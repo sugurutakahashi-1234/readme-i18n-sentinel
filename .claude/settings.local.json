@@ -147,7 +147,10 @@
       "Bash(tar:*)",
       "Bash(git cherry-pick:*)",
       "Bash(act:*)",
-      "Bash(../dist/presentation/cli.js init --yes)"
+      "Bash(../dist/presentation/cli.js init --yes)",
+      "Bash(git push:*)",
+      "Bash(git commit:*)",
+      "Bash(git add:*)"
     ],
     "deny": []
   },
