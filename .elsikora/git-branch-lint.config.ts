@@ -28,7 +28,7 @@ const config: IBranchLintConfig = {
     "main",
     "develop", // GitFlow development branch
     // Release Please creates this branch automatically for release management
-    "release-please--branches--main--components--typescript-template",
+    "release-please--branches--main--components--readme-i18n-sentinel",
   ],
   rules: {
     "branch-pattern": ":type/:name",

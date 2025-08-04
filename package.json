@@ -1,12 +1,12 @@
 {
-  "name": "typescript-template",
+  "name": "readme-i18n-sentinel",
   "version": "0.1.0",
-  "description": "typescript-template",
+  "description": "readme-i18n-sentinel",
   "publishConfig": {
     "access": "public"
   },
   "bin": {
-    "typescript-template": "./bin/typescript-template.js"
+    "readme-i18n-sentinel": "./bin/readme-i18n-sentinel.js"
   },
   "exports": {
     ".": "./dist/index.js"
@@ -16,12 +16,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sugurutakahashi-1234/typescript-template.git"
+    "url": "https://github.com/sugurutakahashi-1234/readme-i18n-sentinel.git"
   },
   "bugs": {
-    "url": "https://github.com/sugurutakahashi-1234/typescript-template/issues"
+    "url": "https://github.com/sugurutakahashi-1234/readme-i18n-sentinel/issues"
   },
-  "homepage": "https://github.com/sugurutakahashi-1234/typescript-template#readme",
+  "homepage": "https://github.com/sugurutakahashi-1234/readme-i18n-sentinel#readme",
   "files": [
     "dist",
     "bin",
