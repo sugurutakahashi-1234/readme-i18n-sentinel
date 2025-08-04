@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    // Disable declaration maps for smaller package size
+    "declarationMap": false,
+    // Disable source maps for production builds
+    "sourceMap": false
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "src/__tests__/**"
+  ]
+}
