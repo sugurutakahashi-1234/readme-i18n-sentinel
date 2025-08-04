@@ -1,0 +1,81 @@
+{
+  "name": "typescript-template",
+  "version": "0.1.0",
+  "description": "typescript-template",
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "typescript-template": "./bin/typescript-template.js"
+  },
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "keywords": [],
+  "author": "Suguru Takahashi",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sugurutakahashi-1234/typescript-template.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sugurutakahashi-1234/typescript-template/issues"
+  },
+  "homepage": "https://github.com/sugurutakahashi-1234/typescript-template#readme",
+  "files": [
+    "dist",
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "packageManager": "bun@1.2.19",
+  "scripts": {
+    "prepare": "husky",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "build": "tsc -p tsconfig.build.json",
+    "lint": "biome check --write .",
+    "lint:unsafe": "biome check --write --unsafe .",
+    "lint:check": "biome check .",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "test": "bun test",
+    "test:quiet": "bun test > /dev/null 2>&1 && echo '✅ All tests passed' || echo '❌ Tests failed - run \"bun run test\" for details'",
+    "test:coverage": "bun test --coverage",
+    "test:coverage:html": "bun test --coverage && bunx @lcov-viewer/cli lcov coverage/lcov.info -o coverage/html",
+    "validate:codecov": "cat codecov.yml | curl --data-binary @- https://codecov.io/validate",
+    "validate:renovate": "$(which npx) --yes --package renovate -- renovate-config-validator renovate.json5 --strict",
+    "validate:branch": "git-branch-lint",
+    "knip": "knip -c knip.config.ts",
+    "knip:fix": "knip -c knip.config.ts --fix",
+    "update:docs:knip": "knip -c knip.config.ts --reporter markdown > docs/reports/code-quality/unused-code.md",
+    "update:docs:deps-graph": "tsg --tsconfig tsconfig.build.json --LR --md docs/reports/dependencies/deps-graph.md",
+    "update:docs:deps-graph:layers": "tsg --tsconfig tsconfig.build.json --LR --abstraction src/domain --abstraction src/application --abstraction src/infrastructure --abstraction src/presentation --md docs/reports/dependencies/layers.md",
+    "update:docs": "bun run update:docs:knip && bun run update:docs:deps-graph && bun run update:docs:deps-graph:layers",
+    "ci": "bun run lint && bun run format && bun run typecheck && bun run lint:check && bun run format:check && bun run build && bun run knip && bun run test:quiet && bun run update:docs",
+    "clean": "rm -rf bun.lock node_modules dist coverage .*.bun-build tsconfig.tsbuildinfo tsconfig.build.tsbuildinfo",
+    "clean:install": "bun run clean && bun install",
+    "clean:build": "bun run clean:install && bun run ci",
+    "release-please:dry-run": "bunx release-please release-pr --token=$(gh auth token) --repo-url=$(gh repo view --json nameWithOwner --jq '.nameWithOwner') --debug --dry-run",
+    "deps:size": "node-size",
+    "deps:check": "bunx ncu --deep",
+    "deps:update": "bunx ncu -u --deep && bun install"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@biomejs/biome": "^2.1.3",
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "@commitlint/types": "^19.8.1",
+    "@elsikora/git-branch-lint": "^1.1.2",
+    "@types/bun": "^1.2.19",
+    "@types/node": "^24.1.0",
+    "husky": "^9.1.7",
+    "knip": "^5.62.0",
+    "typescript": "^5.9.2",
+    "@ysk8hori/typescript-graph": "^0.26.4"
+  }
+}

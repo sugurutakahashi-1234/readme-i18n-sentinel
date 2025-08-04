@@ -1,0 +1,121 @@
+{
+  // Renovate configuration file
+  // https://docs.renovatebot.com/configuration-options/
+
+  // Renovate is an automated dependency update tool
+  // https://github.com/marketplace/renovate
+
+  // This configuration file is used to customize Renovate's behavior
+  // https://github.com/settings/installations
+  
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  
+  // Disable config migration
+  "configMigration": false,
+  
+  // Inherit basic settings
+  // "config:best-practices" includes:
+  // - rangeStrategy: "pin" (fully pinned versions)
+  // - separateMajorMinor: true (separate major/minor)
+  // - separateMinorPatch: true (separate minor/patch)
+  // - :pinAllExceptPeerDependencies (pin everything except peerDependencies)
+  // - :pinDevDependencies (pin devDependencies)
+  // - helpers:pinGitHubActionDigests (pin GitHub Actions by digest)
+  //
+  // NOTE: Override to use caret (^) ranges for OSS flexibility
+  "extends": [
+    "config:best-practices"
+  ],
+  
+  // Use caret ranges (e.g., "^5.3.2" allows 5.x.x) for OSS flexibility
+  // "bump" = preserve semver ranges when updating
+  // This allows downstream users to benefit from minor/patch updates
+  // while maintaining compatibility within major versions
+  "rangeStrategy": "bump",
+  
+  "timezone": "Asia/Tokyo",
+  "enabled": true,
+  "packageRules": [
+    // Disable automerge (all updates require manual review)
+    {
+      "automerge": false,
+      "matchPackageNames": [
+        "*"
+      ]
+    },
+
+    // Disable digest pinning for GitHub Actions, Dockerfile, and Docker Compose
+    {
+      "matchManagers": [
+        "github-actions",
+        "dockerfile",
+        "docker-compose"
+      ],
+      "pinDigests": false
+    },
+    
+    // Explicitly disable pin updates for all packages
+    // OSS packages should use ranges (^) not pinned versions
+    // to allow flexibility for end users
+    {
+      "matchUpdateTypes": ["pin"],
+      "enabled": false
+    },
+    
+    // Disable Node.js engine updates
+    // Engine version is intentionally set to minimum supported version
+    // to maximize compatibility for OSS users
+    {
+      "matchDepTypes": ["engines"],
+      "matchPackageNames": ["node"],
+      "enabled": false
+    },
+    
+    // Disable .nvmrc file updates
+    // Node version is intentionally set to minimum supported version for OSS compatibility
+    {
+      "matchManagers": ["nvm"],
+      "enabled": false
+    },
+  ],
+  
+  // Schedule: weekdays 10:00-17:00
+  "schedule": [
+    "* 10-17 * * 1-5"
+  ],
+
+  // PR settings (unlimited PRs allowed, up to 10 concurrently)
+  "prHourlyLimit": 0,
+  "prConcurrentLimit": 10,
+  "labels": [],
+  "draftPR": true,
+  
+  // Commit message: "chore: [Renovate] update {{depName}}"
+  "commitMessagePrefix": "chore:",
+  "commitMessageAction": "[Renovate] update",
+  "commitMessageTopic": "{{depName}}",
+  
+  // Branch settings
+  "branchPrefix": "feature/renovate-",
+  "baseBranches": [
+    "$default"
+  ],
+  "branchNameStrict": true,
+  "prTitleStrict": true,
+  
+  // Vulnerability alerts
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": []
+  },
+  
+  // Dependency Dashboard settings
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "[Renovate] Dependency Update Dashboard",
+  "dependencyDashboardHeader": "This issue is automatically created by Renovate to track the status of all dependency updates. Check the status of each PR and merge as needed.",
+  "dependencyDashboardFooter": "For more details, see the renovate.json5 file in this repository.",
+  "dependencyDashboardLabels": [],
+  
+  // Ignore dependencies
+  "ignoreDeps": []
+}

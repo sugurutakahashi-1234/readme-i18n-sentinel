@@ -1,0 +1,15 @@
+[install]
+# Commented out to use caret (^) ranges for OSS flexibility
+# exact = true
+
+[test]
+# Ref: https://bun.com/docs/test/coverage
+
+# NOTE: Due to a bug in Bun 1.2.x, specifying coverageThreshold as an object (e.g., { lines = 0.8, functions = 0.8 })
+# applies the threshold to each file individually, not to the overall coverage.
+# As a result, even if the overall coverage meets the threshold, the process may exit with code 1.
+# Therefore, the coverageThreshold setting is currently commented out.
+# coverageThreshold = 0.80
+coverageSkipTestFiles = true
+coverageDir = "coverage"
+coverageReporter = ["text", "lcov"]

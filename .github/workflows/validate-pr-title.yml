@@ -1,0 +1,32 @@
+name: validate-pr-title
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened, ready_for_review]
+
+permissions:
+  pull-requests: write  # Required to read PR information
+  statuses: write       # Required for WIP status updates
+
+jobs:
+  validate-pr-title:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check PR title
+        uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # Subject must start with lowercase and be max 72 chars
+          subjectPattern: ^(?![A-Z]).{1,72}$
+          subjectPatternError: |
+            PR title must start with lowercase and be ≤72 characters.
+            Current: {subject}
+            
+            ✅ Good: "add new feature"
+            ❌ Bad: "Add new feature" or titles >72 chars
+
+          # Allow WIP PRs
+          wip: true
