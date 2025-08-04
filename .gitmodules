@@ -1,4 +1,0 @@
-[submodule "reference/mermaid-markdown-wrap"]
-	path = reference/mermaid-markdown-wrap
-	url = https://github.com/sugurutakahashi-1234/mermaid-markdown-wrap.git
-	ignore = all
