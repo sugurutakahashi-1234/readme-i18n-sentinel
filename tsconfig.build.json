@@ -10,7 +10,6 @@
   "exclude": [
     "node_modules",
     "dist",
-    "lib",
     "src/**/*.test.ts",
     "src/**/*.test.tsx",
     "src/__tests__/**"

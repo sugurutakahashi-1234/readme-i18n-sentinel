@@ -43,9 +43,6 @@ bun.lockb
 # compiled binaries
 dist/
 
-# TypeScript build output
-lib/
-
 # editor
 .vscode/*
 !.vscode/settings.json

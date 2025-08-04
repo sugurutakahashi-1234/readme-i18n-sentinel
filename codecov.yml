@@ -32,7 +32,6 @@ ignore:
   - "scripts/**"
   - "dist/**"
   - "**/*.test.ts"
-  - "lib/**"
   - "**/*.d.ts"
   - "node_modules/**"
   - "docs/**"
