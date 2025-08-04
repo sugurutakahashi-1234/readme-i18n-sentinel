@@ -150,7 +150,9 @@
       "Bash(../dist/presentation/cli.js init --yes)",
       "Bash(git push:*)",
       "Bash(git commit:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git submodule add:*)",
+      "Bash(git submodule:*)"
     ],
     "deny": []
   },
