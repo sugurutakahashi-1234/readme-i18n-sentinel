@@ -1,7 +1,7 @@
 {
   "name": "readme-i18n-sentinel",
   "version": "0.1.0",
-  "description": "readme-i18n-sentinel",
+  "description": "CLI tool to detect outdated translations in README files using Git diff",
   "publishConfig": {
     "access": "public"
   },
@@ -9,9 +9,22 @@
     "readme-i18n-sentinel": "./bin/readme-i18n-sentinel.js"
   },
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./config": {
+      "types": "./dist/config.d.ts",
+      "default": "./dist/config.js"
+    }
   },
-  "keywords": [],
+  "keywords": [
+    "i18n",
+    "internationalization",
+    "readme",
+    "markdown",
+    "translation",
+    "git",
+    "cli",
+    "typescript"
+  ],
   "author": "Suguru Takahashi",
   "license": "MIT",
   "repository": {
@@ -25,6 +38,7 @@
   "files": [
     "dist",
     "bin",
+    "schema",
     "README.md",
     "LICENSE"
   ],
@@ -35,8 +49,13 @@
   "packageManager": "bun@1.2.19",
   "scripts": {
     "prepare": "husky",
+    "help": "bun src/index.ts --help",
+    "help:init": "bun src/index.ts init --help",
+    "help:validate": "bun src/index.ts validate --help",
     "typecheck": "tsc --noEmit -p tsconfig.json",
+    "prebuild": "bun run generate:schema",
     "build": "tsc -p tsconfig.build.json",
+    "dev": "bun run src/index.ts",
     "lint": "biome check --write .",
     "lint:unsafe": "biome check --write --unsafe .",
     "lint:check": "biome check .",
@@ -44,11 +63,15 @@
     "format:check": "biome format .",
     "test": "bun test",
     "test:quiet": "bun test > /dev/null 2>&1 && echo '✅ All tests passed' || echo '❌ Tests failed - run \"bun run test\" for details'",
+    "test:e2e": "bun scripts/testing/e2e-npm-package.ts",
     "test:coverage": "bun test --coverage",
     "test:coverage:html": "bun test --coverage && bunx @lcov-viewer/cli lcov coverage/lcov.info -o coverage/html",
+    "generate:schema": "bun scripts/development/generate-schema.ts && biome format --write schema/config.schema.json",
+    "validate:schema": "bun scripts/development/check-schema.ts",
     "validate:codecov": "cat codecov.yml | curl --data-binary @- https://codecov.io/validate",
     "validate:renovate": "$(which npx) --yes --package renovate -- renovate-config-validator renovate.json5 --strict",
     "validate:branch": "git-branch-lint",
+    "readme-i18n-sentinel": "bun ./dist/cli.js",
     "knip": "knip -c knip.config.ts",
     "knip:fix": "knip -c knip.config.ts --fix",
     "update:docs:knip": "knip -c knip.config.ts --reporter markdown > docs/reports/code-quality/unused-code.md",
@@ -62,9 +85,18 @@
     "release-please:dry-run": "bunx release-please release-pr --token=$(gh auth token) --repo-url=$(gh repo view --json nameWithOwner --jq '.nameWithOwner') --debug --dry-run",
     "deps:size": "node-size",
     "deps:check": "bunx ncu --deep",
-    "deps:update": "bunx ncu -u --deep && bun install"
+    "deps:update": "bunx ncu -u --deep && bun install && bun run ci"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@clack/prompts": "^0.11.0",
+    "commander": "^14.0.0",
+    "cosmiconfig": "^9.0.0",
+    "cosmiconfig-typescript-loader": "^6.1.0",
+    "globby": "^14.1.0",
+    "simple-git": "^3.28.0",
+    "yaml": "^2.8.0",
+    "zod": "^4.0.14"
+  },
   "devDependencies": {
     "@biomejs/biome": "^2.1.3",
     "@commitlint/cli": "^19.8.1",
@@ -72,7 +104,7 @@
     "@commitlint/types": "^19.8.1",
     "@elsikora/git-branch-lint": "^1.1.2",
     "@types/bun": "^1.2.19",
-    "@types/node": "^24.1.0",
+    "@types/node": "^24.2.0",
     "husky": "^9.1.7",
     "knip": "^5.62.0",
     "typescript": "^5.9.2",

@@ -4,7 +4,7 @@ const config: KnipConfig = {
   // Let knip auto-detect entry points from package.json
   project: ["src/**/*.ts"],
   ignoreDependencies: ["tslib", "@commitlint/cli"], // tslib is a runtime dependency, @commitlint/cli is used in CI only
-  ignoreBinaries: ["act", "jq", "node-size"], // act: test:act script, jq: GitHub Actions workflows, node-size: used in npm scripts
+  ignoreBinaries: ["node-size"], // node-size: used in npm scripts
   ignoreExportsUsedInFile: false,
 
   // IMPORTANT: Keep this as true to detect real unused exports
