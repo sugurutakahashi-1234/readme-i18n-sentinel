@@ -71,7 +71,7 @@
     "validate:codecov": "cat codecov.yml | curl --data-binary @- https://codecov.io/validate",
     "validate:renovate": "$(which npx) --yes --package renovate -- renovate-config-validator renovate.json5 --strict",
     "validate:branch": "git-branch-lint",
-    "readme-i18n-sentinel": "bun ./dist/cli.js",
+    "readme-i18n-sentinel": "bun ./dist/index.js",
     "knip": "knip -c knip.config.ts",
     "knip:fix": "knip -c knip.config.ts --fix",
     "update:docs:knip": "knip -c knip.config.ts --reporter markdown > docs/reports/code-quality/unused-code.md",

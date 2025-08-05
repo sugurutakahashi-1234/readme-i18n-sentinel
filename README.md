@@ -296,4 +296,3 @@ MIT
 - [cosmiconfig](https://github.com/cosmiconfig/cosmiconfig) - Configuration file loader
 - [simple-git](https://github.com/steveukx/git-js) - Git integration
 - [Husky](https://typicode.github.io/husky/) - Git hooks made easy
-- 
