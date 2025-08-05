@@ -105,6 +105,17 @@ program
         process.exit(2);
       }
 
+      // Print check settings if not in JSON mode
+      if (!config.output?.json) {
+        console.error("📖 Checking README translations...");
+        if (config.checks?.headingsMatchSource !== false) {
+          console.error(
+            "Settings: headingsMatchSource=true (Headings must match source file exactly)",
+          );
+        }
+        console.error(""); // Empty line for readability
+      }
+
       // Run checks
       const result = await checkTranslationsUseCase(config);
 

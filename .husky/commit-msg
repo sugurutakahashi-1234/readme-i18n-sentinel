@@ -6,9 +6,19 @@ README_FILE='README.md'
 I18N_SKIP_FLAG='[i18n-skip]'
 
 if git diff --cached --name-only | grep -q "^${README_FILE}$"; then
-  if ! grep -q "${I18N_SKIP_FLAG}" "$1"; then
+  if ! grep -qF "${I18N_SKIP_FLAG}" "$1"; then
     echo "📖 Checking README translations..."
-    bun run readme-i18n-sentinel || exit 1
+    if ! bun run readme-i18n-sentinel; then
+      echo ""
+      echo "❌ README translation check failed"
+      echo ""
+      echo "The translations in README.*.md files need to be updated."
+      echo "Please fix the issues above or add '${I18N_SKIP_FLAG}' to your commit message to skip this check."
+      echo ""
+      echo "Example: feat: update documentation ${I18N_SKIP_FLAG}"
+      echo ""
+      exit 1
+    fi
   else
     echo "📖 Skipping README translation check due to ${I18N_SKIP_FLAG} flag"
   fi

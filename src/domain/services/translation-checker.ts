@@ -1,4 +1,11 @@
-import type { ErrorItem } from "../models/check-result.js";
+import type {
+  HeadingCountMismatch,
+  HeadingMismatch,
+  LineCountMismatch,
+  MissingHeading,
+  OutdatedLine,
+  TranslationError,
+} from "../models/check-result.js";
 
 interface Heading {
   level: number;
@@ -13,12 +20,19 @@ export function checkLines(
   sourceLineCount: number,
   targetLineCount: number,
   targetFile: string,
-): ErrorItem | null {
+): LineCountMismatch | null {
   if (sourceLineCount !== targetLineCount) {
+    const difference = sourceLineCount - targetLineCount;
     return {
+      type: "line-count-mismatch",
       file: targetFile,
-      type: "lines-mismatch",
-      details: `Line count mismatch: source has ${sourceLineCount} lines, target has ${targetLineCount} lines`,
+      expected: sourceLineCount,
+      actual: targetLineCount,
+      difference,
+      suggestion:
+        difference > 0
+          ? `Add ${difference} lines to match the source file`
+          : `Remove ${Math.abs(difference)} lines to match the source file`,
     };
   }
   return null;
@@ -31,18 +45,32 @@ export function checkChanges(
   sourceChangedLines: number[],
   targetChangedLines: number[],
   targetFile: string,
-): ErrorItem[] {
-  const errors: ErrorItem[] = [];
+  sourceContent?: string,
+  targetContent?: string,
+): OutdatedLine[] {
+  const errors: OutdatedLine[] = [];
   const targetChangedSet = new Set(targetChangedLines);
 
   for (const line of sourceChangedLines) {
     if (!targetChangedSet.has(line)) {
-      errors.push({
+      const sourceLines = sourceContent?.split("\n") || [];
+      const targetLines = targetContent?.split("\n") || [];
+      const expectedContent = sourceLines[line - 1] || "";
+      const currentContent = targetLines[line - 1];
+
+      const error: OutdatedLine = {
+        type: "outdated-line",
         file: targetFile,
-        type: "line-missing",
-        line,
-        details: `Line ${line} was changed in source but not in target`,
-      });
+        lineNumber: line,
+        expectedContent,
+        suggestion: `Update line ${line} with the new content from the source file`,
+      };
+
+      if (currentContent !== undefined) {
+        error.currentContent = currentContent;
+      }
+
+      errors.push(error);
     }
   }
 
@@ -56,26 +84,54 @@ export function checkHeadings(
   sourceHeadings: Heading[],
   targetHeadings: Heading[],
   targetFile: string,
-): ErrorItem[] {
-  const errors: ErrorItem[] = [];
+): TranslationError[] {
+  const errors: TranslationError[] = [];
 
-  // Check if the number of headings match
+  // Early return if heading count doesn't match
   if (sourceHeadings.length !== targetHeadings.length) {
+    const difference = sourceHeadings.length - targetHeadings.length;
     errors.push({
+      type: "heading-count-mismatch",
       file: targetFile,
-      type: "headings-mismatch",
-      details: `Heading count mismatch: source has ${sourceHeadings.length} headings, target has ${targetHeadings.length} headings`,
-    });
-    return errors;
+      expected: sourceHeadings.length,
+      actual: targetHeadings.length,
+      difference,
+      suggestion:
+        difference > 0
+          ? `Add ${difference} headings to match the source structure. Check which headings are missing and add them in the correct order.`
+          : `Remove ${Math.abs(difference)} extra headings to match the source structure.`,
+    } as HeadingCountMismatch);
+    return errors; // Early return to avoid unnecessary detailed checks
   }
 
-  // Check each heading
+  // Only check individual headings if the count matches
+  const targetHeadingMap = new Map(
+    targetHeadings.map((h) => [`${h.level}-${h.text}`, h]),
+  );
+
+  // Check for missing headings
+  for (const sourceHeading of sourceHeadings) {
+    const key = `${sourceHeading.level}-${sourceHeading.text}`;
+    if (!targetHeadingMap.has(key)) {
+      errors.push({
+        type: "missing-heading",
+        file: targetFile,
+        heading: sourceHeading.text,
+        level: sourceHeading.level,
+        suggestion: `Add heading "${"#".repeat(
+          sourceHeading.level,
+        )} ${sourceHeading.text}" to match the source structure`,
+      } as MissingHeading);
+    }
+  }
+
+  // Check for heading mismatches at each position
   for (let i = 0; i < sourceHeadings.length; i++) {
     const sourceHeading = sourceHeadings[i];
     const targetHeading = targetHeadings[i];
 
     if (!sourceHeading || !targetHeading) {
-      continue; // This should not happen if length check passed
+      continue;
     }
 
     if (
@@ -83,12 +139,23 @@ export function checkHeadings(
       sourceHeading.text !== targetHeading.text
     ) {
       errors.push({
+        type: "heading-mismatch",
         file: targetFile,
-        type: "headings-mismatch",
-        heading: sourceHeading.text,
-        line: targetHeading.line,
-        details: `Heading mismatch at line ${targetHeading.line}: expected "${sourceHeading.text}" (level ${sourceHeading.level}), found "${targetHeading.text}" (level ${targetHeading.level})`,
-      });
+        lineNumber: targetHeading.line,
+        expected: {
+          level: sourceHeading.level,
+          text: sourceHeading.text,
+        },
+        actual: {
+          level: targetHeading.level,
+          text: targetHeading.text,
+        },
+        suggestion: `Replace "${"#".repeat(
+          targetHeading.level,
+        )} ${targetHeading.text}" with "${"#".repeat(
+          sourceHeading.level,
+        )} ${sourceHeading.text}" at line ${targetHeading.line}`,
+      } as HeadingMismatch);
     }
   }
 

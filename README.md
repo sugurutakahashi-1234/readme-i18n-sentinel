@@ -166,9 +166,19 @@ Available options:
    I18N_SKIP_FLAG='[i18n-skip]'  # You can customize this flag string
    
    if git diff --cached --name-only | grep -q "^${README_FILE}$"; then
-     if ! grep -q "${I18N_SKIP_FLAG}" "$1"; then
+     if ! grep -qF "${I18N_SKIP_FLAG}" "$1"; then
        echo "📖 Checking README translations..."
-       npx readme-i18n-sentinel || exit 1
+       if ! npx readme-i18n-sentinel; then
+         echo ""
+         echo "❌ README translation check failed"
+         echo ""
+         echo "The translations in README.*.md files need to be updated."
+         echo "Please fix the issues above or add '${I18N_SKIP_FLAG}' to your commit message to skip this check."
+         echo ""
+         echo "Example: feat: update documentation ${I18N_SKIP_FLAG}"
+         echo ""
+         exit 1
+       fi
      else
        echo "📖 Skipping README translation check due to ${I18N_SKIP_FLAG} flag"
      fi
@@ -296,3 +306,4 @@ MIT
 - [cosmiconfig](https://github.com/cosmiconfig/cosmiconfig) - Configuration file loader
 - [simple-git](https://github.com/steveukx/git-js) - Git integration
 - [Husky](https://typicode.github.io/husky/) - Git hooks made easy
+テスト用のREADME変更
