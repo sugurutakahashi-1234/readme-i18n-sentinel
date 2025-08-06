@@ -6,10 +6,12 @@ import type {
 } from "../../domain/models/check-result.js";
 import type { Config } from "../../domain/models/config.js";
 import {
+  checkCodeBlockMatch,
   checkLines,
   checkSectionLines,
   checkSectionOrder,
   checkSectionTitleMatch,
+  extractCodeBlocks,
   extractHeadings,
 } from "../../domain/services/translation-checker.js";
 import {
@@ -80,7 +82,19 @@ export async function checkTranslationsUseCase(
       errors.push(...titleErrors);
     }
 
-    // 4. Finally, check total line count
+    // 4. Check code blocks (if required)
+    if (config.checks?.codeBlock === true) {
+      const sourceBlocks = extractCodeBlocks(sourceContent, sourceHeadings);
+      const targetBlocks = extractCodeBlocks(targetContent, targetHeadings);
+      const codeBlockErrors = checkCodeBlockMatch(
+        sourceBlocks,
+        targetBlocks,
+        targetFile,
+      );
+      errors.push(...codeBlockErrors);
+    }
+
+    // 5. Finally, check total line count
     if (config.checks?.lineCount !== false) {
       const lineError = checkLines(
         sourceLineCount,
@@ -102,6 +116,7 @@ export async function checkTranslationsUseCase(
       sectionPosition: config.checks?.sectionPosition ?? true,
       sectionTitle: config.checks?.sectionTitle ?? false,
       lineCount: config.checks?.lineCount ?? true,
+      codeBlock: config.checks?.codeBlock ?? false,
     },
     output: {
       json: config.output?.json ?? false,

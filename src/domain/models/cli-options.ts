@@ -12,6 +12,7 @@ const RawCLIOptionsSchema = z.object({
   sectionPosition: z.boolean().optional(),
   sectionTitle: z.boolean().optional(),
   lineCount: z.boolean().optional(),
+  codeBlock: z.boolean().optional(),
   json: z.boolean().optional(),
 });
 

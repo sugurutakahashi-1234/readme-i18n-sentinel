@@ -56,6 +56,7 @@ export async function prepareCheckConfigUseCase(
       sectionPosition: cliOptions.sectionPosition ?? true,
       sectionTitle: cliOptions.sectionTitle ?? false,
       lineCount: cliOptions.lineCount ?? true,
+      codeBlock: cliOptions.codeBlock ?? false,
     },
     output: {
       json: cliOptions.json || false,

@@ -9,12 +9,14 @@ const ChecksConfigSchema = z
     sectionPosition: z.boolean().default(true),
     sectionTitle: z.boolean().default(false),
     lineCount: z.boolean().default(true),
+    codeBlock: z.boolean().default(false),
   })
   .default({
     sectionStructure: true,
     sectionPosition: true,
     sectionTitle: false,
     lineCount: true,
+    codeBlock: false,
   });
 
 /**

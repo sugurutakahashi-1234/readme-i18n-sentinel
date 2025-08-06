@@ -36,6 +36,172 @@ describe("checkTranslationsUseCase Integration Tests", () => {
     }
   });
 
+  test("detects code block mismatches when enabled", async () => {
+    // Create source file with code blocks
+    await writeFile(
+      "README.md",
+      `# Title
+
+## Installation
+
+\`\`\`bash
+npm install package
+\`\`\`
+
+## Usage
+
+\`\`\`javascript
+console.log("hello");
+\`\`\`
+`,
+    );
+
+    // Create target file with different code blocks
+    await writeFile(
+      "README.ja.md",
+      `# Title
+
+## Installation
+
+\`\`\`bash
+yarn add package
+\`\`\`
+
+## Usage
+
+\`\`\`javascript
+console.log("こんにちは");
+\`\`\`
+`,
+    );
+
+    const config: Config = {
+      source: "README.md",
+      target: "README.ja.md",
+      checks: {
+        sectionStructure: true,
+        sectionPosition: true,
+        sectionTitle: true,
+        lineCount: true,
+        codeBlock: true, // Enable code block checking
+      },
+      output: {
+        json: false,
+      },
+    };
+
+    const result = await checkTranslationsUseCase(config);
+
+    expect(result.isValid).toBe(false);
+    // Should detect 2 code block mismatches
+    const codeBlockErrors = result.errors.filter(
+      (e) => e.type === "code-block",
+    );
+    expect(codeBlockErrors).toHaveLength(2);
+  });
+
+  test("passes code block check when disabled", async () => {
+    // Create source file with code blocks
+    await writeFile(
+      "README.md",
+      `# Title
+
+\`\`\`bash
+npm install
+\`\`\`
+`,
+    );
+
+    // Create target file with different code blocks
+    await writeFile(
+      "README.ja.md",
+      `# Title
+
+\`\`\`bash
+yarn install
+\`\`\`
+`,
+    );
+
+    const config: Config = {
+      source: "README.md",
+      target: "README.ja.md",
+      checks: {
+        sectionStructure: true,
+        sectionPosition: true,
+        sectionTitle: true,
+        lineCount: true,
+        codeBlock: false, // Disable code block checking
+      },
+      output: {
+        json: false,
+      },
+    };
+
+    const result = await checkTranslationsUseCase(config);
+
+    // Should pass even though code blocks differ
+    expect(result.isValid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
+
+  test("detects missing code blocks", async () => {
+    // Create source file with code blocks
+    await writeFile(
+      "README.md",
+      `# Title
+
+\`\`\`bash
+npm install
+\`\`\`
+
+Some text
+
+\`\`\`bash
+npm test
+\`\`\`
+`,
+    );
+
+    // Create target file with only one code block
+    await writeFile(
+      "README.ja.md",
+      `# Title
+
+\`\`\`bash
+npm install
+\`\`\`
+
+Some text
+`,
+    );
+
+    const config: Config = {
+      source: "README.md",
+      target: "README.ja.md",
+      checks: {
+        sectionStructure: false,
+        sectionPosition: false,
+        sectionTitle: false,
+        lineCount: false,
+        codeBlock: true, // Only check code blocks
+      },
+      output: {
+        json: false,
+      },
+    };
+
+    const result = await checkTranslationsUseCase(config);
+
+    expect(result.isValid).toBe(false);
+    // Should detect 1 missing code block
+    const codeBlockErrors = result.errors.filter(
+      (e) => e.type === "code-block",
+    );
+    expect(codeBlockErrors).toHaveLength(1);
+    expect(codeBlockErrors[0]?.actual).toBe("");
+  });
+
   test("detects heading and line count issues", async () => {
     // Create source file
     await writeFile(
@@ -57,6 +223,7 @@ describe("checkTranslationsUseCase Integration Tests", () => {
         sectionPosition: true,
         sectionTitle: true,
         lineCount: true,
+        codeBlock: false,
       },
       output: {
         json: false,
@@ -92,6 +259,7 @@ describe("checkTranslationsUseCase Integration Tests", () => {
         sectionPosition: true,
         sectionTitle: true,
         lineCount: true,
+        codeBlock: false,
       },
       output: {
         json: false,
@@ -113,6 +281,7 @@ describe("checkTranslationsUseCase Integration Tests", () => {
         sectionPosition: true,
         sectionTitle: true,
         lineCount: true,
+        codeBlock: false,
       },
       output: {
         json: false,
@@ -135,6 +304,7 @@ describe("checkTranslationsUseCase Integration Tests", () => {
         sectionPosition: true,
         sectionTitle: true,
         lineCount: true,
+        codeBlock: false,
       },
       output: {
         json: false,
@@ -162,6 +332,7 @@ describe("checkTranslationsUseCase Integration Tests", () => {
         sectionPosition: false, // Disabled
         sectionTitle: false, // Disabled
         lineCount: false, // Disabled
+        codeBlock: false, // Disabled
       },
       output: {
         json: false,
@@ -207,6 +378,7 @@ describe("checkTranslationsUseCase Integration Tests", () => {
         sectionPosition: true,
         sectionTitle: true,
         lineCount: true,
+        codeBlock: false,
       },
       output: {
         json: false,
@@ -236,6 +408,7 @@ describe("checkTranslationsUseCase Integration Tests", () => {
         sectionPosition: true,
         sectionTitle: true,
         lineCount: true,
+        codeBlock: false,
       },
       output: {
         json: false,

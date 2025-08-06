@@ -1,4 +1,5 @@
 import type {
+  CodeBlockError,
   LineCountError,
   SectionCountError,
   SectionPositionError,
@@ -253,8 +254,8 @@ export function extractHeadings(content: string): Heading[] {
       continue;
     }
 
-    // Check for code block boundaries
-    if (line.startsWith("```")) {
+    // Check for code block boundaries (including indented ones)
+    if (line.trim().startsWith("```")) {
       inCodeBlock = !inCodeBlock;
       continue;
     }
@@ -276,4 +277,146 @@ export function extractHeadings(content: string): Heading[] {
   }
 
   return headings;
+}
+
+/**
+ * Represents a code block found in the content
+ */
+interface CodeBlock {
+  content: string; // Full content including ``` markers
+  line: number; // Starting line number
+  section?: string; // The section this code block belongs to
+}
+
+/**
+ * Extract code blocks from file content
+ */
+export function extractCodeBlocks(
+  content: string,
+  headings: Heading[],
+): CodeBlock[] {
+  const lines = content.split("\n");
+  const codeBlocks: CodeBlock[] = [];
+  let inCodeBlock = false;
+  let currentBlock: string[] = [];
+  let blockStartLine = 0;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i] ?? "";
+    const lineNumber = i + 1;
+
+    // Check for code block boundaries (including indented ones)
+    if (line.trim().startsWith("```")) {
+      if (!inCodeBlock) {
+        // Start of code block
+        inCodeBlock = true;
+        blockStartLine = lineNumber;
+        currentBlock = [line];
+      } else {
+        // End of code block
+        currentBlock.push(line);
+        const blockContent = currentBlock.join("\n");
+
+        // Find the section this code block belongs to
+        let section: string | undefined;
+        for (let j = headings.length - 1; j >= 0; j--) {
+          const heading = headings[j];
+          if (heading && heading.line < blockStartLine) {
+            section = formatHeadingWithLevel(heading);
+            break;
+          }
+        }
+
+        codeBlocks.push({
+          content: blockContent,
+          line: blockStartLine,
+          ...(section !== undefined && { section }),
+        });
+
+        inCodeBlock = false;
+        currentBlock = [];
+      }
+    } else if (inCodeBlock) {
+      // Inside code block, add all lines (including empty ones)
+      currentBlock.push(line);
+    }
+  }
+
+  return codeBlocks;
+}
+
+/**
+ * Check if code blocks match exactly
+ */
+export function checkCodeBlockMatch(
+  sourceBlocks: CodeBlock[],
+  targetBlocks: CodeBlock[],
+  targetFile: string,
+): CodeBlockError[] {
+  const errors: CodeBlockError[] = [];
+
+  // Check each code block
+  const minLength = Math.min(sourceBlocks.length, targetBlocks.length);
+  for (let i = 0; i < minLength; i++) {
+    const sourceBlock = sourceBlocks[i];
+    const targetBlock = targetBlocks[i];
+
+    if (!sourceBlock || !targetBlock) {
+      continue;
+    }
+
+    // Check if content matches exactly
+    if (sourceBlock.content !== targetBlock.content) {
+      const error: CodeBlockError = {
+        type: "code-block",
+        file: targetFile,
+        line: targetBlock.line,
+        expected: sourceBlock.content,
+        actual: targetBlock.content,
+        ...(targetBlock.section !== undefined && {
+          section: targetBlock.section,
+        }),
+      };
+      errors.push(error);
+    }
+  }
+
+  // If block counts differ, report a single error for the first difference
+  if (sourceBlocks.length !== targetBlocks.length) {
+    if (sourceBlocks.length > targetBlocks.length) {
+      // Missing blocks in target
+      const sourceBlock = sourceBlocks[targetBlocks.length];
+      if (sourceBlock) {
+        const error: CodeBlockError = {
+          type: "code-block",
+          file: targetFile,
+          // Don't set line for missing blocks
+          expected: sourceBlock.content,
+          actual: "", // Missing block
+          ...(sourceBlock.section !== undefined && {
+            section: sourceBlock.section,
+          }),
+        };
+        errors.push(error);
+      }
+    } else {
+      // Extra blocks in target
+      const targetBlock = targetBlocks[sourceBlocks.length];
+      if (targetBlock) {
+        const error: CodeBlockError = {
+          type: "code-block",
+          file: targetFile,
+          line: targetBlock.line,
+          expected: "", // No corresponding block in source
+          actual: targetBlock.content,
+          ...(targetBlock.section !== undefined && {
+            section: targetBlock.section,
+          }),
+        };
+        errors.push(error);
+      }
+    }
+  }
+
+  return errors;
 }

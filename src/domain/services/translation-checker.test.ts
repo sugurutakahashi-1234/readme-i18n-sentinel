@@ -1,9 +1,11 @@
 import { describe, expect, test } from "bun:test";
 import {
+  checkCodeBlockMatch,
   checkLines,
   checkSectionLines,
   checkSectionOrder,
   checkSectionTitleMatch,
+  extractCodeBlocks,
   extractHeadings,
 } from "./translation-checker.js";
 
@@ -131,5 +133,206 @@ More text
       { level: 1, text: "Real Heading", line: 1 },
       { level: 2, text: "Real Section", line: 6 },
     ]);
+  });
+});
+
+describe("extractCodeBlocks", () => {
+  test("extracts code blocks with correct content", () => {
+    const content = `# Title
+Some text
+\`\`\`bash
+npm install
+\`\`\`
+More text`;
+    const headings = extractHeadings(content);
+    const blocks = extractCodeBlocks(content, headings);
+    expect(blocks).toHaveLength(1);
+    expect(blocks[0]).toEqual({
+      content: "```bash\nnpm install\n```",
+      line: 3,
+      section: "# Title",
+    });
+  });
+
+  test("extracts multiple code blocks", () => {
+    const content = `# Installation
+\`\`\`bash
+npm install
+\`\`\`
+## Usage
+\`\`\`javascript
+console.log("hello");
+\`\`\``;
+    const headings = extractHeadings(content);
+    const blocks = extractCodeBlocks(content, headings);
+    expect(blocks).toHaveLength(2);
+    expect(blocks[0]?.content).toBe("```bash\nnpm install\n```");
+    expect(blocks[0]?.section).toBe("# Installation");
+    expect(blocks[1]?.content).toBe(
+      '```javascript\nconsole.log("hello");\n```',
+    );
+    expect(blocks[1]?.section).toBe("## Usage");
+  });
+
+  test("handles empty lines in code blocks", () => {
+    const content = `# Title
+\`\`\`python
+def hello():
+
+    print("world")
+\`\`\``;
+    const headings = extractHeadings(content);
+    const blocks = extractCodeBlocks(content, headings);
+    expect(blocks).toHaveLength(1);
+    expect(blocks[0]?.content).toBe(
+      '```python\ndef hello():\n\n    print("world")\n```',
+    );
+  });
+
+  test("detects indented code blocks in lists", () => {
+    const content = `# Installation
+
+1. First step
+   \`\`\`bash
+   npm install
+   \`\`\`
+
+2. Second step
+   \`\`\`javascript
+   console.log("test");
+   \`\`\``;
+
+    const headings = extractHeadings(content);
+    const blocks = extractCodeBlocks(content, headings);
+
+    // Should detect both indented code blocks
+    expect(blocks).toHaveLength(2);
+    expect(blocks[0]?.content).toBe("   ```bash\n   npm install\n   ```");
+    expect(blocks[0]?.section).toBe("# Installation");
+    expect(blocks[1]?.content).toBe(
+      '   ```javascript\n   console.log("test");\n   ```',
+    );
+    expect(blocks[1]?.section).toBe("# Installation");
+  });
+});
+
+describe("checkCodeBlockMatch", () => {
+  test("detects content mismatch", () => {
+    const sourceBlocks = [
+      {
+        content: "```bash\nnpm install\n```",
+        line: 3,
+        section: "# Installation",
+      },
+    ];
+    const targetBlocks = [
+      {
+        content: "```bash\nyarn install\n```",
+        line: 3,
+        section: "# Installation",
+      },
+    ];
+    const errors = checkCodeBlockMatch(
+      sourceBlocks,
+      targetBlocks,
+      "README.ja.md",
+    );
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toEqual({
+      type: "code-block",
+      file: "README.ja.md",
+      line: 3,
+      expected: "```bash\nnpm install\n```",
+      actual: "```bash\nyarn install\n```",
+      section: "# Installation",
+    });
+  });
+
+  test("detects missing code blocks", () => {
+    const sourceBlocks = [
+      {
+        content: "```bash\nnpm install\n```",
+        line: 3,
+        section: "# Installation",
+      },
+      { content: "```bash\nnpm test\n```", line: 7, section: "# Testing" },
+    ];
+    const targetBlocks = [
+      {
+        content: "```bash\nnpm install\n```",
+        line: 3,
+        section: "# Installation",
+      },
+    ];
+    const errors = checkCodeBlockMatch(
+      sourceBlocks,
+      targetBlocks,
+      "README.ja.md",
+    );
+    expect(errors).toHaveLength(1);
+    expect(errors[0]?.type).toBe("code-block");
+    expect(errors[0]?.expected).toBe("```bash\nnpm test\n```");
+    expect(errors[0]?.actual).toBe("");
+    expect(errors[0]?.line).toBeUndefined(); // Should not have line for missing blocks
+  });
+
+  test("detects extra code blocks", () => {
+    const sourceBlocks = [
+      {
+        content: "```bash\nnpm install\n```",
+        line: 3,
+        section: "# Installation",
+      },
+    ];
+    const targetBlocks = [
+      {
+        content: "```bash\nnpm install\n```",
+        line: 3,
+        section: "# Installation",
+      },
+      { content: "```bash\nnpm test\n```", line: 7, section: "# Testing" },
+    ];
+    const errors = checkCodeBlockMatch(
+      sourceBlocks,
+      targetBlocks,
+      "README.ja.md",
+    );
+    expect(errors).toHaveLength(1);
+    expect(errors[0]?.type).toBe("code-block");
+    expect(errors[0]?.expected).toBe("");
+    expect(errors[0]?.actual).toBe("```bash\nnpm test\n```");
+  });
+
+  test("passes when code blocks match exactly", () => {
+    const sourceBlocks = [
+      {
+        content: "```bash\nnpm install\n```",
+        line: 3,
+        section: "# Installation",
+      },
+      {
+        content: '```js\nconsole.log("test");\n```',
+        line: 7,
+        section: "# Usage",
+      },
+    ];
+    const targetBlocks = [
+      {
+        content: "```bash\nnpm install\n```",
+        line: 3,
+        section: "# Installation",
+      },
+      {
+        content: '```js\nconsole.log("test");\n```',
+        line: 7,
+        section: "# Usage",
+      },
+    ];
+    const errors = checkCodeBlockMatch(
+      sourceBlocks,
+      targetBlocks,
+      "README.ja.md",
+    );
+    expect(errors).toHaveLength(0);
   });
 });

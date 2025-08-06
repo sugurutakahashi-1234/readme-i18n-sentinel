@@ -13,6 +13,7 @@ const ERROR_TYPE_LABELS = {
   "section-structure": "Section structure mismatch",
   "section-position": "Section position mismatch",
   "section-title": "Section title mismatch",
+  "code-block": "Code block mismatch",
   "file-not-found": "File not found",
 } as const satisfies Record<ErrorType, string>;
 
@@ -79,6 +80,25 @@ function generateSuggestion(error: TranslationError): string {
 
     case "section-title":
       return `Section title at line ${error.line} should be "${error.expected}" but found "${error.actual}". Keep titles in the source language for URL anchors`;
+
+    case "code-block": {
+      const lines = error.expected.split("\n");
+      const isMultiLine = lines.length > 1;
+      const preview = isMultiLine ? `${lines[0]}...` : error.expected;
+
+      if (error.actual === "") {
+        return `Missing code block at expected position. Expected: "${preview}"`;
+      } else if (error.expected === "") {
+        const actualLines = error.actual.split("\n");
+        const actualPreview =
+          actualLines.length > 1 ? `${actualLines[0]}...` : error.actual;
+        const lineInfo = error.line ? ` at line ${error.line}` : "";
+        return `Unexpected code block${lineInfo}. Found: "${actualPreview}"`;
+      } else {
+        const lineInfo = error.line ? ` at line ${error.line}` : "";
+        return `Code block${lineInfo} does not match exactly. Ensure code blocks are identical in all translations`;
+      }
+    }
 
     case "file-not-found":
       if (error.pattern) {
@@ -164,6 +184,52 @@ function formatErrorDetails(error: TranslationError): string[] {
       lines.push(`  → ${generateSuggestion(error)}`);
       break;
 
+    case "code-block": {
+      if (error.section) {
+        lines.push(`  In section: ${error.section}`);
+      }
+
+      // Show first few lines of expected and actual content for comparison
+      const expectedLines = error.expected.split("\n");
+      const actualLines = error.actual.split("\n");
+      const maxPreviewLines = 3;
+
+      if (error.expected) {
+        lines.push(`  Expected:`);
+        for (
+          let i = 0;
+          i < Math.min(expectedLines.length, maxPreviewLines);
+          i++
+        ) {
+          lines.push(`    ${expectedLines[i]}`);
+        }
+        if (expectedLines.length > maxPreviewLines) {
+          lines.push(
+            `    ... (${expectedLines.length - maxPreviewLines} more lines)`,
+          );
+        }
+      }
+
+      if (error.actual) {
+        lines.push(`  Found:`);
+        for (
+          let i = 0;
+          i < Math.min(actualLines.length, maxPreviewLines);
+          i++
+        ) {
+          lines.push(`    ${actualLines[i]}`);
+        }
+        if (actualLines.length > maxPreviewLines) {
+          lines.push(
+            `    ... (${actualLines.length - maxPreviewLines} more lines)`,
+          );
+        }
+      }
+
+      lines.push(`  → ${generateSuggestion(error)}`);
+      break;
+    }
+
     case "file-not-found":
       lines.push(`  → ${generateSuggestion(error)}`);
       break;
@@ -205,7 +271,10 @@ function formatText(result: CheckResult): string {
 
       // Show error with file and type
       let errorHeader = `[${error.file}] ${formatErrorType(error.type)}`;
-      if (error.type === "section-title" && error.line) {
+      if (
+        (error.type === "section-title" || error.type === "code-block") &&
+        error.line
+      ) {
         errorHeader += ` (line ${error.line})`;
       }
       lines.push(errorHeader);

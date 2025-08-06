@@ -32,6 +32,7 @@ program
     "require exact section title match (no translation allowed)",
   )
   .option("--no-line-count", "disable line count check")
+  .option("--code-block", "enable strict code block matching")
   .option("--json", "output in JSON format")
   .action(async (options: unknown) => {
     try {
@@ -70,6 +71,9 @@ Examples:
   
   # Enable strict heading checks (no translation allowed)
   $ ${getPackageName()} --section-title
+  
+  # Enable strict code block matching
+  $ ${getPackageName()} --code-block
   
   # JSON output
   $ ${getPackageName()} --json

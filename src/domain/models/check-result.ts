@@ -9,6 +9,7 @@ export type ErrorType =
   | "section-structure"
   | "section-position"
   | "section-title"
+  | "code-block"
   | "file-not-found";
 
 // Base interface for all errors (internal use only)
@@ -69,6 +70,15 @@ export interface SectionTitleError extends BaseError {
   actual: string;
 }
 
+// Code block error
+export interface CodeBlockError extends BaseError {
+  type: "code-block";
+  line?: number;
+  expected: string;
+  actual: string;
+  section?: string;
+}
+
 // File not found error
 export interface FileNotFound extends BaseError {
   type: "file-not-found";
@@ -82,6 +92,7 @@ export type TranslationError =
   | SectionStructureError
   | SectionPositionError
   | SectionTitleError
+  | CodeBlockError
   | FileNotFound;
 
 // Check configuration used during the check
@@ -93,6 +104,7 @@ export interface CheckConfig {
     sectionPosition: boolean;
     sectionTitle: boolean;
     lineCount: boolean;
+    codeBlock: boolean;
   };
   output: {
     json: boolean;
