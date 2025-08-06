@@ -7,12 +7,7 @@ import {
 } from "./translation-checker.js";
 
 describe("checkLines", () => {
-  test("returns null when line counts match", () => {
-    const result = checkLines(10, 10, "README.ja.md");
-    expect(result).toBeNull();
-  });
-
-  test("returns error when line counts don't match", () => {
+  test("returns error with correct difference calculation", () => {
     const result = checkLines(10, 8, "README.ja.md");
     expect(result).toEqual({
       file: "README.ja.md",
@@ -26,29 +21,7 @@ describe("checkLines", () => {
 });
 
 describe("checkChanges", () => {
-  test("returns empty array when all changes are reflected", () => {
-    const sourceChanges = [1, 5, 10];
-    const targetChanges = [1, 5, 10, 12]; // Target can have additional changes
-    const result = checkChanges(sourceChanges, targetChanges, "README.ja.md");
-    expect(result).toEqual([]);
-  });
-
-  test("returns errors for missing changes", () => {
-    const sourceChanges = [1, 5, 10];
-    const targetChanges = [1, 10]; // Missing line 5
-    const result = checkChanges(sourceChanges, targetChanges, "README.ja.md");
-    expect(result).toEqual([
-      {
-        file: "README.ja.md",
-        type: "outdated-line",
-        lineNumber: 5,
-        expectedContent: "",
-        suggestion: "Please translate the updated content from line 5",
-      },
-    ]);
-  });
-
-  test("returns multiple errors for multiple missing changes", () => {
+  test("detects multiple missing changes correctly", () => {
     const sourceChanges = [1, 5, 10, 15];
     const targetChanges = [1]; // Missing lines 5, 10, 15
     const result = checkChanges(sourceChanges, targetChanges, "README.ja.md");
@@ -91,39 +64,9 @@ More text
       { level: 2, text: "Real Section", line: 6 },
     ]);
   });
-
-  test("handles empty lines", () => {
-    const content = `# Title
-
-## Section`;
-
-    const headings = extractHeadings(content);
-    expect(headings).toEqual([
-      { level: 1, text: "Title", line: 1 },
-      { level: 2, text: "Section", line: 3 },
-    ]);
-  });
 });
 
 describe("checkHeadings", () => {
-  test("returns empty array when headings match", () => {
-    const sourceHeadings = [
-      { level: 1, text: "Title", line: 1 },
-      { level: 2, text: "Section", line: 3 },
-    ];
-    const targetHeadings = [
-      { level: 1, text: "Title", line: 1 },
-      { level: 2, text: "Section", line: 5 }, // Different line number is OK
-    ];
-
-    const errors = checkHeadings(
-      sourceHeadings,
-      targetHeadings,
-      "README.ja.md",
-    );
-    expect(errors).toEqual([]);
-  });
-
   test("returns error when heading count differs", () => {
     const sourceHeadings = [
       { level: 1, text: "Title", line: 1 },

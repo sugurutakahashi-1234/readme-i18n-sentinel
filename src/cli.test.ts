@@ -7,7 +7,7 @@ import { join } from "node:path";
 let testDir: string;
 let originalCwd: string;
 
-describe("CLI Basic Tests", () => {
+describe("CLI E2E Tests", () => {
   beforeEach(async () => {
     originalCwd = process.cwd();
     testDir = join(
