@@ -5,14 +5,16 @@ import { z } from "zod";
  */
 const ChecksConfigSchema = z
   .object({
-    checkLineCount: z.boolean().default(true),
-    checkChangedLines: z.boolean().default(true),
-    strictHeadings: z.boolean().default(false),
+    sectionStructure: z.boolean().default(true),
+    sectionPosition: z.boolean().default(true),
+    sectionTitle: z.boolean().default(false),
+    lineCount: z.boolean().default(true),
   })
   .default({
-    checkLineCount: true,
-    checkChangedLines: true,
-    strictHeadings: false,
+    sectionStructure: true,
+    sectionPosition: true,
+    sectionTitle: false,
+    lineCount: true,
   });
 
 /**
@@ -31,7 +33,7 @@ const OutputConfigSchema = z
  *
  * Defines the structure and validation rules for configuration files
  */
-export const ConfigSchema = z.object({
+const ConfigSchema = z.object({
   // Path to source README file
   source: z.string().min(1, "Source file path cannot be empty"),
 

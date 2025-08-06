@@ -13,7 +13,6 @@ flowchart LR
                 src/domain/models/check//result.ts["check-result.ts"]
                 src/domain/models/config.ts["config.ts"]
                 src/domain/models/heading.ts["heading.ts"]
-                src/domain/models/error//types.ts["error-types.ts"]
                 src/domain/models/cli//options.ts["cli-options.ts"]
             end
             subgraph src/domain/services["/services"]
@@ -24,14 +23,13 @@ flowchart LR
             end
         end
         subgraph src/infrastructure["/infrastructure"]
-            subgraph src/infrastructure/adapters["/adapters"]
-                src/infrastructure/adapters/git.adapter.ts["git.adapter.ts"]
-                src/infrastructure/adapters/glob.adapter.ts["glob.adapter.ts"]
-            end
             subgraph src/infrastructure/services["/services"]
                 src/infrastructure/services/content//normalizer.ts["content-normalizer.ts"]
                 src/infrastructure/services/file//validator.ts["file-validator.ts"]
                 src/infrastructure/services/readme//detector.ts["readme-detector.ts"]
+            end
+            subgraph src/infrastructure/adapters["/adapters"]
+                src/infrastructure/adapters/glob.adapter.ts["glob.adapter.ts"]
             end
         end
         subgraph src/application/use//cases["/application/use-cases"]
@@ -45,22 +43,18 @@ flowchart LR
     end
     subgraph node//modules["node_modules"]
         node//modules/zod/index.d.cts["zod"]
-        node//modules/simple//git/dist/typings/index.d.ts["simple-git"]
         node//modules/globby/index.d.ts["globby"]
         node//modules/commander/typings/index.d.ts["commander"]
     end
     src/domain/models/config.ts-->node//modules/zod/index.d.cts
     src/domain/services/translation//checker.ts-->src/domain/models/check//result.ts
     src/domain/services/translation//checker.ts-->src/domain/models/heading.ts
-    src/infrastructure/adapters/git.adapter.ts-->node//modules/simple//git/dist/typings/index.d.ts
-    src/infrastructure/adapters/git.adapter.ts-->src/domain/models/error//types.ts
     src/infrastructure/adapters/glob.adapter.ts-->node//modules/globby/index.d.ts
     src/infrastructure/services/file//validator.ts-->src/domain/models/check//result.ts
     src/infrastructure/services/file//validator.ts-->src/infrastructure/adapters/glob.adapter.ts
     src/application/use//cases/check//translations.ts-->src/domain/models/check//result.ts
     src/application/use//cases/check//translations.ts-->src/domain/models/config.ts
     src/application/use//cases/check//translations.ts-->src/domain/services/translation//checker.ts
-    src/application/use//cases/check//translations.ts-->src/infrastructure/adapters/git.adapter.ts
     src/application/use//cases/check//translations.ts-->src/infrastructure/services/content//normalizer.ts
     src/application/use//cases/check//translations.ts-->src/infrastructure/services/file//validator.ts
     src/domain/models/cli//options.ts-->node//modules/zod/index.d.cts

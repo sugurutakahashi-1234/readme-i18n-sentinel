@@ -8,51 +8,46 @@ interface BaseError {
   file: string;
 }
 
-// Line count mismatch error
-export interface LineCountMismatch extends BaseError {
-  type: "line-count-mismatch";
+// Line count error
+export interface LineCountError extends BaseError {
+  type: "line-count";
   counts: {
     expected: number;
     actual: number;
   };
 }
 
-// Outdated line error
-export interface OutdatedLine extends BaseError {
-  type: "outdated-line";
-  line: number;
-  content: {
-    current?: string;
-    expected: string;
-  };
-}
-
-// Missing heading error
-export interface MissingHeading extends BaseError {
-  type: "missing-heading";
-  heading: {
-    level: number;
-    text: string;
-  };
-}
-
-// Heading mismatch error
-export interface HeadingMismatch extends BaseError {
-  type: "heading-mismatch";
-  line: number;
-  heading: {
-    expected: { level: number; text: string };
-    actual: { level: number; text: string };
-  };
-}
-
-// Heading count mismatch error
-export interface HeadingCountMismatch extends BaseError {
-  type: "heading-count-mismatch";
+// Section count error
+export interface SectionCountError extends BaseError {
+  type: "section-count";
   counts: {
     expected: number;
     actual: number;
   };
+}
+
+// Section structure error
+export interface SectionStructureError extends BaseError {
+  type: "section-structure";
+  position: number;
+  expected: { level: number; index: number };
+  actual: { level: number; text: string };
+}
+
+// Section position error
+export interface SectionPositionError extends BaseError {
+  type: "section-position";
+  section: string;
+  expected: number;
+  actual: number;
+}
+
+// Section title error
+export interface SectionTitleError extends BaseError {
+  type: "section-title";
+  line: number;
+  expected: string;
+  actual: string;
 }
 
 // File not found error
@@ -63,11 +58,11 @@ export interface FileNotFound extends BaseError {
 
 // Union type for all translation errors
 export type TranslationError =
-  | LineCountMismatch
-  | OutdatedLine
-  | MissingHeading
-  | HeadingMismatch
-  | HeadingCountMismatch
+  | LineCountError
+  | SectionCountError
+  | SectionStructureError
+  | SectionPositionError
+  | SectionTitleError
   | FileNotFound;
 
 // Check configuration used during the check
@@ -75,9 +70,10 @@ export interface CheckConfig {
   source: string;
   target: string;
   checks: {
-    checkLineCount: boolean;
-    checkChangedLines: boolean;
-    strictHeadings: boolean;
+    sectionStructure: boolean;
+    sectionPosition: boolean;
+    sectionTitle: boolean;
+    lineCount: boolean;
   };
   output: {
     json: boolean;

@@ -4,7 +4,7 @@
 [![npm downloads](https://img.shields.io/npm/dm/readme-i18n-sentinel.svg)](https://www.npmjs.com/package/readme-i18n-sentinel)
 [![install size](https://packagephobia.com/badge?p=readme-i18n-sentinel)](https://packagephobia.com/result?p=readme-i18n-sentinel)
 [![Build](https://github.com/sugurutakahashi-1234/readme-i18n-sentinel/actions/workflows/ci-push-main.yml/badge.svg)](https://github.com/sugurutakahashi-1234/readme-i18n-sentinel/actions/workflows/ci-push-main.yml)
-[![codecov](https://codecov.io/gh/sugurutakahashi-1234/readme-i18n-sentinel/graph/badge.svg?token=YOUR_TOKEN)](https://codecov.io/gh/sugurutakahashi-1234/readme-i18n-sentinel)
+[![codecov](https://codecov.io/gh/sugurutakahashi-1234/readme-i18n-sentinel/graph/badge.svg)](https://codecov.io/gh/sugurutakahashi-1234/readme-i18n-sentinel)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 [English](README.md) | [日本語](README.ja.md)
@@ -14,9 +14,10 @@ A lightweight CLI tool to detect outdated translations in README files using Git
 ## What it does
 
 Detects when your translated README files are out of sync with the source file by checking:
-- Line count differences
-- Which specific lines were changed but not translated
-- Heading consistency across languages
+- Section structure (count and hierarchy)
+- Section positions (line numbers)
+- Section titles (optional exact match)
+- Total line count
 
 **Example scenario:**
 
@@ -36,7 +37,7 @@ But forget to update the Japanese version. Running `readme-i18n-sentinel` will c
 
 ## Installation
 
-**Requirements:** Node.js v24z or higher
+**Requirements:** Node.js v20 or higher
 
 ```bash
 # Global installation (recommended)
@@ -61,9 +62,6 @@ readme-i18n-sentinel
 # 3. Check if translations are up to date
 ```
 
-## Configuration
-
-All configuration is done through command-line arguments. There are no configuration files.
 
 ## Usage
 
@@ -82,7 +80,7 @@ readme-i18n-sentinel
 
 ```bash
 # Disable specific checks
-readme-i18n-sentinel --no-lines
+readme-i18n-sentinel --no-line-count
 
 # JSON output for CI integration
 readme-i18n-sentinel --json
@@ -91,15 +89,16 @@ readme-i18n-sentinel --json
 readme-i18n-sentinel --source docs/README.md --target "docs/README.*.md"
 
 # Combine multiple options
-readme-i18n-sentinel --json --no-changes
+readme-i18n-sentinel --json --section-title
 ```
 
 Available options:
 - `-s, --source <path>` - Source README file path
 - `-t, --target <pattern>` - Target file pattern (glob supported, can be specified multiple times)
-- `--no-lines` - Disable line count check
-- `--no-changes` - Disable changes check
-- `--no-headings-match-source` - Disable headings match check
+- `--no-section-structure` - Disable section structure check (count and hierarchy)
+- `--no-section-position` - Disable section position check
+- `--section-title` - Require exact section title match (no translation allowed)
+- `--no-line-count` - Disable line count check
 - `--json` - Output in JSON format
 - `-v, --version` - Display version
 - `--help` - Show help
@@ -164,21 +163,59 @@ Check translation files for outdated content.
 readme-i18n-sentinel [options]
 ```
 
+Options:
+- `-s, --source <path>` - Source README file path
+- `-t, --target <pattern>` - Target file pattern
+- `--no-section-structure` - Disable section structure check
+- `--no-section-position` - Disable section position check  
+- `--section-title` - Require exact title match
+- `--no-line-count` - Disable line count check
+- `--json` - Output in JSON format
+- `-v, --version` - Display version
+- `-h, --help` - Show help
+
+### `readme-i18n-sentinel init`
+
+Create a configuration file interactively.
+
+```bash
+readme-i18n-sentinel init [options]
+```
+
+Options:
+- `-y, --yes` - Skip prompts and use defaults
+
+### `readme-i18n-sentinel validate`
+
+Validate configuration file.
+
+```bash
+readme-i18n-sentinel validate [config-file]
+```
+
 ## Check Types
 
-### Line Count Check (`lines`)
-Ensures source and translation files have the same number of lines. Catches missing or extra content.
+### Section Structure Check (`sectionStructure`)
+**Default: enabled**  
+Ensures sections have the same count, hierarchy, and order. Checks that:
+- Same number of headings exist
+- Heading levels match (e.g., `#` vs `##`)
+- Sections appear in the same order
 
-### Change Detection (`changes`)
-Uses `git diff` to detect which lines changed in the source file and verifies those same lines were updated in translations.
+### Section Position Check (`sectionPosition`)
+**Default: enabled**  
+Verifies that each section starts at the same line number. Helps identify where content has expanded or contracted.
 
-### Heading Consistency (`headingsMatchSource`)
-Ensures all markdown headings (`#`, `##`, etc.) match exactly between source and translations. This is crucial for:
-- Maintaining document structure
-- Keeping anchor links working
+### Section Title Check (`sectionTitle`)
+**Default: disabled**  
+Requires section titles to match exactly (no translation). Useful for:
+- Maintaining URL anchors
 - Ensuring consistent navigation
+- Projects requiring untranslated headings
 
-**Important:** Headings should remain in the source language (typically English) across all translations to maintain URL anchors.
+### Line Count Check (`lineCount`)
+**Default: enabled**  
+Ensures source and translation files have the same total number of lines.
 
 ## Tips
 

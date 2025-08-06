@@ -42,7 +42,7 @@ describe("checkTranslationsUseCase Integration Tests", () => {
     }
   });
 
-  test("detects all types of issues", async () => {
+  test("detects heading and line count issues", async () => {
     // Create source file
     await writeFile(
       "README.md",
@@ -52,27 +52,21 @@ describe("checkTranslationsUseCase Integration Tests", () => {
     // Create target file with same line count but issues
     await writeFile(
       "README.ja.md",
-      "# インストール\n\nStep 1\nStep 2\n\n## Usage\n\nHow to use\n", // Same line count, wrong heading, missing Step 3
+      "# インストール\n\nStep 1\nStep 2\n\n## Usage\n\nHow to use\n", // Same line count, wrong heading
     );
 
     // Commit initial state
     execSync("git add .");
     execSync('git commit -m "Initial commit"');
 
-    // Make changes to source
-    await writeFile(
-      "README.md",
-      "# Installation\n\nStep 1 updated\nStep 2\nStep 3\n## Usage\n\nHow to use\n",
-    );
-    execSync("git add README.md");
-
     const config: Config = {
       source: "README.md",
       target: "README.ja.md",
       checks: {
-        checkLineCount: true,
-        checkChangedLines: true,
-        strictHeadings: true,
+        sectionStructure: true,
+        sectionPosition: true,
+        sectionTitle: true,
+        lineCount: true,
       },
       output: {
         json: false,
@@ -84,20 +78,11 @@ describe("checkTranslationsUseCase Integration Tests", () => {
     expect(result.isValid).toBe(false);
     expect(result.errors.length).toBeGreaterThan(0);
 
-    // Should detect missing change
-    const changeError = result.errors.find((e) => e.type === "outdated-line");
-    expect(changeError).toBeDefined();
-    if (changeError?.type === "outdated-line") {
-      expect(changeError.line).toBe(3);
-    }
-
-    // Should detect heading mismatch
-    const headingError = result.errors.find(
-      (e) => e.type === "heading-mismatch",
-    );
-    expect(headingError).toBeDefined();
-    if (headingError?.type === "heading-mismatch") {
-      expect(headingError.heading.expected.text).toBe("Installation");
+    // Should detect section title mismatch
+    const titleError = result.errors.find((e) => e.type === "section-title");
+    expect(titleError).toBeDefined();
+    if (titleError?.type === "section-title") {
+      expect(titleError.expected).toBe("Installation");
     }
   });
 
@@ -117,9 +102,10 @@ describe("checkTranslationsUseCase Integration Tests", () => {
       source: "README.md",
       target: "README.{ja,zh-CN}.md",
       checks: {
-        checkLineCount: true,
-        checkChangedLines: true,
-        strictHeadings: true,
+        sectionStructure: true,
+        sectionPosition: true,
+        sectionTitle: true,
+        lineCount: true,
       },
       output: {
         json: false,
@@ -137,9 +123,10 @@ describe("checkTranslationsUseCase Integration Tests", () => {
       source: "nonexistent.md",
       target: "README.ja.md",
       checks: {
-        checkLineCount: true,
-        checkChangedLines: true,
-        strictHeadings: true,
+        sectionStructure: true,
+        sectionPosition: true,
+        sectionTitle: true,
+        lineCount: true,
       },
       output: {
         json: false,
@@ -162,9 +149,10 @@ describe("checkTranslationsUseCase Integration Tests", () => {
       source: "README.md",
       target: "nonexistent.ja.md",
       checks: {
-        checkLineCount: true,
-        checkChangedLines: true,
-        strictHeadings: true,
+        sectionStructure: true,
+        sectionPosition: true,
+        sectionTitle: true,
+        lineCount: true,
       },
       output: {
         json: false,
@@ -192,9 +180,10 @@ describe("checkTranslationsUseCase Integration Tests", () => {
       source: "README.md",
       target: "README.ja.md",
       checks: {
-        checkLineCount: false, // Disabled
-        checkChangedLines: false, // Disabled
-        strictHeadings: false, // Disabled
+        sectionStructure: false, // Disabled
+        sectionPosition: false, // Disabled
+        sectionTitle: false, // Disabled
+        lineCount: false, // Disabled
       },
       output: {
         json: false,
@@ -240,9 +229,10 @@ describe("checkTranslationsUseCase Integration Tests", () => {
       source: "README.md",
       target: "README.ja.md",
       checks: {
-        checkLineCount: true,
-        checkChangedLines: true,
-        strictHeadings: true,
+        sectionStructure: true,
+        sectionPosition: true,
+        sectionTitle: true,
+        lineCount: true,
       },
       output: {
         json: false,
@@ -272,9 +262,10 @@ describe("checkTranslationsUseCase Integration Tests", () => {
       source: "README.md",
       target: "README.{ja,zh-CN}.md",
       checks: {
-        checkLineCount: true,
-        checkChangedLines: true,
-        strictHeadings: true,
+        sectionStructure: true,
+        sectionPosition: true,
+        sectionTitle: true,
+        lineCount: true,
       },
       output: {
         json: false,
@@ -297,48 +288,9 @@ describe("checkTranslationsUseCase Integration Tests", () => {
     expect(zhErrors.length).toBeGreaterThan(0);
 
     // ja.md should have line count issue
-    expect(jaErrors.some((e) => e.type === "line-count-mismatch")).toBe(true);
+    expect(jaErrors.some((e) => e.type === "line-count")).toBe(true);
 
-    // zh-CN.md should have heading issue
-    expect(zhErrors.some((e) => e.type === "heading-mismatch")).toBe(true);
-  });
-
-  test("detects changes when source is modified after commit", async () => {
-    const initialContent = "# Title\n\nOriginal content\n";
-
-    // Create files
-    await writeFile("README.md", initialContent);
-    await writeFile("README.ja.md", initialContent);
-
-    // Commit initial state
-    execSync("git add .");
-    execSync('git commit -m "Initial commit"');
-
-    // Modify source file
-    await writeFile("README.md", "# Title\n\nModified content\n");
-    execSync("git add README.md");
-
-    const config: Config = {
-      source: "README.md",
-      target: "README.ja.md",
-      checks: {
-        checkLineCount: true,
-        checkChangedLines: true,
-        strictHeadings: true,
-      },
-      output: {
-        json: false,
-      },
-    };
-
-    const result = await checkTranslationsUseCase(config);
-
-    expect(result.isValid).toBe(false);
-    expect(result.errors).toHaveLength(1);
-    const error = result.errors[0];
-    expect(error?.type).toBe("outdated-line");
-    if (error?.type === "outdated-line") {
-      expect(error.line).toBe(3);
-    }
+    // zh-CN.md should have title mismatch issue
+    expect(zhErrors.some((e) => e.type === "section-title")).toBe(true);
   });
 });

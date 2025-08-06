@@ -1,8 +1,9 @@
 import { describe, expect, test } from "bun:test";
 import {
-  checkChanges,
-  checkHeadings,
   checkLines,
+  checkSectionLines,
+  checkSectionOrder,
+  checkSectionTitleMatch,
   extractHeadings,
 } from "./translation-checker.js";
 
@@ -11,7 +12,7 @@ describe("checkLines", () => {
     const result = checkLines(10, 8, "README.ja.md");
     expect(result).toEqual({
       file: "README.ja.md",
-      type: "line-count-mismatch",
+      type: "line-count",
       counts: {
         expected: 10,
         actual: 8,
@@ -20,15 +21,82 @@ describe("checkLines", () => {
   });
 });
 
-describe("checkChanges", () => {
-  test("detects multiple missing changes correctly", () => {
-    const sourceChanges = [1, 5, 10, 15];
-    const targetChanges = [1]; // Missing lines 5, 10, 15
-    const result = checkChanges(sourceChanges, targetChanges, "README.ja.md");
-    expect(result).toHaveLength(3);
-    expect(result[0]?.line).toBe(5);
-    expect(result[1]?.line).toBe(10);
-    expect(result[2]?.line).toBe(15);
+describe("checkSectionOrder", () => {
+  test("detects section count mismatch", () => {
+    const sourceHeadings = [
+      { level: 1, text: "Title", line: 1 },
+      { level: 2, text: "Section", line: 3 },
+    ];
+    const targetHeadings = [{ level: 1, text: "Title", line: 1 }];
+    const result = checkSectionOrder(
+      sourceHeadings,
+      targetHeadings,
+      "README.ja.md",
+    );
+    expect(result).toHaveLength(1);
+    expect(result[0]?.type).toBe("section-count");
+  });
+
+  test("detects level mismatch", () => {
+    const sourceHeadings = [
+      { level: 1, text: "Title", line: 1 },
+      { level: 2, text: "Section", line: 3 },
+    ];
+    const targetHeadings = [
+      { level: 1, text: "タイトル", line: 1 },
+      { level: 3, text: "セクション", line: 3 },
+    ];
+    const result = checkSectionOrder(
+      sourceHeadings,
+      targetHeadings,
+      "README.ja.md",
+    );
+    expect(result).toHaveLength(1);
+    expect(result[0]?.type).toBe("section-structure");
+  });
+});
+
+describe("checkSectionLines", () => {
+  test("detects line position mismatch", () => {
+    const sourceHeadings = [
+      { level: 1, text: "Title", line: 1 },
+      { level: 2, text: "Section", line: 10 },
+    ];
+    const targetHeadings = [
+      { level: 1, text: "タイトル", line: 1 },
+      { level: 2, text: "セクション", line: 15 },
+    ];
+    const result = checkSectionLines(
+      sourceHeadings,
+      targetHeadings,
+      "README.ja.md",
+    );
+    expect(result).toHaveLength(1);
+    expect(result[0]?.type).toBe("section-position");
+    if (result[0]?.type === "section-position") {
+      expect(result[0].expected).toBe(10);
+      expect(result[0].actual).toBe(15);
+    }
+  });
+});
+
+describe("checkSectionTitleMatch", () => {
+  test("detects title mismatch", () => {
+    const sourceHeadings = [
+      { level: 1, text: "Installation", line: 1 },
+      { level: 2, text: "Usage", line: 10 },
+    ];
+    const targetHeadings = [
+      { level: 1, text: "インストール", line: 1 },
+      { level: 2, text: "使い方", line: 10 },
+    ];
+    const result = checkSectionTitleMatch(
+      sourceHeadings,
+      targetHeadings,
+      "README.ja.md",
+    );
+    expect(result).toHaveLength(2);
+    expect(result[0]?.type).toBe("section-title");
   });
 });
 
@@ -63,79 +131,5 @@ More text
       { level: 1, text: "Real Heading", line: 1 },
       { level: 2, text: "Real Section", line: 6 },
     ]);
-  });
-});
-
-describe("checkHeadings", () => {
-  test("returns error when heading count differs", () => {
-    const sourceHeadings = [
-      { level: 1, text: "Title", line: 1 },
-      { level: 2, text: "Section", line: 3 },
-    ];
-    const targetHeadings = [{ level: 1, text: "Title", line: 1 }];
-
-    const errors = checkHeadings(
-      sourceHeadings,
-      targetHeadings,
-      "README.ja.md",
-    );
-    expect(errors).toHaveLength(1);
-    // Should only have count mismatch error due to early return
-    const error = errors[0];
-    expect(error?.type).toBe("heading-count-mismatch");
-    if (error?.type === "heading-count-mismatch") {
-      expect(error.counts.expected).toBe(2);
-      expect(error.counts.actual).toBe(1);
-    }
-  });
-
-  test("returns error when heading text differs", () => {
-    const sourceHeadings = [{ level: 1, text: "Title", line: 1 }];
-    const targetHeadings = [
-      { level: 1, text: "タイトル", line: 1 }, // Japanese translation
-    ];
-
-    const errors = checkHeadings(
-      sourceHeadings,
-      targetHeadings,
-      "README.ja.md",
-    );
-    expect(errors).toHaveLength(2); // missing-heading + heading-mismatch
-    const missingError = errors.find((e) => e.type === "missing-heading");
-    expect(missingError).toBeDefined();
-    if (missingError?.type === "missing-heading") {
-      expect(missingError.heading.text).toBe("Title");
-    }
-    const mismatchError = errors.find((e) => e.type === "heading-mismatch");
-    expect(mismatchError).toBeDefined();
-    if (mismatchError?.type === "heading-mismatch") {
-      expect(mismatchError.heading.expected.text).toBe("Title");
-      expect(mismatchError.heading.actual.text).toBe("タイトル");
-    }
-  });
-
-  test("returns error when heading level differs", () => {
-    const sourceHeadings = [{ level: 2, text: "Section", line: 1 }];
-    const targetHeadings = [
-      { level: 3, text: "Section", line: 1 }, // Different level
-    ];
-
-    const errors = checkHeadings(
-      sourceHeadings,
-      targetHeadings,
-      "README.ja.md",
-    );
-    expect(errors).toHaveLength(2); // missing-heading + heading-mismatch
-    const missingError = errors.find((e) => e.type === "missing-heading");
-    expect(missingError).toBeDefined();
-    if (missingError?.type === "missing-heading") {
-      expect(missingError.heading.text).toBe("Section");
-    }
-    const mismatchError = errors.find((e) => e.type === "heading-mismatch");
-    expect(mismatchError).toBeDefined();
-    if (mismatchError?.type === "heading-mismatch") {
-      expect(mismatchError.heading.expected.level).toBe(2);
-      expect(mismatchError.heading.actual.level).toBe(3);
-    }
   });
 });

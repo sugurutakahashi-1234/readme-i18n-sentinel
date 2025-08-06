@@ -1,9 +1,9 @@
 import type {
-  HeadingCountMismatch,
-  HeadingMismatch,
-  LineCountMismatch,
-  MissingHeading,
-  OutdatedLine,
+  LineCountError,
+  SectionCountError,
+  SectionPositionError,
+  SectionStructureError,
+  SectionTitleError,
   TranslationError,
 } from "../models/check-result.js";
 import type { Heading } from "../models/heading.js";
@@ -15,10 +15,10 @@ export function checkLines(
   sourceLineCount: number,
   targetLineCount: number,
   targetFile: string,
-): LineCountMismatch | null {
+): LineCountError | null {
   if (sourceLineCount !== targetLineCount) {
-    const error: LineCountMismatch = {
-      type: "line-count-mismatch",
+    const error: LineCountError = {
+      type: "line-count",
       file: targetFile,
       counts: {
         expected: sourceLineCount,
@@ -31,61 +31,19 @@ export function checkLines(
 }
 
 /**
- * Check if changed lines in source are also changed in target
+ * Check section order and structure (count + hierarchy)
  */
-export function checkChanges(
-  sourceChangedLines: number[],
-  targetChangedLines: number[],
-  targetFile: string,
-  sourceContent?: string,
-  targetContent?: string,
-): OutdatedLine[] {
-  const errors: OutdatedLine[] = [];
-  const targetChangedSet = new Set(targetChangedLines);
-
-  for (const line of sourceChangedLines) {
-    if (!targetChangedSet.has(line)) {
-      const sourceLines = sourceContent?.split("\n") || [];
-      const targetLines = targetContent?.split("\n") || [];
-      const expectedContent = sourceLines[line - 1] || "";
-      const currentContent = targetLines[line - 1];
-
-      const error: OutdatedLine = {
-        type: "outdated-line",
-        file: targetFile,
-        line: line,
-        content:
-          currentContent !== undefined
-            ? {
-                current: currentContent,
-                expected: expectedContent,
-              }
-            : {
-                expected: expectedContent,
-              },
-      };
-
-      errors.push(error);
-    }
-  }
-
-  return errors;
-}
-
-/**
- * Check if headings in source and target match exactly
- */
-export function checkHeadings(
+export function checkSectionOrder(
   sourceHeadings: Heading[],
   targetHeadings: Heading[],
   targetFile: string,
 ): TranslationError[] {
   const errors: TranslationError[] = [];
 
-  // Early return if heading count doesn't match
+  // Check if section count matches
   if (sourceHeadings.length !== targetHeadings.length) {
-    const error: HeadingCountMismatch = {
-      type: "heading-count-mismatch",
+    const error: SectionCountError = {
+      type: "section-count",
       file: targetFile,
       counts: {
         expected: sourceHeadings.length,
@@ -93,31 +51,10 @@ export function checkHeadings(
       },
     };
     errors.push(error);
-    return errors; // Early return to avoid unnecessary detailed checks
+    return errors; // Early return - no point checking structure if count differs
   }
 
-  // Only check individual headings if the count matches
-  const targetHeadingMap = new Map(
-    targetHeadings.map((h) => [`${h.level}-${h.text}`, h]),
-  );
-
-  // Check for missing headings
-  for (const sourceHeading of sourceHeadings) {
-    const key = `${sourceHeading.level}-${sourceHeading.text}`;
-    if (!targetHeadingMap.has(key)) {
-      const error: MissingHeading = {
-        type: "missing-heading",
-        file: targetFile,
-        heading: {
-          level: sourceHeading.level,
-          text: sourceHeading.text,
-        },
-      };
-      errors.push(error);
-    }
-  }
-
-  // Check for heading mismatches at each position
+  // Check order and level of each heading
   for (let i = 0; i < sourceHeadings.length; i++) {
     const sourceHeading = sourceHeadings[i];
     const targetHeading = targetHeadings[i];
@@ -126,24 +63,98 @@ export function checkHeadings(
       continue;
     }
 
-    if (
-      sourceHeading.level !== targetHeading.level ||
-      sourceHeading.text !== targetHeading.text
-    ) {
-      const error: HeadingMismatch = {
-        type: "heading-mismatch",
+    // Check if level (hierarchy) matches
+    if (sourceHeading.level !== targetHeading.level) {
+      const error: SectionStructureError = {
+        type: "section-structure",
+        file: targetFile,
+        position: i + 1,
+        expected: {
+          level: sourceHeading.level,
+          index: i,
+        },
+        actual: {
+          level: targetHeading.level,
+          text: targetHeading.text,
+        },
+      };
+      errors.push(error);
+    }
+  }
+
+  return errors;
+}
+
+/**
+ * Check if sections appear at the same line positions
+ */
+export function checkSectionLines(
+  sourceHeadings: Heading[],
+  targetHeadings: Heading[],
+  targetFile: string,
+): SectionPositionError[] {
+  const errors: SectionPositionError[] = [];
+
+  // Only check if counts match (assumes checkSectionOrder was called first)
+  if (sourceHeadings.length !== targetHeadings.length) {
+    return errors;
+  }
+
+  for (let i = 0; i < sourceHeadings.length; i++) {
+    const sourceHeading = sourceHeadings[i];
+    const targetHeading = targetHeadings[i];
+
+    if (!sourceHeading || !targetHeading) {
+      continue;
+    }
+
+    // Check if line position matches
+    if (sourceHeading.line !== targetHeading.line) {
+      const error: SectionPositionError = {
+        type: "section-position",
+        file: targetFile,
+        section: `${"#".repeat(sourceHeading.level)} ${sourceHeading.text}`,
+        expected: sourceHeading.line,
+        actual: targetHeading.line,
+      };
+      errors.push(error);
+    }
+  }
+
+  return errors;
+}
+
+/**
+ * Check if section titles match exactly (no translation allowed)
+ */
+export function checkSectionTitleMatch(
+  sourceHeadings: Heading[],
+  targetHeadings: Heading[],
+  targetFile: string,
+): SectionTitleError[] {
+  const errors: SectionTitleError[] = [];
+
+  // Only check if counts match (assumes checkSectionOrder was called first)
+  if (sourceHeadings.length !== targetHeadings.length) {
+    return errors;
+  }
+
+  for (let i = 0; i < sourceHeadings.length; i++) {
+    const sourceHeading = sourceHeadings[i];
+    const targetHeading = targetHeadings[i];
+
+    if (!sourceHeading || !targetHeading) {
+      continue;
+    }
+
+    // Check if title text matches exactly
+    if (sourceHeading.text !== targetHeading.text) {
+      const error: SectionTitleError = {
+        type: "section-title",
         file: targetFile,
         line: targetHeading.line,
-        heading: {
-          expected: {
-            level: sourceHeading.level,
-            text: sourceHeading.text,
-          },
-          actual: {
-            level: targetHeading.level,
-            text: targetHeading.text,
-          },
-        },
+        expected: sourceHeading.text,
+        actual: targetHeading.text,
       };
       errors.push(error);
     }

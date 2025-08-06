@@ -52,9 +52,10 @@ export async function prepareCheckConfigUseCase(
     source: cliOptions.source || "",
     target: cliOptions.target || "",
     checks: {
-      checkLineCount: cliOptions.checkLineCount ?? true,
-      checkChangedLines: cliOptions.checkChangedLines ?? true,
-      strictHeadings: cliOptions.strictHeadings ?? false,
+      sectionStructure: cliOptions.sectionStructure ?? true,
+      sectionPosition: cliOptions.sectionPosition ?? true,
+      sectionTitle: cliOptions.sectionTitle ?? false,
+      lineCount: cliOptions.lineCount ?? true,
     },
     output: {
       json: cliOptions.json || false,

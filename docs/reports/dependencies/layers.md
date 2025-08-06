@@ -16,14 +16,12 @@ flowchart LR
     end
     subgraph node//modules["node_modules"]
         node//modules/zod/index.d.cts["zod"]
-        node//modules/simple//git/dist/typings/index.d.ts["simple-git"]
         node//modules/globby/index.d.ts["globby"]
         node//modules/commander/typings/index.d.ts["commander"]
     end
     src/domain-->node//modules/zod/index.d.cts
-    src/infrastructure-->node//modules/simple//git/dist/typings/index.d.ts
-    src/infrastructure-->src/domain
     src/infrastructure-->node//modules/globby/index.d.ts
+    src/infrastructure-->src/domain
     src/application-->src/domain
     src/application-->src/infrastructure
     src/presentation-->node//modules/commander/typings/index.d.ts

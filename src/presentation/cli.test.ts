@@ -34,7 +34,7 @@ describe("CLI Presentation Layer Tests", () => {
     expect(result).toContain("Examples:");
     expect(result).toContain("--source");
     expect(result).toContain("--target");
-    expect(result).toContain("--strict-headings");
+    expect(result).toContain("--section-title");
     expect(result).toContain("--json");
   });
 

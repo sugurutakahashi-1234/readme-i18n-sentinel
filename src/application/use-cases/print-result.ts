@@ -8,16 +8,16 @@ import type {
  */
 function formatErrorType(type: string): string {
   switch (type) {
-    case "outdated-line":
-      return "Translation outdated";
-    case "line-count-mismatch":
+    case "line-count":
       return "Line count mismatch";
-    case "heading-mismatch":
-      return "Heading mismatch";
-    case "heading-count-mismatch":
-      return "Heading count mismatch";
-    case "missing-heading":
-      return "Missing heading";
+    case "section-count":
+      return "Section count mismatch";
+    case "section-structure":
+      return "Section structure mismatch";
+    case "section-position":
+      return "Section position mismatch";
+    case "section-title":
+      return "Section title mismatch";
     case "file-not-found":
       return "File not found";
     default:
@@ -30,32 +30,29 @@ function formatErrorType(type: string): string {
  */
 function generateSuggestion(error: TranslationError): string {
   switch (error.type) {
-    case "line-count-mismatch": {
+    case "line-count": {
       const difference = error.counts.expected - error.counts.actual;
       return difference > 0
         ? `Add ${difference} lines to match the source file`
         : `Remove ${Math.abs(difference)} lines to match the source file`;
     }
-    case "outdated-line":
-      return `Please translate the updated content from line ${error.line}`;
-    case "missing-heading":
-      return `Add heading "${"#".repeat(error.heading.level)} ${
-        error.heading.text
-      }" to match the source structure`;
-    case "heading-mismatch":
-      return `Replace "${"#".repeat(error.heading.actual.level)} ${
-        error.heading.actual.text
-      }" with "${"#".repeat(error.heading.expected.level)} ${
-        error.heading.expected.text
-      }" at line ${error.line}`;
-    case "heading-count-mismatch": {
+    case "section-count": {
       const difference = error.counts.expected - error.counts.actual;
       return difference > 0
-        ? `Add ${difference} headings to match the source structure. Check which headings are missing and add them in the correct order.`
+        ? `Add ${difference} sections to match the source structure. Check which sections are missing and add them in the correct order.`
         : `Remove ${Math.abs(
             difference,
-          )} extra headings to match the source structure.`;
+          )} extra sections to match the source structure.`;
     }
+    case "section-structure":
+      return `Section at position ${error.position} has wrong level. Expected level ${error.expected.level}, found level ${error.actual.level}`;
+    case "section-position": {
+      const diff = error.actual - error.expected;
+      const direction = diff > 0 ? "below" : "above";
+      return `Section "${error.section}" expected at line ${error.expected}, found at line ${error.actual} (${Math.abs(diff)} lines ${direction})`;
+    }
+    case "section-title":
+      return `Section title at line ${error.line} should be "${error.expected}" but found "${error.actual}". Keep titles in the source language for URL anchors`;
     case "file-not-found":
       if (error.pattern) {
         return `No files found matching pattern: ${error.pattern}. Check if the pattern is correct`;
@@ -92,58 +89,44 @@ function formatText(result: CheckResult): string {
 
       // Show error with file and type
       let errorHeader = `[${error.file}] ${formatErrorType(error.type)}`;
-      if (
-        (error.type === "outdated-line" || error.type === "heading-mismatch") &&
-        error.line
-      ) {
+      if (error.type === "section-title" && error.line) {
         errorHeader += ` (line ${error.line})`;
       }
       lines.push(errorHeader);
 
       switch (error.type) {
-        case "line-count-mismatch": {
+        case "line-count": {
           lines.push(
             `  Expected: ${error.counts.expected} lines | Found: ${error.counts.actual} lines`,
           );
           lines.push(`  → ${generateSuggestion(error)}`);
           break;
         }
-        case "outdated-line": {
-          // Show simple diff if both contents are available
-          if (error.content.expected && error.content.current !== undefined) {
-            // Simple before/after display
-            lines.push(`  - ${error.content.current}`);
-            lines.push(`  + ${error.content.expected}`);
-          } else if (error.content.expected) {
-            lines.push(`  Expected: "${error.content.expected}"`);
-            if (error.content.current !== undefined) {
-              lines.push(`  Current: "${error.content.current}"`);
-            }
-          }
-          lines.push(`  → ${generateSuggestion(error)}`);
-          break;
-        }
-        case "missing-heading": {
+        case "section-count": {
           lines.push(
-            `  Missing: "${"#".repeat(error.heading.level)} ${error.heading.text}"`,
+            `  Expected: ${error.counts.expected} sections | Found: ${error.counts.actual} sections`,
           );
           lines.push(`  → ${generateSuggestion(error)}`);
           break;
         }
-        case "heading-mismatch": {
+        case "section-structure": {
+          lines.push(`  Position: ${error.position}`);
           lines.push(
-            `  Expected: "${"#".repeat(error.heading.expected.level)} ${error.heading.expected.text}"`,
-          );
-          lines.push(
-            `  Found: "${"#".repeat(error.heading.actual.level)} ${error.heading.actual.text}"`,
+            `  Expected level: ${error.expected.level} | Found level: ${error.actual.level}`,
           );
           lines.push(`  → ${generateSuggestion(error)}`);
           break;
         }
-        case "heading-count-mismatch": {
+        case "section-position": {
           lines.push(
-            `  Expected: ${error.counts.expected} headings | Found: ${error.counts.actual} headings`,
+            `  Expected line: ${error.expected} | Found line: ${error.actual}`,
           );
+          lines.push(`  → ${generateSuggestion(error)}`);
+          break;
+        }
+        case "section-title": {
+          lines.push(`  Expected: "${error.expected}"`);
+          lines.push(`  Found: "${error.actual}"`);
           lines.push(`  → ${generateSuggestion(error)}`);
           break;
         }

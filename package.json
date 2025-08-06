@@ -34,7 +34,6 @@
   "files": [
     "dist",
     "bin",
-    "schema",
     "README.md",
     "LICENSE"
   ],
@@ -47,7 +46,6 @@
     "prepare": "husky",
     "help": "bun src/index.ts --help",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "prebuild": "bun run generate:schema",
     "build": "tsc -p tsconfig.build.json",
     "dev": "bun run src/index.ts",
     "lint": "biome check --write .",
@@ -60,8 +58,6 @@
     "test:e2e": "bun scripts/testing/e2e-npm-package.ts",
     "test:coverage": "bun test --coverage",
     "test:coverage:html": "bun test --coverage && bunx @lcov-viewer/cli lcov coverage/lcov.info -o coverage/html",
-    "generate:schema": "bun scripts/development/generate-schema.ts && biome format --write schema/config.schema.json",
-    "validate:schema": "bun scripts/development/check-schema.ts",
     "validate:codecov": "cat codecov.yml | curl --data-binary @- https://codecov.io/validate",
     "validate:renovate": "$(which npx) --yes --package renovate -- renovate-config-validator renovate.json5 --strict",
     "validate:branch": "git-branch-lint",
@@ -85,7 +81,6 @@
   "dependencies": {
     "commander": "^14.0.0",
     "globby": "^14.1.0",
-    "simple-git": "^3.28.0",
     "zod": "^4.0.15"
   },
   "devDependencies": {

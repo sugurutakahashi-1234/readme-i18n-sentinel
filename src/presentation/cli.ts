@@ -22,12 +22,16 @@ program
   .version(getVersion(), "-v, --version", "display version number")
   .option("-s, --source <path>", "source README file path")
   .option("-t, --target <pattern>", "target file pattern (glob supported)")
-  .option("--no-check-line-count", "disable line count check")
-  .option("--no-check-changed-lines", "disable changed lines check")
   .option(
-    "--strict-headings",
-    "enforce exact heading match (no translation allowed)",
+    "--no-section-structure",
+    "disable section structure check (count and hierarchy)",
   )
+  .option("--no-section-position", "disable section position check")
+  .option(
+    "--section-title",
+    "require exact section title match (no translation allowed)",
+  )
+  .option("--no-line-count", "disable line count check")
   .option("--json", "output in JSON format")
   .action(async (options: unknown) => {
     try {
@@ -38,9 +42,9 @@ program
       // Print check settings if not in JSON mode
       if (!config.output?.json) {
         console.error("📖 Checking README translations...");
-        if (config.checks?.strictHeadings === true) {
+        if (config.checks?.sectionTitle === true) {
           console.error(
-            "Settings: strictHeadings=true (Headings must match source file exactly)",
+            "Settings: sectionTitle=true (Section titles must match source file exactly)",
           );
         }
         console.error(""); // Empty line for readability
@@ -68,10 +72,10 @@ Examples:
   $ ${getPackageName()}
   
   # Disable specific checks
-  $ ${getPackageName()} --no-check-line-count
+  $ ${getPackageName()} --no-line-count
   
   # Enable strict heading checks (no translation allowed)
-  $ ${getPackageName()} --strict-headings
+  $ ${getPackageName()} --section-title
   
   # JSON output
   $ ${getPackageName()} --json
@@ -80,7 +84,7 @@ Examples:
   $ ${getPackageName()} --source docs/README.md --target "docs/README.*.md"
   
   # Multiple options
-  $ ${getPackageName()} --source README.md --target "README.*.md" --strict-headings
+  $ ${getPackageName()} --source README.md --target "README.*.md" --section-title
 
 Auto-detection:
   When no CLI arguments are provided, the tool will:

@@ -6,12 +6,12 @@ import type {
 } from "../../domain/models/check-result.js";
 import type { Config } from "../../domain/models/config.js";
 import {
-  checkChanges,
-  checkHeadings,
   checkLines,
+  checkSectionLines,
+  checkSectionOrder,
+  checkSectionTitleMatch,
   extractHeadings,
 } from "../../domain/services/translation-checker.js";
-import { GitAdapter } from "../../infrastructure/adapters/git.adapter.js";
 import {
   countLines,
   normalizeContent,
@@ -24,15 +24,8 @@ import { FileValidator } from "../../infrastructure/services/file-validator.js";
 export async function checkTranslationsUseCase(
   config: Config,
 ): Promise<CheckResult> {
-  const git = new GitAdapter(process.cwd());
   const fileValidator = new FileValidator();
   const errors: TranslationError[] = [];
-
-  // Check if we're in a git repository
-  const isGitRepo = await git.isGitRepository();
-  if (!isGitRepo) {
-    throw new Error("Not in a git repository");
-  }
 
   // Validate source file exists
   fileValidator.validateSourceFile(config.source);
@@ -41,12 +34,6 @@ export async function checkTranslationsUseCase(
   const sourceContent = normalizeContent(readFileSync(config.source, "utf-8"));
   const sourceLineCount = countLines(sourceContent);
   const sourceHeadings = extractHeadings(sourceContent);
-
-  // Get changed lines if changes check is enabled
-  let sourceChangedLines: number[] = [];
-  if (config.checks?.checkChangedLines !== false) {
-    sourceChangedLines = await git.getChangedLines(config.source);
-  }
 
   // Expand and validate target files
   const { targetFiles, errors: validationErrors } =
@@ -60,19 +47,41 @@ export async function checkTranslationsUseCase(
     const targetLineCount = countLines(targetContent);
     const targetHeadings = extractHeadings(targetContent);
 
-    // Check headings if strict mode is enabled
-    if (config.checks?.strictHeadings === true) {
-      const headingErrors = checkHeadings(
+    // 1. Check section structure (count and hierarchy) first
+    if (config.checks?.sectionStructure !== false) {
+      const orderErrors = checkSectionOrder(
         sourceHeadings,
         targetHeadings,
         targetFile,
       );
-      errors.push(...headingErrors);
+      if (orderErrors.length > 0) {
+        errors.push(...orderErrors);
+        // Continue checking other aspects even if order is wrong
+      }
     }
 
-    // Check lines
-    let lineMismatch = false;
-    if (config.checks?.checkLineCount !== false) {
+    // 2. Check section positions
+    if (config.checks?.sectionPosition !== false) {
+      const lineErrors = checkSectionLines(
+        sourceHeadings,
+        targetHeadings,
+        targetFile,
+      );
+      errors.push(...lineErrors);
+    }
+
+    // 3. Check section titles (if required)
+    if (config.checks?.sectionTitle === true) {
+      const titleErrors = checkSectionTitleMatch(
+        sourceHeadings,
+        targetHeadings,
+        targetFile,
+      );
+      errors.push(...titleErrors);
+    }
+
+    // 4. Finally, check total line count
+    if (config.checks?.lineCount !== false) {
       const lineError = checkLines(
         sourceLineCount,
         targetLineCount,
@@ -80,25 +89,7 @@ export async function checkTranslationsUseCase(
       );
       if (lineError) {
         errors.push(lineError);
-        lineMismatch = true;
       }
-    }
-
-    // Check changes only if line counts match (line-based check)
-    if (
-      config.checks?.checkChangedLines !== false &&
-      sourceChangedLines.length > 0 &&
-      !lineMismatch
-    ) {
-      const targetChangedLines = await git.getChangedLines(targetFile);
-      const changeErrors = checkChanges(
-        sourceChangedLines,
-        targetChangedLines,
-        targetFile,
-        sourceContent,
-        targetContent,
-      );
-      errors.push(...changeErrors);
     }
   }
 
@@ -107,9 +98,10 @@ export async function checkTranslationsUseCase(
     source: config.source,
     target: config.target,
     checks: {
-      checkLineCount: config.checks?.checkLineCount ?? true,
-      checkChangedLines: config.checks?.checkChangedLines ?? true,
-      strictHeadings: config.checks?.strictHeadings ?? false,
+      sectionStructure: config.checks?.sectionStructure ?? true,
+      sectionPosition: config.checks?.sectionPosition ?? true,
+      sectionTitle: config.checks?.sectionTitle ?? false,
+      lineCount: config.checks?.lineCount ?? true,
     },
     output: {
       json: config.output?.json ?? false,
