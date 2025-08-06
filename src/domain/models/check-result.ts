@@ -24,6 +24,12 @@ export interface SectionCountError extends BaseError {
     expected: number;
     actual: number;
   };
+  firstDifference?: {
+    position: number;
+    expectedSection?: string;
+    actualSection?: string;
+    previousSection?: string;
+  };
 }
 
 // Section structure error
@@ -31,7 +37,7 @@ export interface SectionStructureError extends BaseError {
   type: "section-structure";
   position: number;
   expected: { level: number; index: number };
-  actual: { level: number; text: string };
+  actual: { level: number; text: string; line?: number };
 }
 
 // Section position error
@@ -40,6 +46,10 @@ export interface SectionPositionError extends BaseError {
   section: string;
   expected: number;
   actual: number;
+  previousSection?: {
+    text: string;
+    line: number;
+  };
 }
 
 // Section title error

@@ -72,7 +72,7 @@ describe("checkTranslationsUseCase Integration Tests", () => {
     const titleError = result.errors.find((e) => e.type === "section-title");
     expect(titleError).toBeDefined();
     if (titleError?.type === "section-title") {
-      expect(titleError.expected).toBe("Installation");
+      expect(titleError.expected).toBe("# Installation");
     }
   });
 

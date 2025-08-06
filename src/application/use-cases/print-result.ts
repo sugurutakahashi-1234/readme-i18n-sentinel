@@ -38,14 +38,38 @@ function generateSuggestion(error: TranslationError): string {
     }
     case "section-count": {
       const difference = error.counts.expected - error.counts.actual;
-      return difference > 0
-        ? `Add ${difference} sections to match the source structure. Check which sections are missing and add them in the correct order.`
-        : `Remove ${Math.abs(
-            difference,
-          )} extra sections to match the source structure.`;
+      const baseMessage =
+        difference > 0
+          ? `Add ${difference} sections to match the source structure`
+          : `Remove ${Math.abs(difference)} extra sections to match the source structure`;
+
+      // Add specific hint if available
+      if (error.firstDifference) {
+        if (difference > 0 && error.firstDifference.expectedSection) {
+          let message = `${baseMessage}. Missing: "${error.firstDifference.expectedSection}"`;
+          if (error.firstDifference.previousSection) {
+            message += ` after "${error.firstDifference.previousSection}"`;
+          }
+          return message;
+        } else if (difference < 0 && error.firstDifference.actualSection) {
+          let message = `${baseMessage}. Extra: "${error.firstDifference.actualSection}"`;
+          if (error.firstDifference.previousSection) {
+            message += ` after "${error.firstDifference.previousSection}"`;
+          }
+          return message;
+        }
+      }
+
+      return `${baseMessage}. Check which sections are missing and add them in the correct order.`;
     }
-    case "section-structure":
-      return `Section at position ${error.position} has wrong level. Expected level ${error.expected.level}, found level ${error.actual.level}`;
+    case "section-structure": {
+      let message = `Section "${error.actual.text}" at position ${error.position}`;
+      if (error.actual.line) {
+        message += ` (line ${error.actual.line})`;
+      }
+      message += ` has wrong level. Expected level ${error.expected.level}, found level ${error.actual.level}`;
+      return message;
+    }
     case "section-position": {
       const diff = error.actual - error.expected;
       const direction = diff > 0 ? "below" : "above";
@@ -107,12 +131,31 @@ function formatText(result: CheckResult): string {
             `  Expected: ${error.counts.expected} sections | Found: ${error.counts.actual} sections`,
           );
           lines.push(`  → ${generateSuggestion(error)}`);
+
+          // Show helpful context if available
+          if (error.firstDifference?.previousSection) {
+            lines.push(
+              `  💡 Check the area after "${error.firstDifference.previousSection}"`,
+            );
+          }
           break;
         }
         case "section-structure": {
           lines.push(`  Position: ${error.position}`);
+
+          // Show section name and line if available
+          if (error.actual.line) {
+            lines.push(
+              `  Section: "${error.actual.text}" at line ${error.actual.line}`,
+            );
+          } else {
+            lines.push(`  Section: "${error.actual.text}"`);
+          }
+
+          const expectedLevel = "#".repeat(error.expected.level);
+          const actualLevel = "#".repeat(error.actual.level);
           lines.push(
-            `  Expected level: ${error.expected.level} | Found level: ${error.actual.level}`,
+            `  Expected: ${expectedLevel} (level ${error.expected.level}) | Found: ${actualLevel} (level ${error.actual.level})`,
           );
           lines.push(`  → ${generateSuggestion(error)}`);
           break;
@@ -122,6 +165,13 @@ function formatText(result: CheckResult): string {
             `  Expected line: ${error.expected} | Found line: ${error.actual}`,
           );
           lines.push(`  → ${generateSuggestion(error)}`);
+
+          // Show previous section info to help locate the issue
+          if (error.previousSection) {
+            lines.push(
+              `  💡 Check area after previous section "${error.previousSection.text}" (line ${error.previousSection.line})`,
+            );
+          }
           break;
         }
         case "section-title": {

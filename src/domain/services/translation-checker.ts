@@ -9,6 +9,13 @@ import type {
 import type { Heading } from "../models/heading.js";
 
 /**
+ * Format heading with level markers (e.g., "## Section Title")
+ */
+function formatHeadingWithLevel(heading: Heading): string {
+  return `${"#".repeat(heading.level)} ${heading.text}`;
+}
+
+/**
  * Check if source and target files have the same number of lines
  */
 export function checkLines(
@@ -50,6 +57,59 @@ export function checkSectionOrder(
         actual: targetHeadings.length,
       },
     };
+
+    // Find first difference to help locate the issue
+    const minLength = Math.min(sourceHeadings.length, targetHeadings.length);
+
+    // Check common sections for differences
+    for (let i = 0; i < minLength; i++) {
+      const source = sourceHeadings[i];
+      const target = targetHeadings[i];
+      if (source && target && source.text !== target.text) {
+        const prev = i > 0 ? targetHeadings[i - 1] : undefined;
+        const prevSection = prev ? formatHeadingWithLevel(prev) : undefined;
+        error.firstDifference = {
+          position: i + 1,
+          expectedSection: formatHeadingWithLevel(source),
+          actualSection: formatHeadingWithLevel(target),
+          ...(prevSection && { previousSection: prevSection }),
+        };
+        break;
+      }
+    }
+
+    // If all common sections match, the difference is at the end
+    if (
+      !error.firstDifference &&
+      sourceHeadings.length !== targetHeadings.length
+    ) {
+      const position = minLength + 1;
+      const expectedHeading = sourceHeadings[minLength];
+      const actualHeading = targetHeadings[minLength];
+      const prevHeading =
+        minLength > 0 ? targetHeadings[minLength - 1] : undefined;
+
+      const expectedSection = expectedHeading
+        ? formatHeadingWithLevel(expectedHeading)
+        : undefined;
+      const actualSection = actualHeading
+        ? formatHeadingWithLevel(actualHeading)
+        : undefined;
+      const prevSection = prevHeading
+        ? formatHeadingWithLevel(prevHeading)
+        : undefined;
+
+      // Only set firstDifference if we have at least one section to show
+      if (expectedSection || actualSection) {
+        error.firstDifference = {
+          position,
+          ...(expectedSection && { expectedSection }),
+          ...(actualSection && { actualSection }),
+          ...(prevSection && { previousSection: prevSection }),
+        };
+      }
+    }
+
     errors.push(error);
     return errors; // Early return - no point checking structure if count differs
   }
@@ -75,7 +135,8 @@ export function checkSectionOrder(
         },
         actual: {
           level: targetHeading.level,
-          text: targetHeading.text,
+          text: formatHeadingWithLevel(targetHeading),
+          line: targetHeading.line,
         },
       };
       errors.push(error);
@@ -113,11 +174,24 @@ export function checkSectionLines(
       const error: SectionPositionError = {
         type: "section-position",
         file: targetFile,
-        section: `${"#".repeat(sourceHeading.level)} ${sourceHeading.text}`,
+        section: formatHeadingWithLevel(sourceHeading),
         expected: sourceHeading.line,
         actual: targetHeading.line,
       };
+
+      // Add previous section info to help locate the issue
+      if (i > 0) {
+        const prevHeading = targetHeadings[i - 1];
+        if (prevHeading) {
+          error.previousSection = {
+            text: formatHeadingWithLevel(prevHeading),
+            line: prevHeading.line,
+          };
+        }
+      }
+
       errors.push(error);
+      return errors; // Early return on first mismatch to avoid cascading errors
     }
   }
 
@@ -153,8 +227,8 @@ export function checkSectionTitleMatch(
         type: "section-title",
         file: targetFile,
         line: targetHeading.line,
-        expected: sourceHeading.text,
-        actual: targetHeading.text,
+        expected: formatHeadingWithLevel(sourceHeading),
+        actual: formatHeadingWithLevel(targetHeading),
       };
       errors.push(error);
     }
