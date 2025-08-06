@@ -1,28 +1,26 @@
 import type {
   CheckResult,
+  ErrorType,
   TranslationError,
 } from "../../domain/models/check-result.js";
 
 /**
+ * Error type display labels
+ */
+const ERROR_TYPE_LABELS = {
+  "line-count": "Line count mismatch",
+  "section-count": "Section count mismatch",
+  "section-structure": "Section structure mismatch",
+  "section-position": "Section position mismatch",
+  "section-title": "Section title mismatch",
+  "file-not-found": "File not found",
+} as const satisfies Record<ErrorType, string>;
+
+/**
  * Format error type for display
  */
-function formatErrorType(type: string): string {
-  switch (type) {
-    case "line-count":
-      return "Line count mismatch";
-    case "section-count":
-      return "Section count mismatch";
-    case "section-structure":
-      return "Section structure mismatch";
-    case "section-position":
-      return "Section position mismatch";
-    case "section-title":
-      return "Section title mismatch";
-    case "file-not-found":
-      return "File not found";
-    default:
-      return type;
-  }
+function formatErrorType(type: ErrorType): string {
+  return ERROR_TYPE_LABELS[type];
 }
 
 /**
@@ -36,6 +34,7 @@ function generateSuggestion(error: TranslationError): string {
         ? `Add ${difference} lines to match the source file`
         : `Remove ${Math.abs(difference)} lines to match the source file`;
     }
+
     case "section-count": {
       const difference = error.counts.expected - error.counts.actual;
       const baseMessage =
@@ -62,6 +61,7 @@ function generateSuggestion(error: TranslationError): string {
 
       return `${baseMessage}. Check which sections are missing and add them in the correct order.`;
     }
+
     case "section-structure": {
       let message = `Section "${error.actual.text}" at position ${error.position}`;
       if (error.actual.line) {
@@ -70,21 +70,113 @@ function generateSuggestion(error: TranslationError): string {
       message += ` has wrong level. Expected level ${error.expected.level}, found level ${error.actual.level}`;
       return message;
     }
+
     case "section-position": {
       const diff = error.actual - error.expected;
       const direction = diff > 0 ? "below" : "above";
       return `Section "${error.section}" expected at line ${error.expected}, found at line ${error.actual} (${Math.abs(diff)} lines ${direction})`;
     }
+
     case "section-title":
       return `Section title at line ${error.line} should be "${error.expected}" but found "${error.actual}". Keep titles in the source language for URL anchors`;
+
     case "file-not-found":
       if (error.pattern) {
         return `No files found matching pattern: ${error.pattern}. Check if the pattern is correct`;
       }
       return `Target file ${error.file} not found. Create the file or check the path`;
-    default:
-      return "Fix the issue to match the source file";
+
+    default: {
+      // Exhaustive check - ensures all cases are handled
+      const _exhaustive: never = error;
+      void _exhaustive;
+      throw new Error(`Unhandled error type`);
+    }
   }
+}
+
+/**
+ * Format error details
+ */
+function formatErrorDetails(error: TranslationError): string[] {
+  const lines: string[] = [];
+
+  switch (error.type) {
+    case "line-count":
+      lines.push(
+        `  Expected: ${error.counts.expected} lines | Found: ${error.counts.actual} lines`,
+      );
+      lines.push(`  → ${generateSuggestion(error)}`);
+      break;
+
+    case "section-count":
+      lines.push(
+        `  Expected: ${error.counts.expected} sections | Found: ${error.counts.actual} sections`,
+      );
+      lines.push(`  → ${generateSuggestion(error)}`);
+
+      // Show helpful context if available
+      if (error.firstDifference?.previousSection) {
+        lines.push(
+          `  💡 Check the area after "${error.firstDifference.previousSection}"`,
+        );
+      }
+      break;
+
+    case "section-structure": {
+      lines.push(`  Position: ${error.position}`);
+
+      // Show section name and line if available
+      if (error.actual.line) {
+        lines.push(
+          `  Section: "${error.actual.text}" at line ${error.actual.line}`,
+        );
+      } else {
+        lines.push(`  Section: "${error.actual.text}"`);
+      }
+
+      const expectedLevel = "#".repeat(error.expected.level);
+      const actualLevel = "#".repeat(error.actual.level);
+      lines.push(
+        `  Expected: ${expectedLevel} (level ${error.expected.level}) | Found: ${actualLevel} (level ${error.actual.level})`,
+      );
+      lines.push(`  → ${generateSuggestion(error)}`);
+      break;
+    }
+
+    case "section-position":
+      lines.push(
+        `  Expected line: ${error.expected} | Found line: ${error.actual}`,
+      );
+      lines.push(`  → ${generateSuggestion(error)}`);
+
+      // Show previous section info to help locate the issue
+      if (error.previousSection) {
+        lines.push(
+          `  💡 Check area after previous section "${error.previousSection.text}" (line ${error.previousSection.line})`,
+        );
+      }
+      break;
+
+    case "section-title":
+      lines.push(`  Expected: "${error.expected}"`);
+      lines.push(`  Found: "${error.actual}"`);
+      lines.push(`  → ${generateSuggestion(error)}`);
+      break;
+
+    case "file-not-found":
+      lines.push(`  → ${generateSuggestion(error)}`);
+      break;
+
+    default: {
+      // Exhaustive check - ensures all cases are handled
+      const _exhaustive: never = error;
+      void _exhaustive;
+      throw new Error(`Unhandled error type`);
+    }
+  }
+
+  return lines;
 }
 
 /**
@@ -118,73 +210,9 @@ function formatText(result: CheckResult): string {
       }
       lines.push(errorHeader);
 
-      switch (error.type) {
-        case "line-count": {
-          lines.push(
-            `  Expected: ${error.counts.expected} lines | Found: ${error.counts.actual} lines`,
-          );
-          lines.push(`  → ${generateSuggestion(error)}`);
-          break;
-        }
-        case "section-count": {
-          lines.push(
-            `  Expected: ${error.counts.expected} sections | Found: ${error.counts.actual} sections`,
-          );
-          lines.push(`  → ${generateSuggestion(error)}`);
-
-          // Show helpful context if available
-          if (error.firstDifference?.previousSection) {
-            lines.push(
-              `  💡 Check the area after "${error.firstDifference.previousSection}"`,
-            );
-          }
-          break;
-        }
-        case "section-structure": {
-          lines.push(`  Position: ${error.position}`);
-
-          // Show section name and line if available
-          if (error.actual.line) {
-            lines.push(
-              `  Section: "${error.actual.text}" at line ${error.actual.line}`,
-            );
-          } else {
-            lines.push(`  Section: "${error.actual.text}"`);
-          }
-
-          const expectedLevel = "#".repeat(error.expected.level);
-          const actualLevel = "#".repeat(error.actual.level);
-          lines.push(
-            `  Expected: ${expectedLevel} (level ${error.expected.level}) | Found: ${actualLevel} (level ${error.actual.level})`,
-          );
-          lines.push(`  → ${generateSuggestion(error)}`);
-          break;
-        }
-        case "section-position": {
-          lines.push(
-            `  Expected line: ${error.expected} | Found line: ${error.actual}`,
-          );
-          lines.push(`  → ${generateSuggestion(error)}`);
-
-          // Show previous section info to help locate the issue
-          if (error.previousSection) {
-            lines.push(
-              `  💡 Check area after previous section "${error.previousSection.text}" (line ${error.previousSection.line})`,
-            );
-          }
-          break;
-        }
-        case "section-title": {
-          lines.push(`  Expected: "${error.expected}"`);
-          lines.push(`  Found: "${error.actual}"`);
-          lines.push(`  → ${generateSuggestion(error)}`);
-          break;
-        }
-        case "file-not-found": {
-          lines.push(`  → ${generateSuggestion(error)}`);
-          break;
-        }
-      }
+      // Format error details
+      const detailLines = formatErrorDetails(error);
+      lines.push(...detailLines);
 
       lines.push(""); // Empty line between errors
     }

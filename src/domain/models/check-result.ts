@@ -2,9 +2,18 @@
  * Types for check results
  */
 
+// Error type definitions
+export type ErrorType =
+  | "line-count"
+  | "section-count"
+  | "section-structure"
+  | "section-position"
+  | "section-title"
+  | "file-not-found";
+
 // Base interface for all errors (internal use only)
 interface BaseError {
-  type: string;
+  type: ErrorType;
   file: string;
 }
 
