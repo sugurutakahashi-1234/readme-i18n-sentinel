@@ -1,5 +1,5 @@
 import { type SimpleGit, simpleGit } from "simple-git";
-import { GitOperationError } from "../../domain/models/errors.js";
+import { GitOperationError } from "../../domain/models/error-types.js";
 
 export class GitAdapter {
   private git: SimpleGit;
@@ -15,8 +15,23 @@ export class GitAdapter {
     try {
       await this.git.status();
       return true;
-    } catch {
-      return false;
+    } catch (error) {
+      // Check if the error is specifically about not being a git repository
+      if (error instanceof Error) {
+        const message = error.message.toLowerCase();
+        if (
+          message.includes("not a git repository") ||
+          message.includes("fatal: not a git repository") ||
+          message.includes("not in a git directory")
+        ) {
+          return false;
+        }
+      }
+      // Re-throw unexpected errors (e.g., permission issues, network errors)
+      throw new GitOperationError(
+        `Unexpected error while checking git repository: ${error instanceof Error ? error.message : String(error)}`,
+        "git status",
+      );
     }
   }
 

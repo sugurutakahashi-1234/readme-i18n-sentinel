@@ -1,17 +1,17 @@
 #!/usr/bin/env bun
 
 import { Command } from "commander";
+import { checkTranslationsUseCase } from "../application/use-cases/check-translations.js";
 import {
-  checkTranslationsUseCase,
-  prepareConfig,
+  prepareCheckConfigUseCase,
   type RawCLIOptions,
-} from "../application/use-cases/check-translations.js";
+} from "../application/use-cases/prepare-check-config.js";
 import { printResultUseCase } from "../application/use-cases/print-result.js";
 import {
   getDescription,
   getPackageName,
   getVersion,
-} from "../domain/constants/package-info.js";
+} from "../domain/constants/package-metadata.js";
 
 const program = new Command();
 
@@ -33,7 +33,7 @@ program
     try {
       // Parse and prepare config
       const cliOptions = options as RawCLIOptions;
-      const config = await prepareConfig(cliOptions);
+      const config = await prepareCheckConfigUseCase(cliOptions);
 
       // Print check settings if not in JSON mode
       if (!config.output?.json) {

@@ -72,7 +72,7 @@
     "update:docs:knip": "knip -c knip.config.ts --reporter markdown > docs/reports/code-quality/unused-code.md",
     "update:docs:deps-graph": "tsg --tsconfig tsconfig.build.json --LR --md docs/reports/dependencies/deps-graph.md",
     "update:docs:deps-graph:layers": "tsg --tsconfig tsconfig.build.json --LR --abstraction src/domain --abstraction src/application --abstraction src/infrastructure --abstraction src/presentation --md docs/reports/dependencies/layers.md",
-    "update:docs": "bun run update:docs:knip && bun run update:docs:deps-graph && bun run update:docs:deps-graph:layers",
+    "update:docs": "bun run update:docs:readme && bun run update:docs:knip && bun run update:docs:deps-graph && bun run update:docs:deps-graph:layers",
     "ci": "bun run lint && bun run format && bun run typecheck && bun run lint:check && bun run format:check && bun run build && bun run knip && bun run test:quiet && bun run update:docs",
     "clean": "rm -rf bun.lock node_modules dist coverage .*.bun-build tsconfig.tsbuildinfo tsconfig.build.tsbuildinfo",
     "clean:install": "bun run clean && bun install",

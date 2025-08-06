@@ -35,7 +35,6 @@ export class FileValidator {
           type: "file-not-found",
           file: targetPattern,
           pattern: targetPattern,
-          suggestion: `No files found matching pattern: ${targetPattern}. Check if the pattern is correct`,
         });
       } else {
         targetFiles = matchedFiles;
@@ -52,7 +51,6 @@ export class FileValidator {
         errors.push({
           type: "file-not-found",
           file: targetFile,
-          suggestion: `Target file ${targetFile} not found. Create the file or check the path`,
         });
       } else {
         validFiles.push(targetFile);

@@ -12,10 +12,10 @@ describe("checkLines", () => {
     expect(result).toEqual({
       file: "README.ja.md",
       type: "line-count-mismatch",
-      expected: 10,
-      actual: 8,
-      difference: 2,
-      suggestion: "Add 2 lines to match the source file",
+      counts: {
+        expected: 10,
+        actual: 8,
+      },
     });
   });
 });
@@ -26,9 +26,9 @@ describe("checkChanges", () => {
     const targetChanges = [1]; // Missing lines 5, 10, 15
     const result = checkChanges(sourceChanges, targetChanges, "README.ja.md");
     expect(result).toHaveLength(3);
-    expect(result[0]?.lineNumber).toBe(5);
-    expect(result[1]?.lineNumber).toBe(10);
-    expect(result[2]?.lineNumber).toBe(15);
+    expect(result[0]?.line).toBe(5);
+    expect(result[1]?.line).toBe(10);
+    expect(result[2]?.line).toBe(15);
   });
 });
 
@@ -84,8 +84,8 @@ describe("checkHeadings", () => {
     const error = errors[0];
     expect(error?.type).toBe("heading-count-mismatch");
     if (error?.type === "heading-count-mismatch") {
-      expect(error.expected).toBe(2);
-      expect(error.actual).toBe(1);
+      expect(error.counts.expected).toBe(2);
+      expect(error.counts.actual).toBe(1);
     }
   });
 
@@ -103,11 +103,15 @@ describe("checkHeadings", () => {
     expect(errors).toHaveLength(2); // missing-heading + heading-mismatch
     const missingError = errors.find((e) => e.type === "missing-heading");
     expect(missingError).toBeDefined();
-    expect(missingError?.heading).toBe("Title");
+    if (missingError?.type === "missing-heading") {
+      expect(missingError.heading.text).toBe("Title");
+    }
     const mismatchError = errors.find((e) => e.type === "heading-mismatch");
     expect(mismatchError).toBeDefined();
-    expect(mismatchError?.expected?.text).toBe("Title");
-    expect(mismatchError?.actual?.text).toBe("タイトル");
+    if (mismatchError?.type === "heading-mismatch") {
+      expect(mismatchError.heading.expected.text).toBe("Title");
+      expect(mismatchError.heading.actual.text).toBe("タイトル");
+    }
   });
 
   test("returns error when heading level differs", () => {
@@ -124,10 +128,14 @@ describe("checkHeadings", () => {
     expect(errors).toHaveLength(2); // missing-heading + heading-mismatch
     const missingError = errors.find((e) => e.type === "missing-heading");
     expect(missingError).toBeDefined();
-    expect(missingError?.heading).toBe("Section");
+    if (missingError?.type === "missing-heading") {
+      expect(missingError.heading.text).toBe("Section");
+    }
     const mismatchError = errors.find((e) => e.type === "heading-mismatch");
     expect(mismatchError).toBeDefined();
-    expect(mismatchError?.expected?.level).toBe(2);
-    expect(mismatchError?.actual?.level).toBe(3);
+    if (mismatchError?.type === "heading-mismatch") {
+      expect(mismatchError.heading.expected.level).toBe(2);
+      expect(mismatchError.heading.actual.level).toBe(3);
+    }
   });
 });

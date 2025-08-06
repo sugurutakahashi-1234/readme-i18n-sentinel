@@ -4,7 +4,6 @@ import type {
   CheckResult,
   TranslationError,
 } from "../../domain/models/check-result.js";
-import type { RawCLIOptions } from "../../domain/models/cli-options.js";
 import type { Config } from "../../domain/models/config.js";
 import {
   checkChanges,
@@ -13,76 +12,11 @@ import {
   extractHeadings,
 } from "../../domain/services/translation-checker.js";
 import { GitAdapter } from "../../infrastructure/adapters/git.adapter.js";
-import { FileValidator } from "../../infrastructure/services/file-validator.js";
 import {
   countLines,
   normalizeContent,
-} from "../../infrastructure/services/normalizer.js";
-import {
-  detectReadmeFiles,
-  shouldUseAutoDetection,
-} from "../../infrastructure/services/readme-detector.js";
-
-/**
- * Prepare config with auto-detection if needed
- */
-export async function prepareConfig(
-  cliOptions: RawCLIOptions,
-): Promise<Config> {
-  // Check if we should use auto-detection
-  if (shouldUseAutoDetection(!!cliOptions.source)) {
-    // Auto-detect README files
-    const detected = await detectReadmeFiles();
-
-    if (!detected.source) {
-      throw new Error(
-        "No README.md file found in the current directory. Specify files with --source and --target options.",
-      );
-    }
-
-    if (detected.targets.length === 0) {
-      throw new Error(
-        "No translation files (README.*.md) found. Make sure you have translation files like README.ja.md, README.zh-CN.md, etc.",
-      );
-    }
-
-    // Use detected files if not specified
-    if (!cliOptions.source) {
-      cliOptions.source = detected.source;
-    }
-    if (!cliOptions.target) {
-      // Convert array of targets to glob pattern
-      if (detected.targets.length === 1) {
-        cliOptions.target = detected.targets[0];
-      } else if (detected.targets.length > 1) {
-        cliOptions.target = `{${detected.targets.join(",")}}`;
-      }
-    }
-  }
-
-  // Convert CLI options to config format
-  const config: Config = {
-    source: cliOptions.source || "",
-    target: cliOptions.target || "",
-    checks: {
-      checkLineCount: cliOptions.checkLineCount ?? true,
-      checkChangedLines: cliOptions.checkChangedLines ?? true,
-      strictHeadings: cliOptions.strictHeadings ?? false,
-    },
-    output: {
-      json: cliOptions.json || false,
-    },
-  };
-
-  // Validate the merged configuration
-  if (!config.source || !config.target) {
-    throw new Error(
-      "Source and target pattern must be specified. Use --source and --target options.",
-    );
-  }
-
-  return config;
-}
+} from "../../infrastructure/services/content-normalizer.js";
+import { FileValidator } from "../../infrastructure/services/file-validator.js";
 
 /**
  * Main use case for checking translations
@@ -199,5 +133,3 @@ export async function checkTranslationsUseCase(
 
   return result;
 }
-
-export type { RawCLIOptions } from "../../domain/models/cli-options.js";

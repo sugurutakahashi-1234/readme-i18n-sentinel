@@ -27,5 +27,11 @@ export function normalizeContent(content: string): string {
  */
 export function countLines(content: string): number {
   const normalized = normalizeContent(content);
-  return normalized.split("\n").length - 1; // -1 because of trailing newline
+  // Remove trailing newline and count lines
+  // This provides a more intuitive line count
+  const trimmedContent = normalized.trimEnd();
+  if (trimmedContent === "") {
+    return 0; // Empty file has 0 lines
+  }
+  return trimmedContent.split("\n").length;
 }

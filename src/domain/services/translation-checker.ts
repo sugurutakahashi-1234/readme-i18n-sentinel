@@ -6,13 +6,7 @@ import type {
   OutdatedLine,
   TranslationError,
 } from "../models/check-result.js";
-import { formatSuggestion } from "./error-formatter.js";
-
-interface Heading {
-  level: number;
-  text: string;
-  line: number;
-}
+import type { Heading } from "../models/heading.js";
 
 /**
  * Check if source and target files have the same number of lines
@@ -23,16 +17,14 @@ export function checkLines(
   targetFile: string,
 ): LineCountMismatch | null {
   if (sourceLineCount !== targetLineCount) {
-    const difference = sourceLineCount - targetLineCount;
     const error: LineCountMismatch = {
       type: "line-count-mismatch",
       file: targetFile,
-      expected: sourceLineCount,
-      actual: targetLineCount,
-      difference,
-      suggestion: "", // Will be set below
+      counts: {
+        expected: sourceLineCount,
+        actual: targetLineCount,
+      },
     };
-    error.suggestion = formatSuggestion(error);
     return error;
   }
   return null;
@@ -61,16 +53,18 @@ export function checkChanges(
       const error: OutdatedLine = {
         type: "outdated-line",
         file: targetFile,
-        lineNumber: line,
-        expectedContent,
-        suggestion: "", // Will be set below
+        line: line,
+        content:
+          currentContent !== undefined
+            ? {
+                current: currentContent,
+                expected: expectedContent,
+              }
+            : {
+                expected: expectedContent,
+              },
       };
 
-      if (currentContent !== undefined) {
-        error.currentContent = currentContent;
-      }
-
-      error.suggestion = formatSuggestion(error);
       errors.push(error);
     }
   }
@@ -90,16 +84,14 @@ export function checkHeadings(
 
   // Early return if heading count doesn't match
   if (sourceHeadings.length !== targetHeadings.length) {
-    const difference = sourceHeadings.length - targetHeadings.length;
     const error: HeadingCountMismatch = {
       type: "heading-count-mismatch",
       file: targetFile,
-      expected: sourceHeadings.length,
-      actual: targetHeadings.length,
-      difference,
-      suggestion: "", // Will be set below
+      counts: {
+        expected: sourceHeadings.length,
+        actual: targetHeadings.length,
+      },
     };
-    error.suggestion = formatSuggestion(error);
     errors.push(error);
     return errors; // Early return to avoid unnecessary detailed checks
   }
@@ -116,11 +108,11 @@ export function checkHeadings(
       const error: MissingHeading = {
         type: "missing-heading",
         file: targetFile,
-        heading: sourceHeading.text,
-        level: sourceHeading.level,
-        suggestion: "", // Will be set below
+        heading: {
+          level: sourceHeading.level,
+          text: sourceHeading.text,
+        },
       };
-      error.suggestion = formatSuggestion(error);
       errors.push(error);
     }
   }
@@ -141,18 +133,18 @@ export function checkHeadings(
       const error: HeadingMismatch = {
         type: "heading-mismatch",
         file: targetFile,
-        lineNumber: targetHeading.line,
-        expected: {
-          level: sourceHeading.level,
-          text: sourceHeading.text,
+        line: targetHeading.line,
+        heading: {
+          expected: {
+            level: sourceHeading.level,
+            text: sourceHeading.text,
+          },
+          actual: {
+            level: targetHeading.level,
+            text: targetHeading.text,
+          },
         },
-        actual: {
-          level: targetHeading.level,
-          text: targetHeading.text,
-        },
-        suggestion: "", // Will be set below
       };
-      error.suggestion = formatSuggestion(error);
       errors.push(error);
     }
   }

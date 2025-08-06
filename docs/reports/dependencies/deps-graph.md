@@ -11,16 +11,16 @@ flowchart LR
         subgraph src/domain["/domain"]
             subgraph src/domain/models["/models"]
                 src/domain/models/check//result.ts["check-result.ts"]
-                src/domain/models/cli//options.ts["cli-options.ts"]
                 src/domain/models/config.ts["config.ts"]
-                src/domain/models/errors.ts["errors.ts"]
+                src/domain/models/heading.ts["heading.ts"]
+                src/domain/models/error//types.ts["error-types.ts"]
+                src/domain/models/cli//options.ts["cli-options.ts"]
             end
             subgraph src/domain/services["/services"]
-                src/domain/services/error//formatter.ts["error-formatter.ts"]
                 src/domain/services/translation//checker.ts["translation-checker.ts"]
             end
             subgraph src/domain/constants["/constants"]
-                src/domain/constants/package//info.ts["package-info.ts"]
+                src/domain/constants/package//metadata.ts["package-metadata.ts"]
             end
         end
         subgraph src/infrastructure["/infrastructure"]
@@ -29,13 +29,14 @@ flowchart LR
                 src/infrastructure/adapters/glob.adapter.ts["glob.adapter.ts"]
             end
             subgraph src/infrastructure/services["/services"]
+                src/infrastructure/services/content//normalizer.ts["content-normalizer.ts"]
                 src/infrastructure/services/file//validator.ts["file-validator.ts"]
-                src/infrastructure/services/normalizer.ts["normalizer.ts"]
                 src/infrastructure/services/readme//detector.ts["readme-detector.ts"]
             end
         end
         subgraph src/application/use//cases["/application/use-cases"]
             src/application/use//cases/check//translations.ts["check-translations.ts"]
+            src/application/use//cases/prepare//check//config.ts["prepare-check-config.ts"]
             src/application/use//cases/print//result.ts["print-result.ts"]
         end
         subgraph src/presentation["/presentation"]
@@ -48,31 +49,31 @@ flowchart LR
         node//modules/globby/index.d.ts["globby"]
         node//modules/commander/typings/index.d.ts["commander"]
     end
-    src/domain/models/cli//options.ts-->node//modules/zod/index.d.cts
     src/domain/models/config.ts-->node//modules/zod/index.d.cts
-    src/domain/services/error//formatter.ts-->src/domain/models/check//result.ts
     src/domain/services/translation//checker.ts-->src/domain/models/check//result.ts
-    src/domain/services/translation//checker.ts-->src/domain/services/error//formatter.ts
+    src/domain/services/translation//checker.ts-->src/domain/models/heading.ts
     src/infrastructure/adapters/git.adapter.ts-->node//modules/simple//git/dist/typings/index.d.ts
-    src/infrastructure/adapters/git.adapter.ts-->src/domain/models/errors.ts
+    src/infrastructure/adapters/git.adapter.ts-->src/domain/models/error//types.ts
     src/infrastructure/adapters/glob.adapter.ts-->node//modules/globby/index.d.ts
     src/infrastructure/services/file//validator.ts-->src/domain/models/check//result.ts
     src/infrastructure/services/file//validator.ts-->src/infrastructure/adapters/glob.adapter.ts
-    src/infrastructure/services/readme//detector.ts-->src/infrastructure/adapters/glob.adapter.ts
     src/application/use//cases/check//translations.ts-->src/domain/models/check//result.ts
-    src/application/use//cases/check//translations.ts-->src/domain/models/cli//options.ts
     src/application/use//cases/check//translations.ts-->src/domain/models/config.ts
     src/application/use//cases/check//translations.ts-->src/domain/services/translation//checker.ts
     src/application/use//cases/check//translations.ts-->src/infrastructure/adapters/git.adapter.ts
+    src/application/use//cases/check//translations.ts-->src/infrastructure/services/content//normalizer.ts
     src/application/use//cases/check//translations.ts-->src/infrastructure/services/file//validator.ts
-    src/application/use//cases/check//translations.ts-->src/infrastructure/services/normalizer.ts
-    src/application/use//cases/check//translations.ts-->src/infrastructure/services/readme//detector.ts
+    src/domain/models/cli//options.ts-->node//modules/zod/index.d.cts
+    src/infrastructure/services/readme//detector.ts-->src/infrastructure/adapters/glob.adapter.ts
+    src/application/use//cases/prepare//check//config.ts-->src/domain/models/cli//options.ts
+    src/application/use//cases/prepare//check//config.ts-->src/domain/models/config.ts
+    src/application/use//cases/prepare//check//config.ts-->src/infrastructure/services/readme//detector.ts
     src/application/use//cases/print//result.ts-->src/domain/models/check//result.ts
-    src/application/use//cases/print//result.ts-->src/domain/services/error//formatter.ts
     src/presentation/cli.ts-->node//modules/commander/typings/index.d.ts
     src/presentation/cli.ts-->src/application/use//cases/check//translations.ts
+    src/presentation/cli.ts-->src/application/use//cases/prepare//check//config.ts
     src/presentation/cli.ts-->src/application/use//cases/print//result.ts
-    src/presentation/cli.ts-->src/domain/constants/package//info.ts
+    src/presentation/cli.ts-->src/domain/constants/package//metadata.ts
     src/index.ts-->src/presentation/cli.ts
 ```
 

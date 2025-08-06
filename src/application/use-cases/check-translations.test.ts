@@ -87,14 +87,18 @@ describe("checkTranslationsUseCase Integration Tests", () => {
     // Should detect missing change
     const changeError = result.errors.find((e) => e.type === "outdated-line");
     expect(changeError).toBeDefined();
-    expect(changeError?.lineNumber).toBe(3);
+    if (changeError?.type === "outdated-line") {
+      expect(changeError.line).toBe(3);
+    }
 
     // Should detect heading mismatch
     const headingError = result.errors.find(
       (e) => e.type === "heading-mismatch",
     );
     expect(headingError).toBeDefined();
-    expect(headingError?.expected?.text).toBe("Installation");
+    if (headingError?.type === "heading-mismatch") {
+      expect(headingError.heading.expected.text).toBe("Installation");
+    }
   });
 
   test("passes when all checks are satisfied", async () => {
@@ -172,8 +176,7 @@ describe("checkTranslationsUseCase Integration Tests", () => {
     expect(result.isValid).toBe(false);
     expect(result.errors).toHaveLength(1);
     expect(result.errors[0]?.type).toBe("file-not-found");
-    expect(result.errors[0]?.suggestion).toContain("Target file");
-    expect(result.errors[0]?.suggestion).toContain("not found");
+    expect(result.errors[0]?.file).toBeDefined();
   });
 
   test("skips disabled checks", async () => {
@@ -335,7 +338,7 @@ describe("checkTranslationsUseCase Integration Tests", () => {
     const error = result.errors[0];
     expect(error?.type).toBe("outdated-line");
     if (error?.type === "outdated-line") {
-      expect(error.lineNumber).toBe(3);
+      expect(error.line).toBe(3);
     }
   });
 });
