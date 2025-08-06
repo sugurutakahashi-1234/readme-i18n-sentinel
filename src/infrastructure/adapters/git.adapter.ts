@@ -72,23 +72,4 @@ export class GitAdapter {
 
     return changedLines;
   }
-
-  /**
-   * Get list of files changed in the current diff
-   */
-  async getChangedFiles(): Promise<string[]> {
-    try {
-      const status = await this.git.status();
-      return [
-        ...status.modified,
-        ...status.created,
-        ...status.renamed.map((item) => item.to),
-      ];
-    } catch (error) {
-      throw new GitOperationError(
-        `Failed to get git status: ${error instanceof Error ? error.message : String(error)}`,
-        "git status",
-      );
-    }
-  }
 }

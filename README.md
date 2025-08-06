@@ -36,7 +36,7 @@ But forget to update the Japanese version. Running `readme-i18n-sentinel` will c
 
 ## Installation
 
-**Requirements:** Node.js v20 or higher
+**Requirements:** Node.js v24z or higher
 
 ```bash
 # Global installation (recommended)
@@ -59,58 +59,11 @@ readme-i18n-sentinel
 # 1. Find README.md as the source
 # 2. Find all README.*.md files as translations
 # 3. Check if translations are up to date
-
-# Generate a configuration file if you need custom settings
-readme-i18n-sentinel init
 ```
 
 ## Configuration
 
-The tool searches for configuration in the following locations (powered by [cosmiconfig](https://github.com/cosmiconfig/cosmiconfig)):
-
-- `package.json` (under "readme-i18n-sentinel" property)
-- `.readme-i18n-sentinelrc` (no extension)
-- `.readme-i18n-sentinelrc.{json,yaml,yml,js,ts,mjs,cjs}`
-- `.config/readme-i18n-sentinelrc` (no extension)
-- `.config/readme-i18n-sentinelrc.{json,yaml,yml,js,ts,mjs,cjs}`
-- `readme-i18n-sentinel.config.{js,ts,mjs,cjs}`
-
-### Example configurations
-
-**TypeScript/JavaScript (recommended):**
-```typescript
-// readme-i18n-sentinel.config.ts
-import { defineConfig } from 'readme-i18n-sentinel/config';
-
-export default defineConfig({
-  source: 'README.md',
-  target: 'README.*.md',  // Glob pattern for all translations
-  checks: {
-    lines: true,         // Check line count matches
-    changes: true,       // Check changed lines are updated
-    headingsMatchSource: true  // Check headings match exactly
-  },
-  output: {
-    json: false  // Set to true for JSON output
-  }
-});
-```
-
-**JSON:**
-```json
-{
-  "source": "docs/README.md",
-  "target": "docs/README.*.md"
-}
-```
-
-**YAML:**
-```yaml
-source: README.md
-target: README.*.md
-checks:
-  headingsMatchSource: true
-```
+All configuration is done through command-line arguments. There are no configuration files.
 
 ## Usage
 
@@ -134,26 +87,22 @@ readme-i18n-sentinel --no-lines
 # JSON output for CI integration
 readme-i18n-sentinel --json
 
-# Use specific config file
-readme-i18n-sentinel -c myconfig.yml
-
 # Specify custom paths
 readme-i18n-sentinel --source docs/README.md --target "docs/README.*.md"
 
-# Mix config file with CLI overrides
-readme-i18n-sentinel -c config.json --json --no-changes
+# Combine multiple options
+readme-i18n-sentinel --json --no-changes
 ```
 
 Available options:
-- `-c, --config <path>` - Path to configuration file
 - `-s, --source <path>` - Source README file path
 - `-t, --target <pattern>` - Target file pattern (glob supported, can be specified multiple times)
 - `--no-lines` - Disable line count check
 - `--no-changes` - Disable changes check
 - `--no-headings-match-source` - Disable headings match check
 - `--json` - Output in JSON format
-
-**Priority:** CLI arguments > Config file > Auto-detection
+- `-v, --version` - Display version
+- `--help` - Show help
 
 ### Common Use Cases
 
@@ -215,30 +164,6 @@ Check translation files for outdated content.
 readme-i18n-sentinel [options]
 ```
 
-Options:
-- `-c, --config <path>` - Path to configuration file
-- `-v, --version` - Display version
-- `--help` - Show help
-
-### `readme-i18n-sentinel init`
-
-Create a configuration file interactively.
-
-```bash
-readme-i18n-sentinel init [options]
-```
-
-Options:
-- `-y, --yes` - Skip prompts and use defaults
-
-### `readme-i18n-sentinel validate`
-
-Validate your configuration file.
-
-```bash
-readme-i18n-sentinel validate [config-file]
-```
-
 ## Check Types
 
 ### Line Count Check (`lines`)
@@ -255,43 +180,12 @@ Ensures all markdown headings (`#`, `##`, etc.) match exactly between source and
 
 **Important:** Headings should remain in the source language (typically English) across all translations to maintain URL anchors.
 
-## Output Formats
-
-### Text Format (default)
-Human-readable output for terminal:
-```
-❌ README.ja.md: Line 42 not updated
-❌ README.zh-CN.md: Line count mismatch (120 ≠ 118)
-❌ README.ja.md: Heading mismatch => "## Getting Started"
-```
-
-### JSON Format
-Machine-readable output for automation:
-```json
-{
-  "isValid": false,
-  "errors": [
-    {
-      "file": "README.ja.md",
-      "type": "line-missing",
-      "line": 42,
-      "details": "Line 42 was changed in source but not in target"
-    },
-    {
-      "file": "README.zh-CN.md",
-      "type": "lines-mismatch",
-      "details": "Line count mismatch: source has 118 lines, target has 120 lines"
-    }
-  ]
-}
-```
-
 ## Tips
 
 - **Start small**: Begin with just line count checks, then enable other checks gradually
 - **Use with Git hooks**: Integrate with Husky to catch issues before commit
 - **CI Integration**: Add to your CI pipeline to ensure PRs don't break translations
-- **Heading rule**: Keep headings in English across all language versions
+- **Heading rule**: Keep headings in English across all language versions to maintain consistency
 
 ## Contributing
 
@@ -300,10 +194,3 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## License
 
 MIT
-
-## See Also
-
-- [cosmiconfig](https://github.com/cosmiconfig/cosmiconfig) - Configuration file loader
-- [simple-git](https://github.com/steveukx/git-js) - Git integration
-- [Husky](https://typicode.github.io/husky/) - Git hooks made easy
-テスト用のREADME変更

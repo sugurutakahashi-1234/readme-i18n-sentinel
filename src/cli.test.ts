@@ -1,6 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { execSync } from "node:child_process";
-import { existsSync } from "node:fs";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -33,44 +32,7 @@ describe("CLI Basic Tests", () => {
     }
   });
 
-  test("init command creates config file", () => {
-    execSync(`bun ${join(originalCwd, "src/presentation/cli.ts")} init --yes`, {
-      stdio: "pipe",
-    });
-
-    expect(existsSync("readme-i18n-sentinel.config.ts")).toBe(true);
-  });
-
-  test("validate command validates config", async () => {
-    const config = {
-      source: "README.md",
-      target: "README.ja.md",
-    };
-    await writeFile(
-      "readme-i18n-sentinel.config.js",
-      `module.exports = ${JSON.stringify(config, null, 2)};`,
-    );
-
-    const result = execSync(
-      `bun ${join(originalCwd, "src/presentation/cli.ts")} validate`,
-      { stdio: "pipe" },
-    ).toString();
-
-    expect(result).toContain("✅");
-    expect(result).toContain("Configuration is valid");
-  });
-
   test("check command detects outdated translations", async () => {
-    // Create config
-    const config = {
-      source: "README.md",
-      target: "README.ja.md",
-    };
-    await writeFile(
-      "readme-i18n-sentinel.config.js",
-      `module.exports = ${JSON.stringify(config, null, 2)};`,
-    );
-
     // Create files with different content
     await writeFile("README.md", "# Title\n\nLine 1\nLine 2\n");
     await writeFile("README.ja.md", "# Title\n\nLine 1\n");
@@ -87,22 +49,12 @@ describe("CLI Basic Tests", () => {
       expect(true).toBe(false);
     } catch (error: any) {
       expect(error.status).toBe(1);
-      expect(error.stderr.toString()).toContain("❌");
-      expect(error.stderr.toString()).toContain("Line count mismatch");
+      expect(error.stdout.toString()).toContain("issue");
+      expect(error.stdout.toString()).toContain("Line count mismatch");
     }
   });
 
   test("check command passes when translations are up to date", async () => {
-    // Create config
-    const config = {
-      source: "README.md",
-      target: "README.ja.md",
-    };
-    await writeFile(
-      "readme-i18n-sentinel.config.js",
-      `module.exports = ${JSON.stringify(config, null, 2)};`,
-    );
-
     // Create files with same content
     const content = "# Title\n\nContent\n";
     await writeFile("README.md", content);
@@ -117,8 +69,8 @@ describe("CLI Basic Tests", () => {
       { stdio: "pipe", encoding: "utf-8" },
     ).toString();
 
-    // stderr output is expected for human-readable output
-    expect(result).toBe("");
+    // stdout output is expected for human-readable output
+    expect(result).toContain("✅ All translations are up to date");
   });
 
   test("shows version", () => {

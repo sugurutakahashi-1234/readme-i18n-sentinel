@@ -6,6 +6,7 @@ import type {
   OutdatedLine,
   TranslationError,
 } from "../models/check-result.js";
+import { formatSuggestion } from "./error-formatter.js";
 
 interface Heading {
   level: number;
@@ -23,17 +24,16 @@ export function checkLines(
 ): LineCountMismatch | null {
   if (sourceLineCount !== targetLineCount) {
     const difference = sourceLineCount - targetLineCount;
-    return {
+    const error: LineCountMismatch = {
       type: "line-count-mismatch",
       file: targetFile,
       expected: sourceLineCount,
       actual: targetLineCount,
       difference,
-      suggestion:
-        difference > 0
-          ? `Add ${difference} lines to match the source file`
-          : `Remove ${Math.abs(difference)} lines to match the source file`,
+      suggestion: "", // Will be set below
     };
+    error.suggestion = formatSuggestion(error);
+    return error;
   }
   return null;
 }
@@ -63,13 +63,14 @@ export function checkChanges(
         file: targetFile,
         lineNumber: line,
         expectedContent,
-        suggestion: `Update line ${line} with the new content from the source file`,
+        suggestion: "", // Will be set below
       };
 
       if (currentContent !== undefined) {
         error.currentContent = currentContent;
       }
 
+      error.suggestion = formatSuggestion(error);
       errors.push(error);
     }
   }
@@ -90,17 +91,16 @@ export function checkHeadings(
   // Early return if heading count doesn't match
   if (sourceHeadings.length !== targetHeadings.length) {
     const difference = sourceHeadings.length - targetHeadings.length;
-    errors.push({
+    const error: HeadingCountMismatch = {
       type: "heading-count-mismatch",
       file: targetFile,
       expected: sourceHeadings.length,
       actual: targetHeadings.length,
       difference,
-      suggestion:
-        difference > 0
-          ? `Add ${difference} headings to match the source structure. Check which headings are missing and add them in the correct order.`
-          : `Remove ${Math.abs(difference)} extra headings to match the source structure.`,
-    } as HeadingCountMismatch);
+      suggestion: "", // Will be set below
+    };
+    error.suggestion = formatSuggestion(error);
+    errors.push(error);
     return errors; // Early return to avoid unnecessary detailed checks
   }
 
@@ -113,15 +113,15 @@ export function checkHeadings(
   for (const sourceHeading of sourceHeadings) {
     const key = `${sourceHeading.level}-${sourceHeading.text}`;
     if (!targetHeadingMap.has(key)) {
-      errors.push({
+      const error: MissingHeading = {
         type: "missing-heading",
         file: targetFile,
         heading: sourceHeading.text,
         level: sourceHeading.level,
-        suggestion: `Add heading "${"#".repeat(
-          sourceHeading.level,
-        )} ${sourceHeading.text}" to match the source structure`,
-      } as MissingHeading);
+        suggestion: "", // Will be set below
+      };
+      error.suggestion = formatSuggestion(error);
+      errors.push(error);
     }
   }
 
@@ -138,7 +138,7 @@ export function checkHeadings(
       sourceHeading.level !== targetHeading.level ||
       sourceHeading.text !== targetHeading.text
     ) {
-      errors.push({
+      const error: HeadingMismatch = {
         type: "heading-mismatch",
         file: targetFile,
         lineNumber: targetHeading.line,
@@ -150,12 +150,10 @@ export function checkHeadings(
           level: targetHeading.level,
           text: targetHeading.text,
         },
-        suggestion: `Replace "${"#".repeat(
-          targetHeading.level,
-        )} ${targetHeading.text}" with "${"#".repeat(
-          sourceHeading.level,
-        )} ${sourceHeading.text}" at line ${targetHeading.line}`,
-      } as HeadingMismatch);
+        suggestion: "", // Will be set below
+      };
+      error.suggestion = formatSuggestion(error);
+      errors.push(error);
     }
   }
 

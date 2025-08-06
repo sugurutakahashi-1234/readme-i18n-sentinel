@@ -39,15 +39,6 @@ describe("GitAdapter", () => {
     expect(isRepo).toBe(true);
   });
 
-  test("detects non-git directory", async () => {
-    // Change to parent directory (not a git repo)
-    process.chdir(originalCwd);
-    const git = new GitAdapter();
-    const isRepo = await git.isGitRepository();
-    // This might be true if the parent is also a git repo
-    expect(typeof isRepo).toBe("boolean");
-  });
-
   test("getChangedLines detects added lines", async () => {
     // Create and commit initial file
     await writeFile("test.txt", "Line 1\nLine 2\nLine 3\n");

@@ -1,6 +1,32 @@
 import { z } from "zod";
 
 /**
+ * Check configurations schema
+ */
+const ChecksConfigSchema = z
+  .object({
+    checkLineCount: z.boolean().default(true),
+    checkChangedLines: z.boolean().default(true),
+    strictHeadings: z.boolean().default(false),
+  })
+  .default({
+    checkLineCount: true,
+    checkChangedLines: true,
+    strictHeadings: false,
+  });
+
+/**
+ * Output configuration schema
+ */
+const OutputConfigSchema = z
+  .object({
+    json: z.boolean().default(false),
+  })
+  .default({
+    json: false,
+  });
+
+/**
  * Configuration schema for readme-i18n-sentinel
  *
  * Defines the structure and validation rules for configuration files
@@ -13,26 +39,10 @@ export const ConfigSchema = z.object({
   target: z.string().min(1, "Target file pattern cannot be empty"),
 
   // Check configurations (all default to true)
-  checks: z
-    .object({
-      lines: z.boolean().default(true),
-      changes: z.boolean().default(true),
-      headingsMatchSource: z.boolean().default(true),
-    })
-    .default({
-      lines: true,
-      changes: true,
-      headingsMatchSource: true,
-    }),
+  checks: ChecksConfigSchema,
 
   // Output configuration
-  output: z
-    .object({
-      json: z.boolean().default(false),
-    })
-    .default({
-      json: false,
-    }),
+  output: OutputConfigSchema,
 });
 
 // Type export

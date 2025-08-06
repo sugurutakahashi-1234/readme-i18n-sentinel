@@ -1,4 +1,4 @@
-import { findFilesByPattern } from "../../infrastructure/adapters/glob.adapter.js";
+import { findFilesByPattern } from "../adapters/glob.adapter.js";
 
 /**
  * Result of README file detection
@@ -53,16 +53,11 @@ export async function detectReadmeFiles(): Promise<ReadmeDetectionResult> {
  * Check if auto-detection should be used
  *
  * Auto-detection is used when:
- * - No config file is found
  * - No source is specified via CLI
  *
- * @param hasConfig - Whether a config file was found
  * @param hasCliSource - Whether source was specified via CLI
  * @returns Whether to use auto-detection
  */
-export function shouldUseAutoDetection(
-  hasConfig: boolean,
-  hasCliSource: boolean,
-): boolean {
-  return !hasConfig && !hasCliSource;
+export function shouldUseAutoDetection(hasCliSource: boolean): boolean {
+  return !hasCliSource;
 }

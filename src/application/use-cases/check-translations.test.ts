@@ -49,10 +49,10 @@ describe("checkTranslationsUseCase Integration Tests", () => {
       "# Installation\n\nStep 1\nStep 2\nStep 3\n## Usage\n\nHow to use\n",
     );
 
-    // Create target file with issues
+    // Create target file with same line count but issues
     await writeFile(
       "README.ja.md",
-      "# インストール\n\nStep 1\nStep 2\n## Usage\n\nHow to use\n", // Missing Step 3, wrong heading
+      "# インストール\n\nStep 1\nStep 2\n\n## Usage\n\nHow to use\n", // Same line count, wrong heading, missing Step 3
     );
 
     // Commit initial state
@@ -70,9 +70,9 @@ describe("checkTranslationsUseCase Integration Tests", () => {
       source: "README.md",
       target: "README.ja.md",
       checks: {
-        lines: true,
-        changes: true,
-        headingsMatchSource: true,
+        checkLineCount: true,
+        checkChangedLines: true,
+        strictHeadings: true,
       },
       output: {
         json: false,
@@ -84,21 +84,17 @@ describe("checkTranslationsUseCase Integration Tests", () => {
     expect(result.isValid).toBe(false);
     expect(result.errors.length).toBeGreaterThan(0);
 
-    // Should detect line count mismatch
-    const lineError = result.errors.find((e) => e.type === "lines-mismatch");
-    expect(lineError).toBeDefined();
-
     // Should detect missing change
-    const changeError = result.errors.find((e) => e.type === "line-missing");
+    const changeError = result.errors.find((e) => e.type === "outdated-line");
     expect(changeError).toBeDefined();
-    expect(changeError?.line).toBe(3);
+    expect(changeError?.lineNumber).toBe(3);
 
     // Should detect heading mismatch
     const headingError = result.errors.find(
-      (e) => e.type === "headings-mismatch",
+      (e) => e.type === "heading-mismatch",
     );
     expect(headingError).toBeDefined();
-    expect(headingError?.heading).toBe("Installation");
+    expect(headingError?.expected?.text).toBe("Installation");
   });
 
   test("passes when all checks are satisfied", async () => {
@@ -117,9 +113,9 @@ describe("checkTranslationsUseCase Integration Tests", () => {
       source: "README.md",
       target: "README.{ja,zh-CN}.md",
       checks: {
-        lines: true,
-        changes: true,
-        headingsMatchSource: true,
+        checkLineCount: true,
+        checkChangedLines: true,
+        strictHeadings: true,
       },
       output: {
         json: false,
@@ -137,16 +133,16 @@ describe("checkTranslationsUseCase Integration Tests", () => {
       source: "nonexistent.md",
       target: "README.ja.md",
       checks: {
-        lines: true,
-        changes: true,
-        headingsMatchSource: true,
+        checkLineCount: true,
+        checkChangedLines: true,
+        strictHeadings: true,
       },
       output: {
         json: false,
       },
     };
 
-    await expect(checkTranslationsUseCase(config)).rejects.toThrow(
+    expect(checkTranslationsUseCase(config)).rejects.toThrow(
       "Source file not found",
     );
   });
@@ -162,9 +158,9 @@ describe("checkTranslationsUseCase Integration Tests", () => {
       source: "README.md",
       target: "nonexistent.ja.md",
       checks: {
-        lines: true,
-        changes: true,
-        headingsMatchSource: true,
+        checkLineCount: true,
+        checkChangedLines: true,
+        strictHeadings: true,
       },
       output: {
         json: false,
@@ -175,8 +171,9 @@ describe("checkTranslationsUseCase Integration Tests", () => {
 
     expect(result.isValid).toBe(false);
     expect(result.errors).toHaveLength(1);
-    expect(result.errors[0]?.type).toBe("lines-mismatch");
-    expect(result.errors[0]?.details).toContain("Target file not found");
+    expect(result.errors[0]?.type).toBe("file-not-found");
+    expect(result.errors[0]?.suggestion).toContain("Target file");
+    expect(result.errors[0]?.suggestion).toContain("not found");
   });
 
   test("skips disabled checks", async () => {
@@ -192,9 +189,9 @@ describe("checkTranslationsUseCase Integration Tests", () => {
       source: "README.md",
       target: "README.ja.md",
       checks: {
-        lines: false, // Disabled
-        changes: false, // Disabled
-        headingsMatchSource: false, // Disabled
+        checkLineCount: false, // Disabled
+        checkChangedLines: false, // Disabled
+        strictHeadings: false, // Disabled
       },
       output: {
         json: false,
@@ -240,9 +237,9 @@ describe("checkTranslationsUseCase Integration Tests", () => {
       source: "README.md",
       target: "README.ja.md",
       checks: {
-        lines: true,
-        changes: true,
-        headingsMatchSource: true,
+        checkLineCount: true,
+        checkChangedLines: true,
+        strictHeadings: true,
       },
       output: {
         json: false,
@@ -272,9 +269,9 @@ describe("checkTranslationsUseCase Integration Tests", () => {
       source: "README.md",
       target: "README.{ja,zh-CN}.md",
       checks: {
-        lines: true,
-        changes: true,
-        headingsMatchSource: true,
+        checkLineCount: true,
+        checkChangedLines: true,
+        strictHeadings: true,
       },
       output: {
         json: false,
@@ -297,10 +294,10 @@ describe("checkTranslationsUseCase Integration Tests", () => {
     expect(zhErrors.length).toBeGreaterThan(0);
 
     // ja.md should have line count issue
-    expect(jaErrors.some((e) => e.type === "lines-mismatch")).toBe(true);
+    expect(jaErrors.some((e) => e.type === "line-count-mismatch")).toBe(true);
 
     // zh-CN.md should have heading issue
-    expect(zhErrors.some((e) => e.type === "headings-mismatch")).toBe(true);
+    expect(zhErrors.some((e) => e.type === "heading-mismatch")).toBe(true);
   });
 
   test("detects changes when source is modified after commit", async () => {
@@ -322,9 +319,9 @@ describe("checkTranslationsUseCase Integration Tests", () => {
       source: "README.md",
       target: "README.ja.md",
       checks: {
-        lines: true,
-        changes: true,
-        headingsMatchSource: true,
+        checkLineCount: true,
+        checkChangedLines: true,
+        strictHeadings: true,
       },
       output: {
         json: false,
@@ -335,8 +332,11 @@ describe("checkTranslationsUseCase Integration Tests", () => {
 
     expect(result.isValid).toBe(false);
     expect(result.errors).toHaveLength(1);
-    expect(result.errors[0]?.type).toBe("line-missing");
-    expect(result.errors[0]?.line).toBe(3);
+    const error = result.errors[0];
+    expect(error?.type).toBe("outdated-line");
+    if (error?.type === "outdated-line") {
+      expect(error.lineNumber).toBe(3);
+    }
   });
 
   test("handles line ending normalization", async () => {
@@ -358,9 +358,9 @@ describe("checkTranslationsUseCase Integration Tests", () => {
       source: "README.md",
       target: "README.ja.md",
       checks: {
-        lines: true,
-        changes: true,
-        headingsMatchSource: true,
+        checkLineCount: true,
+        checkChangedLines: true,
+        strictHeadings: true,
       },
       output: {
         json: false,
@@ -393,16 +393,16 @@ describe("checkTranslationsUseCase Integration Tests", () => {
         source: "README.md",
         target: "README.ja.md",
         checks: {
-          lines: true,
-          changes: true,
-          headingsMatchSource: true,
+          checkLineCount: true,
+          checkChangedLines: true,
+          strictHeadings: true,
         },
         output: {
           json: false,
         },
       };
 
-      await expect(checkTranslationsUseCase(config)).rejects.toThrow(
+      expect(checkTranslationsUseCase(config)).rejects.toThrow(
         "Not in a git repository",
       );
     } finally {

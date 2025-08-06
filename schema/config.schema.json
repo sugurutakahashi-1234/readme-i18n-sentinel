@@ -14,26 +14,26 @@
     },
     "checks": {
       "default": {
-        "lines": true,
-        "changes": true,
-        "headingsMatchSource": true
+        "checkLineCount": true,
+        "checkChangedLines": true,
+        "strictHeadings": false
       },
       "type": "object",
       "properties": {
-        "lines": {
+        "checkLineCount": {
           "default": true,
           "type": "boolean"
         },
-        "changes": {
+        "checkChangedLines": {
           "default": true,
           "type": "boolean"
         },
-        "headingsMatchSource": {
-          "default": true,
+        "strictHeadings": {
+          "default": false,
           "type": "boolean"
         }
       },
-      "required": ["lines", "changes", "headingsMatchSource"],
+      "required": ["checkLineCount", "checkChangedLines", "strictHeadings"],
       "additionalProperties": false
     },
     "output": {

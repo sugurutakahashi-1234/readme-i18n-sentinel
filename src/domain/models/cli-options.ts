@@ -5,16 +5,12 @@ import { z } from "zod";
  * Represents exactly what the user typed on the command line
  * All fields are optional because the user may not provide them
  */
-export const RawCLIOptionsSchema = z.object({
-  // Existing option
-  config: z.string().optional(),
-
-  // New options
+const RawCLIOptionsSchema = z.object({
   source: z.string().optional(),
   target: z.string().optional(),
-  lines: z.boolean().optional(),
-  changes: z.boolean().optional(),
-  headingsMatchSource: z.boolean().optional(),
+  checkLineCount: z.boolean().optional(),
+  checkChangedLines: z.boolean().optional(),
+  strictHeadings: z.boolean().optional(),
   json: z.boolean().optional(),
 });
 

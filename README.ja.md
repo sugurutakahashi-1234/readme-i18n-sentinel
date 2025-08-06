@@ -255,37 +255,6 @@ readme-i18n-sentinel validate [config-file]
 
 **重要:** URLアンカーを維持するため、見出しはすべての翻訳でソース言語（通常は英語）のままにする必要があります。
 
-## Output Formats
-
-### Text Format (default)
-ターミナル用の人間が読める出力：
-```
-❌ README.ja.md: Line 42 not updated
-❌ README.zh-CN.md: Line count mismatch (120 ≠ 118)
-❌ README.ja.md: Heading mismatch => "## Getting Started"
-```
-
-### JSON Format
-自動化用の機械可読出力：
-```json
-{
-  "isValid": false,
-  "errors": [
-    {
-      "file": "README.ja.md",
-      "type": "line-missing",
-      "line": 42,
-      "details": "Line 42 was changed in source but not in target"
-    },
-    {
-      "file": "README.zh-CN.md",
-      "type": "lines-mismatch",
-      "details": "Line count mismatch: source has 118 lines, target has 120 lines"
-    }
-  ]
-}
-```
-
 ## Tips
 
 - **小さく始める**: 行数チェックだけから始めて、徐々に他のチェックを有効にする

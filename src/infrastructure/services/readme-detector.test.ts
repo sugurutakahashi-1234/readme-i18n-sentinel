@@ -90,20 +90,12 @@ describe("readme-detector", () => {
   });
 
   describe("shouldUseAutoDetection", () => {
-    test("returns true when no config and no CLI source", () => {
-      expect(shouldUseAutoDetection(false, false)).toBe(true);
-    });
-
-    test("returns false when config exists", () => {
-      expect(shouldUseAutoDetection(true, false)).toBe(false);
+    test("returns true when no CLI source", () => {
+      expect(shouldUseAutoDetection(false)).toBe(true);
     });
 
     test("returns false when CLI source is specified", () => {
-      expect(shouldUseAutoDetection(false, true)).toBe(false);
-    });
-
-    test("returns false when both config and CLI source exist", () => {
-      expect(shouldUseAutoDetection(true, true)).toBe(false);
+      expect(shouldUseAutoDetection(true)).toBe(false);
     });
   });
 });

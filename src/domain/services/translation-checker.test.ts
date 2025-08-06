@@ -16,8 +16,11 @@ describe("checkLines", () => {
     const result = checkLines(10, 8, "README.ja.md");
     expect(result).toEqual({
       file: "README.ja.md",
-      type: "lines-mismatch",
-      details: "Line count mismatch: source has 10 lines, target has 8 lines",
+      type: "line-count-mismatch",
+      expected: 10,
+      actual: 8,
+      difference: 2,
+      suggestion: "Add 2 lines to match the source file",
     });
   });
 });
@@ -37,9 +40,10 @@ describe("checkChanges", () => {
     expect(result).toEqual([
       {
         file: "README.ja.md",
-        type: "line-missing",
-        line: 5,
-        details: "Line 5 was changed in source but not in target",
+        type: "outdated-line",
+        lineNumber: 5,
+        expectedContent: "",
+        suggestion: "Please translate the updated content from line 5",
       },
     ]);
   });
@@ -49,9 +53,9 @@ describe("checkChanges", () => {
     const targetChanges = [1]; // Missing lines 5, 10, 15
     const result = checkChanges(sourceChanges, targetChanges, "README.ja.md");
     expect(result).toHaveLength(3);
-    expect(result[0]?.line).toBe(5);
-    expect(result[1]?.line).toBe(10);
-    expect(result[2]?.line).toBe(15);
+    expect(result[0]?.lineNumber).toBe(5);
+    expect(result[1]?.lineNumber).toBe(10);
+    expect(result[2]?.lineNumber).toBe(15);
   });
 });
 
@@ -133,8 +137,13 @@ describe("checkHeadings", () => {
       "README.ja.md",
     );
     expect(errors).toHaveLength(1);
-    expect(errors[0]?.type).toBe("headings-mismatch");
-    expect(errors[0]?.details).toContain("Heading count mismatch");
+    // Should only have count mismatch error due to early return
+    const error = errors[0];
+    expect(error?.type).toBe("heading-count-mismatch");
+    if (error?.type === "heading-count-mismatch") {
+      expect(error.expected).toBe(2);
+      expect(error.actual).toBe(1);
+    }
   });
 
   test("returns error when heading text differs", () => {
@@ -148,9 +157,14 @@ describe("checkHeadings", () => {
       targetHeadings,
       "README.ja.md",
     );
-    expect(errors).toHaveLength(1);
-    expect(errors[0]?.type).toBe("headings-mismatch");
-    expect(errors[0]?.heading).toBe("Title");
+    expect(errors).toHaveLength(2); // missing-heading + heading-mismatch
+    const missingError = errors.find((e) => e.type === "missing-heading");
+    expect(missingError).toBeDefined();
+    expect(missingError?.heading).toBe("Title");
+    const mismatchError = errors.find((e) => e.type === "heading-mismatch");
+    expect(mismatchError).toBeDefined();
+    expect(mismatchError?.expected?.text).toBe("Title");
+    expect(mismatchError?.actual?.text).toBe("タイトル");
   });
 
   test("returns error when heading level differs", () => {
@@ -164,8 +178,13 @@ describe("checkHeadings", () => {
       targetHeadings,
       "README.ja.md",
     );
-    expect(errors).toHaveLength(1);
-    expect(errors[0]?.details).toContain("level 2");
-    expect(errors[0]?.details).toContain("level 3");
+    expect(errors).toHaveLength(2); // missing-heading + heading-mismatch
+    const missingError = errors.find((e) => e.type === "missing-heading");
+    expect(missingError).toBeDefined();
+    expect(missingError?.heading).toBe("Section");
+    const mismatchError = errors.find((e) => e.type === "heading-mismatch");
+    expect(mismatchError).toBeDefined();
+    expect(mismatchError?.expected?.level).toBe(2);
+    expect(mismatchError?.actual?.level).toBe(3);
   });
 });

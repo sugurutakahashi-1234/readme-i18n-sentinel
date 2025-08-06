@@ -48,20 +48,41 @@ export interface HeadingCountMismatch extends BaseError {
   difference: number;
 }
 
+// File not found error
+export interface FileNotFound extends BaseError {
+  type: "file-not-found";
+  pattern?: string;
+}
+
 // Union type for all translation errors
 export type TranslationError =
   | LineCountMismatch
   | OutdatedLine
   | MissingHeading
   | HeadingMismatch
-  | HeadingCountMismatch;
+  | HeadingCountMismatch
+  | FileNotFound;
+
+// Check configuration used during the check
+export interface CheckConfig {
+  source: string;
+  target: string;
+  checks: {
+    checkLineCount: boolean;
+    checkChangedLines: boolean;
+    strictHeadings: boolean;
+  };
+  output: {
+    json: boolean;
+  };
+}
 
 export interface CheckResult {
   isValid: boolean;
   errors: TranslationError[];
+  config: CheckConfig;
   summary?: {
     totalErrors: number;
     affectedFiles: string[];
-    suggestion: string;
   };
 }

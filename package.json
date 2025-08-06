@@ -9,11 +9,7 @@
     "readme-i18n-sentinel": "./bin/readme-i18n-sentinel.js"
   },
   "exports": {
-    ".": "./dist/index.js",
-    "./config": {
-      "types": "./dist/config.d.ts",
-      "default": "./dist/config.js"
-    }
+    ".": "./dist/index.js"
   },
   "keywords": [
     "i18n",
@@ -50,8 +46,6 @@
   "scripts": {
     "prepare": "husky",
     "help": "bun src/index.ts --help",
-    "help:init": "bun src/index.ts init --help",
-    "help:validate": "bun src/index.ts validate --help",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "prebuild": "bun run generate:schema",
     "build": "tsc -p tsconfig.build.json",
@@ -74,6 +68,7 @@
     "readme-i18n-sentinel": "bun ./dist/index.js",
     "knip": "knip -c knip.config.ts",
     "knip:fix": "knip -c knip.config.ts --fix",
+    "update:docs:readme": "bun run readme-i18n-sentinel",
     "update:docs:knip": "knip -c knip.config.ts --reporter markdown > docs/reports/code-quality/unused-code.md",
     "update:docs:deps-graph": "tsg --tsconfig tsconfig.build.json --LR --md docs/reports/dependencies/deps-graph.md",
     "update:docs:deps-graph:layers": "tsg --tsconfig tsconfig.build.json --LR --abstraction src/domain --abstraction src/application --abstraction src/infrastructure --abstraction src/presentation --md docs/reports/dependencies/layers.md",
@@ -88,14 +83,10 @@
     "deps:update": "bunx ncu -u --deep && bun install && bun run ci"
   },
   "dependencies": {
-    "@clack/prompts": "^0.11.0",
     "commander": "^14.0.0",
-    "cosmiconfig": "^9.0.0",
-    "cosmiconfig-typescript-loader": "^6.1.0",
     "globby": "^14.1.0",
     "simple-git": "^3.28.0",
-    "yaml": "^2.8.0",
-    "zod": "^4.0.14"
+    "zod": "^4.0.15"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.1.3",
@@ -105,9 +96,9 @@
     "@elsikora/git-branch-lint": "^1.1.2",
     "@types/bun": "^1.2.19",
     "@types/node": "^24.2.0",
+    "@ysk8hori/typescript-graph": "^0.26.4",
     "husky": "^9.1.7",
     "knip": "^5.62.0",
-    "typescript": "^5.9.2",
-    "@ysk8hori/typescript-graph": "^0.26.4"
+    "typescript": "^5.9.2"
   }
 }
