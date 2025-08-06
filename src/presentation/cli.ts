@@ -41,13 +41,7 @@ program
 
       // Print check settings if not in JSON mode
       if (!config.output?.json) {
-        console.error("📖 Checking README translations...");
-        if (config.checks?.sectionTitle === true) {
-          console.error(
-            "Settings: sectionTitle=true (Section titles must match source file exactly)",
-          );
-        }
-        console.error(""); // Empty line for readability
+        console.log("📖 Checking README translations...");
       }
 
       // Run checks
