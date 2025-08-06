@@ -9,7 +9,7 @@
 
 [English](README.md) | [日本語](README.ja.md)
 
-A lightweight CLI tool to detect outdated translations in README files using Git diff. Keep your multi-language documentation in sync by catching translation drift early in your development workflow.
+A lightweight CLI tool to detect outdated translations in README files. Keep your multi-language documentation in sync by catching translation drift early in your development workflow.
 
 ## What it does
 

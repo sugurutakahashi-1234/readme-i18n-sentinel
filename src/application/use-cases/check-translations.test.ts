@@ -1,5 +1,4 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { execSync } from "node:child_process";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -20,11 +19,6 @@ describe("checkTranslationsUseCase Integration Tests", () => {
       `check-translations-test-${Date.now()}-${Math.random().toString(36).slice(2)}`,
     );
     await mkdir(testDir, { recursive: true });
-
-    // Initialize git repository
-    execSync("git init", { cwd: testDir });
-    execSync('git config user.email "test@example.com"', { cwd: testDir });
-    execSync('git config user.name "Test User"', { cwd: testDir });
 
     // Change to test directory
     process.chdir(testDir);
@@ -54,10 +48,6 @@ describe("checkTranslationsUseCase Integration Tests", () => {
       "README.ja.md",
       "# インストール\n\nStep 1\nStep 2\n\n## Usage\n\nHow to use\n", // Same line count, wrong heading
     );
-
-    // Commit initial state
-    execSync("git add .");
-    execSync('git commit -m "Initial commit"');
 
     const config: Config = {
       source: "README.md",
@@ -94,10 +84,6 @@ describe("checkTranslationsUseCase Integration Tests", () => {
     await writeFile("README.ja.md", content);
     await writeFile("README.zh-CN.md", content);
 
-    // Commit files
-    execSync("git add .");
-    execSync('git commit -m "Initial commit"');
-
     const config: Config = {
       source: "README.md",
       target: "README.{ja,zh-CN}.md",
@@ -118,7 +104,7 @@ describe("checkTranslationsUseCase Integration Tests", () => {
     expect(result.errors).toHaveLength(0);
   });
 
-  test("handles missing source file", async () => {
+  test("handles missing source file", () => {
     const config: Config = {
       source: "nonexistent.md",
       target: "README.ja.md",
@@ -140,10 +126,6 @@ describe("checkTranslationsUseCase Integration Tests", () => {
 
   test("handles missing target file gracefully", async () => {
     await writeFile("README.md", "# Title\n");
-
-    // Commit source file
-    execSync("git add .");
-    execSync('git commit -m "Initial commit"');
 
     const config: Config = {
       source: "README.md",
@@ -171,10 +153,6 @@ describe("checkTranslationsUseCase Integration Tests", () => {
     // Create files with different line counts and headings
     await writeFile("README.md", "# Title\n\nLine 1\nLine 2\n");
     await writeFile("README.ja.md", "# タイトル\n\nLine 1\n");
-
-    // Commit files
-    execSync("git add .");
-    execSync('git commit -m "Initial commit"');
 
     const config: Config = {
       source: "README.md",
@@ -221,10 +199,6 @@ describe("checkTranslationsUseCase Integration Tests", () => {
     await writeFile("README.md", sourceContent);
     await writeFile("README.ja.md", targetContent);
 
-    // Commit files
-    execSync("git add .");
-    execSync('git commit -m "Initial commit"');
-
     const config: Config = {
       source: "README.md",
       target: "README.ja.md",
@@ -253,10 +227,6 @@ describe("checkTranslationsUseCase Integration Tests", () => {
     // Create targets with different issues
     await writeFile("README.ja.md", "# Title\n\n"); // Missing line
     await writeFile("README.zh-CN.md", "# 标题\n\nContent\n"); // Wrong heading
-
-    // Commit files
-    execSync("git add .");
-    execSync('git commit -m "Initial commit"');
 
     const config: Config = {
       source: "README.md",

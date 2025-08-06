@@ -13,9 +13,7 @@ const config: KnipConfig = {
 
   // Workaround: knip doesn't recognize package.json "exports" field
   // Files listed here contain public APIs exported via package.json
-  ignore: [
-    "src/config.ts", // exports: defineConfig() and ConfigOptions type
-  ],
+  ignore: [],
 
   typescript: {
     config: ["tsconfig.json"],
