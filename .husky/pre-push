@@ -5,4 +5,4 @@ bun run validate:branch
 bun run ci
 
 # Run all tests quietly, show output only on failure
-# bun run test:e2e > /dev/null 2>&1 && echo "✅ All tests passed" || (echo "❌ Tests failed! Re-running with output:" && bun run test:e2e)
+bun run test:e2e > /dev/null 2>&1 && echo "✅ All tests passed" || (echo "❌ Tests failed! Re-running with output:" && bun run test:e2e)

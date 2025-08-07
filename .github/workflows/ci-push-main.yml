@@ -50,3 +50,6 @@ jobs:
           flags: unittests                        # Tag coverage as unit tests
           disable_search: false                   # Enable automatic coverage file search
           report_type: coverage                   # Specify coverage report type
+
+      - name: E2E Tests
+        run: bun run test:e2e
