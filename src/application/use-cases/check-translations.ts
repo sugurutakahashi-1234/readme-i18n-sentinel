@@ -18,7 +18,10 @@ import {
   countLines,
   normalizeContent,
 } from "../../infrastructure/services/content-normalizer.js";
-import { FileValidator } from "../../infrastructure/services/file-validator.js";
+import {
+  expandAndValidateTargets,
+  validateSourceFile,
+} from "../../infrastructure/services/file-validator.js";
 
 /**
  * Main use case for checking translations
@@ -26,11 +29,10 @@ import { FileValidator } from "../../infrastructure/services/file-validator.js";
 export async function checkTranslationsUseCase(
   config: Config,
 ): Promise<CheckResult> {
-  const fileValidator = new FileValidator();
   const errors: TranslationError[] = [];
 
   // Validate source file exists
-  fileValidator.validateSourceFile(config.source);
+  validateSourceFile(config.source);
 
   // Read and normalize source content
   const sourceContent = normalizeContent(readFileSync(config.source, "utf-8"));
@@ -39,7 +41,7 @@ export async function checkTranslationsUseCase(
 
   // Expand and validate target files
   const { targetFiles, errors: validationErrors } =
-    await fileValidator.expandAndValidateTargets(config.target);
+    await expandAndValidateTargets(config.target);
   errors.push(...validationErrors);
 
   // Check each valid target file
