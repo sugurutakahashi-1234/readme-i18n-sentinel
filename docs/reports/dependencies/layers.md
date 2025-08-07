@@ -17,6 +17,7 @@ flowchart LR
     subgraph node//modules["node_modules"]
         node//modules/zod/index.d.cts["zod"]
         node//modules/globby/index.d.ts["globby"]
+        node//modules/diff/libcjs/index.d.ts["diff"]
         node//modules/commander/typings/index.d.ts["commander"]
     end
     src/domain-->node//modules/zod/index.d.cts
@@ -24,6 +25,7 @@ flowchart LR
     src/infrastructure-->src/domain
     src/application-->src/domain
     src/application-->src/infrastructure
+    src/infrastructure-->node//modules/diff/libcjs/index.d.ts
     src/presentation-->node//modules/commander/typings/index.d.ts
     src/presentation-->src/application
     src/presentation-->src/domain

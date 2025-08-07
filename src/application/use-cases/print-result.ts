@@ -3,6 +3,7 @@ import type {
   ErrorType,
   TranslationError,
 } from "../../domain/models/check-result.js";
+import { diffFormatter } from "../../infrastructure/services/diff-formatter.js";
 
 /**
  * Error type display labels
@@ -189,40 +190,29 @@ function formatErrorDetails(error: TranslationError): string[] {
         lines.push(`  In section: ${error.section}`);
       }
 
-      // Show first few lines of expected and actual content for comparison
-      const expectedLines = error.expected.split("\n");
-      const actualLines = error.actual.split("\n");
-      const maxPreviewLines = 3;
-
-      if (error.expected) {
-        lines.push(`  Expected:`);
-        for (
-          let i = 0;
-          i < Math.min(expectedLines.length, maxPreviewLines);
-          i++
-        ) {
-          lines.push(`    ${expectedLines[i]}`);
+      // Show diff between expected and actual
+      if (error.expected && error.actual) {
+        lines.push(`  Diff:`);
+        const diffLines = diffFormatter.formatDiff(
+          error.expected,
+          error.actual,
+        );
+        for (const line of diffLines) {
+          lines.push(`  ${line}`);
         }
-        if (expectedLines.length > maxPreviewLines) {
-          lines.push(
-            `    ... (${expectedLines.length - maxPreviewLines} more lines)`,
-          );
+      } else if (error.expected) {
+        // Missing block in target
+        lines.push(`  Missing code block:`);
+        const missingLines = diffFormatter.formatMissing(error.expected);
+        for (const line of missingLines) {
+          lines.push(`  ${line}`);
         }
-      }
-
-      if (error.actual) {
-        lines.push(`  Found:`);
-        for (
-          let i = 0;
-          i < Math.min(actualLines.length, maxPreviewLines);
-          i++
-        ) {
-          lines.push(`    ${actualLines[i]}`);
-        }
-        if (actualLines.length > maxPreviewLines) {
-          lines.push(
-            `    ... (${actualLines.length - maxPreviewLines} more lines)`,
-          );
+      } else if (error.actual) {
+        // Extra block in target
+        lines.push(`  Unexpected code block:`);
+        const unexpectedLines = diffFormatter.formatUnexpected(error.actual);
+        for (const line of unexpectedLines) {
+          lines.push(`  ${line}`);
         }
       }
 

@@ -68,8 +68,8 @@
     "update:docs:knip": "knip -c knip.config.ts --reporter markdown > docs/reports/code-quality/unused-code.md",
     "update:docs:deps-graph": "tsg --tsconfig tsconfig.build.json --LR --md docs/reports/dependencies/deps-graph.md",
     "update:docs:deps-graph:layers": "tsg --tsconfig tsconfig.build.json --LR --abstraction src/domain --abstraction src/application --abstraction src/infrastructure --abstraction src/presentation --md docs/reports/dependencies/layers.md",
-    "update:docs": "bun run update:docs:readme && bun run update:docs:knip && bun run update:docs:deps-graph && bun run update:docs:deps-graph:layers",
-    "ci": "bun run lint && bun run format && bun run typecheck && bun run lint:check && bun run format:check && bun run build && bun run knip && bun run test:quiet && bun run update:docs",
+    "update:docs": "bun run update:docs:deps-graph && bun run update:docs:deps-graph:layers && bun run update:docs:knip && bun run update:docs:readme",
+    "ci": "bun run lint && bun run format && bun run typecheck && bun run lint:check && bun run format:check && bun run build && bun run test:quiet && bun run update:docs && bun run knip",
     "clean": "rm -rf bun.lock node_modules dist coverage .*.bun-build tsconfig.tsbuildinfo tsconfig.build.tsbuildinfo",
     "clean:install": "bun run clean && bun install",
     "clean:build": "bun run clean:install && bun run ci",
@@ -80,6 +80,7 @@
   },
   "dependencies": {
     "commander": "^14.0.0",
+    "diff": "^8.0.2",
     "globby": "^14.1.0",
     "zod": "^4.0.15"
   },
