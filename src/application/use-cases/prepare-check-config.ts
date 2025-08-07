@@ -30,10 +30,8 @@ export async function prepareCheckConfigUseCase(
       );
     }
 
-    // Use detected files if not specified
-    if (!cliOptions.source) {
-      cliOptions.source = detected.source;
-    }
+    // Use detected files
+    cliOptions.source = detected.source;
     if (!cliOptions.target) {
       // Convert array of targets to glob pattern
       if (detected.targets.length === 1) {
