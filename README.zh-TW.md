@@ -12,7 +12,7 @@
 
 [English](README.md) | [日本語](README.ja.md) | [简体中文](README.zh-CN.md) | [Español](README.es.md) | [Português](README.pt-BR.md) | [한국어](README.ko.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Русский](README.ru.md) | [हिन्दी](README.hi.md) | [العربية](README.ar.md) | [繁體中文](README.zh-TW.md)
 
-一個 CLI 工具，確保您的翻譯 README 檔案與源檔案保持相同的結構，幫助您保持多語言文件同步。
+A CLI tool that validates structural consistency between source and translated README files.
 
 ## What it does
 
