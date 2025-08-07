@@ -5,26 +5,15 @@ import { z } from "zod";
  */
 const ChecksConfigSchema = z
   .object({
-    skip: z
-      .object({
-        sectionStructure: z.boolean().default(false),
-        sectionPosition: z.boolean().default(false),
-        lineCount: z.boolean().default(false),
-      })
-      .default({
-        sectionStructure: false,
-        sectionPosition: false,
-        lineCount: false,
-      }),
-    require: z
-      .object({
-        originalSectionTitles: z.boolean().default(false),
-        originalCodeBlocks: z.boolean().default(false),
-      })
-      .default({
-        originalSectionTitles: false,
-        originalCodeBlocks: false,
-      }),
+    skip: z.object({
+      sectionStructure: z.boolean(),
+      sectionPosition: z.boolean(),
+      lineCount: z.boolean(),
+    }),
+    require: z.object({
+      originalSectionTitles: z.boolean(),
+      originalCodeBlocks: z.boolean(),
+    }),
   })
   .default({
     skip: {
@@ -43,7 +32,7 @@ const ChecksConfigSchema = z
  */
 const OutputConfigSchema = z
   .object({
-    json: z.boolean().default(false),
+    json: z.boolean(),
   })
   .default({
     json: false,
