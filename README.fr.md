@@ -12,22 +12,22 @@
 
 [English](README.md) | [日本語](README.ja.md) | [简体中文](README.zh-CN.md) | [Español](README.es.md) | [Português](README.pt-BR.md) | [한국어](README.ko.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Русский](README.ru.md) | [हिन्दी](README.hi.md) | [العربية](README.ar.md) | [繁體中文](README.zh-TW.md)
 
-翻訳されたREADMEファイルがソースと同じ構造を維持していることを確認するCLIツール。多言語ドキュメントの同期を保つのに役立ちます。
+Un outil CLI qui garantit que vos fichiers README traduits conservent la même structure que l'original, vous aidant à maintenir la documentation multilingue synchronisée.
 
 ## What it does
 
-ソースREADMEと翻訳版を比較して、同じ構造を持っていることを確認します：
-- **セクション数と階層** - 同じレベルで同じ数の見出し
-- **行位置** - セクションが同じ行番号から始まる
-- **行数** - ファイルの総行数が同じ
-- **セクションタイトル** (オプション) - 見出しが元の言語のまま
-- **コードブロック** (オプション) - コード例が変更されていない
+Compare votre README source avec les versions traduites pour s'assurer qu'elles ont la même structure :
+- **Nombre et hiérarchie des sections** - Même nombre de titres aux mêmes niveaux
+- **Positions des lignes** - Les sections commencent aux mêmes numéros de ligne
+- **Nombre de lignes** - Les fichiers ont le même nombre total de lignes
+- **Titres de section** (optionnel) - Les titres restent dans la langue d'origine
+- **Blocs de code** (optionnel) - Les exemples de code restent inchangés
 
-**例:** 英語のREADMEが5つのセクションと150行を持ち、日本語版が4つのセクションと140行の場合、このツールは不一致を検出し、どのセクションが欠けているか、ずれているかを報告します。
+**Exemple :** Si votre README anglais a 5 sections et 150 lignes, mais la version japonaise a 4 sections et 140 lignes, l'outil détectera cette incohérence et signalera quelles sections sont manquantes ou désalignées.
 
 ## Installation
 
-**要件:** Node.js v20 以上
+**Exigences :** Node.js v20 ou supérieur
 
 ```bash
 # Global installation (recommended)
@@ -55,15 +55,15 @@ readme-i18n-sentinel
 
 ### Options
 
-| Option                              | Description                                                           | Default                                                              |
-| ----------------------------------- | --------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| `-s, --source <path>`               | ソースREADMEファイルのパス                                            | `README.md`                                                          |
-| `-t, --target <pattern>`            | ターゲットファイルパターン（glob対応）                                | `{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}` |
-| `--skip-section-structure-check`    | 見出しの数と階層（# vs ##）の検証をスキップ                           | disabled                                                             |
-| `--skip-line-count-check`           | 総行数と見出しの行位置の検証をスキップ                                | disabled                                                             |
-| `--require-original-section-titles` | 見出しテキストの完全一致を要求（例：「## Installation」は英語のまま） | disabled                                                             |
-| `--require-original-code-blocks`    | コードブロックの完全一致を要求（```内のコンテンツを含む）             | disabled                                                             |
-| `--json`                            | CI/CD統合用にJSON形式で結果を出力                                     | disabled                                                             |
+| Option                              | Description                                                                          | Default                                                              |
+| ----------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------- |
+| `-s, --source <path>`               | Chemin du fichier README source                                                      | `README.md`                                                          |
+| `-t, --target <pattern>`            | Motif de fichier cible (compatible glob)                                             | `{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}` |
+| `--skip-section-structure-check`    | Ignorer la validation du nombre de titres et de la hiérarchie (# vs ##)              | disabled                                                             |
+| `--skip-line-count-check`           | Ignorer la validation du nombre total de lignes et des positions des lignes de titre | disabled                                                             |
+| `--require-original-section-titles` | Exiger que le texte du titre corresponde exactement (ex. "## Installation" doit rester en anglais) | disabled                                                             |
+| `--require-original-code-blocks`    | Exiger que les blocs de code correspondent exactement (y compris le contenu dans ```) | disabled                                                             |
+| `--json`                            | Sortie des résultats au format JSON pour l'intégration CI/CD                         | disabled                                                             |
 
 ### Examples
 
@@ -82,14 +82,14 @@ readme-i18n-sentinel --source docs/README.md --target "docs/README.*.md"
 
 ### Husky (Git Hooks)
 
-**シンプルバージョン** - 毎回のコミットで翻訳をチェック：
+**Version simple** - Vérifier les traductions à chaque commit :
 ```bash
 # .husky/pre-commit
 
 npx readme-i18n-sentinel
 ```
 
-**高度なバージョン** - README.mdが変更された時のみチェック＆スキップフラグをサポート：
+**Version avancée** - Vérifier seulement quand README.md est modifié et supporter le drapeau d'ignorer :
 ```bash
 # .husky/commit-msg
 
@@ -110,7 +110,7 @@ if git diff --cached --name-only | grep -q "^${README_FILE}$"; then
 fi
 ```
 
-一時的にチェックをスキップするには（高度なバージョンのみ）、コミットメッセージに `[i18n-skip]` を追加：
+Pour ignorer temporairement la vérification (version avancée seulement), ajoutez `[i18n-skip]` à votre message de commit :
 ```bash
 git commit -m "feat: urgent fix [i18n-skip]"
 ```
@@ -129,7 +129,7 @@ check-translations:
 
 ## Contributing
 
-コントリビューションは歓迎します！お気軽にプルリクエストを送信してください。
+Les contributions sont les bienvenues ! N'hésitez pas à soumettre une Pull Request.
 
 ## License
 

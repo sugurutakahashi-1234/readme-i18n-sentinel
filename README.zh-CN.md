@@ -12,22 +12,22 @@
 
 [English](README.md) | [日本語](README.ja.md) | [简体中文](README.zh-CN.md) | [Español](README.es.md) | [Português](README.pt-BR.md) | [한국어](README.ko.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Русский](README.ru.md) | [हिन्दी](README.hi.md) | [العربية](README.ar.md) | [繁體中文](README.zh-TW.md)
 
-翻訳されたREADMEファイルがソースと同じ構造を維持していることを確認するCLIツール。多言語ドキュメントの同期を保つのに役立ちます。
+一个 CLI 工具，确保您的翻译 README 文件与源文件保持相同的结构，帮助您保持多语言文档同步。
 
 ## What it does
 
-ソースREADMEと翻訳版を比較して、同じ構造を持っていることを確認します：
-- **セクション数と階層** - 同じレベルで同じ数の見出し
-- **行位置** - セクションが同じ行番号から始まる
-- **行数** - ファイルの総行数が同じ
-- **セクションタイトル** (オプション) - 見出しが元の言語のまま
-- **コードブロック** (オプション) - コード例が変更されていない
+比较您的源 README 与翻译版本，确保它们具有相同的结构：
+- **章节数量和层次结构** - 相同级别的相同数量的标题
+- **行位置** - 章节从相同的行号开始
+- **行数** - 文件具有相同的总行数
+- **章节标题**（可选）- 标题保持原始语言
+- **代码块**（可选）- 代码示例保持不变
 
-**例:** 英語のREADMEが5つのセクションと150行を持ち、日本語版が4つのセクションと140行の場合、このツールは不一致を検出し、どのセクションが欠けているか、ずれているかを報告します。
+**示例：** 如果您的英文 README 有 5 个章节和 150 行，但日文版本有 4 个章节和 140 行，该工具将检测到这种不匹配，并报告缺少或未对齐的章节。
 
 ## Installation
 
-**要件:** Node.js v20 以上
+**要求：** Node.js v20 或更高版本
 
 ```bash
 # Global installation (recommended)
@@ -55,15 +55,15 @@ readme-i18n-sentinel
 
 ### Options
 
-| Option                              | Description                                                           | Default                                                              |
-| ----------------------------------- | --------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| `-s, --source <path>`               | ソースREADMEファイルのパス                                            | `README.md`                                                          |
-| `-t, --target <pattern>`            | ターゲットファイルパターン（glob対応）                                | `{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}` |
-| `--skip-section-structure-check`    | 見出しの数と階層（# vs ##）の検証をスキップ                           | disabled                                                             |
-| `--skip-line-count-check`           | 総行数と見出しの行位置の検証をスキップ                                | disabled                                                             |
-| `--require-original-section-titles` | 見出しテキストの完全一致を要求（例：「## Installation」は英語のまま） | disabled                                                             |
-| `--require-original-code-blocks`    | コードブロックの完全一致を要求（```内のコンテンツを含む）             | disabled                                                             |
-| `--json`                            | CI/CD統合用にJSON形式で結果を出力                                     | disabled                                                             |
+| Option                              | Description                                                       | Default                                                              |
+| ----------------------------------- | ----------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `-s, --source <path>`               | 源 README 文件路径                                                 | `README.md`                                                          |
+| `-t, --target <pattern>`            | 目标文件模式（支持 glob）                                           | `{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}` |
+| `--skip-section-structure-check`    | 跳过标题数量和层次结构验证（# vs ##）                                | disabled                                                             |
+| `--skip-line-count-check`           | 跳过总行数和标题行位置验证                                          | disabled                                                             |
+| `--require-original-section-titles` | 要求标题文本完全匹配（例如，"## Installation" 必须保持英文）           | disabled                                                             |
+| `--require-original-code-blocks`    | 要求代码块完全匹配（包括 ``` 内的内容）                              | disabled                                                             |
+| `--json`                            | 以 JSON 格式输出结果，用于 CI/CD 集成                               | disabled                                                             |
 
 ### Examples
 
@@ -82,14 +82,14 @@ readme-i18n-sentinel --source docs/README.md --target "docs/README.*.md"
 
 ### Husky (Git Hooks)
 
-**シンプルバージョン** - 毎回のコミットで翻訳をチェック：
+**简单版本** - 每次提交时检查翻译：
 ```bash
 # .husky/pre-commit
 
 npx readme-i18n-sentinel
 ```
 
-**高度なバージョン** - README.mdが変更された時のみチェック＆スキップフラグをサポート：
+**高级版本** - 仅在修改 README.md 时检查并支持跳过标志：
 ```bash
 # .husky/commit-msg
 
@@ -110,7 +110,7 @@ if git diff --cached --name-only | grep -q "^${README_FILE}$"; then
 fi
 ```
 
-一時的にチェックをスキップするには（高度なバージョンのみ）、コミットメッセージに `[i18n-skip]` を追加：
+要临时跳过检查（仅限高级版本），请在提交消息中添加 `[i18n-skip]`：
 ```bash
 git commit -m "feat: urgent fix [i18n-skip]"
 ```
@@ -129,7 +129,7 @@ check-translations:
 
 ## Contributing
 
-コントリビューションは歓迎します！お気軽にプルリクエストを送信してください。
+欢迎贡献！请随时提交 Pull Request。
 
 ## License
 
