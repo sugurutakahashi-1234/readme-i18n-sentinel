@@ -9,31 +9,18 @@
 
 [English](README.md) | [日本語](README.ja.md)
 
-A lightweight CLI tool to detect outdated translations in README files. Keep your multi-language documentation in sync by catching translation drift early in your development workflow.
+A CLI tool that ensures your translated README files maintain the same structure as the source, helping you keep multi-language documentation in sync.
 
 ## What it does
 
-Detects when your translated README files are out of sync with the source file by checking:
-- Section structure (count and hierarchy)
-- Section positions (line numbers)
-- Section titles (optional exact match)
-- Total line count
+Compares your source README with translated versions to ensure they have the same structure:
+- **Section count & hierarchy** - Same number of headings at the same levels
+- **Line positions** - Sections start at the same line numbers
+- **Line count** - Files have the same total number of lines
+- **Section titles** (optional) - Headings remain in original language
+- **Code blocks** (optional) - Code examples stay unchanged
 
-**Example scenario:**
-
-You update your English README:
-```diff
-- ## Installation
-+ ## Installation
-
-- Install using npm:
-+ Install using npm or yarn:
-```
-
-But forget to update the Japanese version. Running `readme-i18n-sentinel` will catch this:
-```
-❌ README.ja.md: Line 3 not updated
-```
+**Example:** If your English README has 5 sections and 150 lines, but the Japanese version has 4 sections and 140 lines, the tool will detect this mismatch and report which sections are missing or misaligned.
 
 ## Installation
 
@@ -56,178 +43,86 @@ npx readme-i18n-sentinel
 # Just run without any arguments - it will auto-detect README files
 readme-i18n-sentinel
 
-# The tool will automatically:
-# 1. Find README.md as the source
-# 2. Find all README.*.md files as translations
-# 3. Check if translations are up to date
+# Automatically checks:
+# - Source: README.md
+# - Targets: README.*.md, docs/README.*.md, docs/*/README.md, docs/*/README.*.md
 ```
-
 
 ## Usage
 
-### Auto-detection (Recommended)
+### Options
+
+| Option                              | Description                                                                           | Default                                                              |
+| ----------------------------------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `-s, --source <path>`               | Source README file path                                                              | `README.md`                                                          |
+| `-t, --target <pattern>`            | Target file pattern (glob supported)                                                  | `{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}` |
+| `--skip-section-structure-check`    | Skip validation of heading count and hierarchy (# vs ##)                              | disabled                                                             |
+| `--skip-line-count-check`           | Skip validation of total line count and heading line positions                        | disabled                                                             |
+| `--require-original-section-titles` | Require heading text to match exactly (e.g., "## Installation" must stay in English)  | disabled                                                             |
+| `--require-original-code-blocks`    | Require code blocks to match exactly (including content inside ```)                   | disabled                                                             |
+| `--json`                            | Output results in JSON format for CI/CD integration                                   | disabled                                                             |
+
+### Examples
 
 ```bash
-# Just run without any arguments
+# Basic usage with auto-detection
 readme-i18n-sentinel
 
-# The above is equivalent to:
-readme-i18n-sentinel \
-  --source "README.md" \
-  --target "{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}"
-```
-
-### Command Line Options
-
-```bash
-# Skip specific checks
-readme-i18n-sentinel --skip-line-count-check
-
-# JSON output for CI integration
+# JSON output for CI/CD
 readme-i18n-sentinel --json
 
-# Specify custom paths
+# Custom paths
 readme-i18n-sentinel --source docs/README.md --target "docs/README.*.md"
-
-# Combine multiple options
-readme-i18n-sentinel --json --require-original-section-titles
 ```
 
-Available options:
-- `-s, --source <path>` - Source README file path
-- `-t, --target <pattern>` - Target file pattern (glob supported, can be specified multiple times)
-- `--skip-section-structure-check` - Skip section structure validation (count and hierarchy)
-- `--skip-line-count-check` - Skip line count and section position validation
-- `--require-original-section-titles` - Require section titles to remain in original language
-- `--require-original-code-blocks` - Require code blocks to remain exactly as original
-- `--json` - Output in JSON format
-- `-v, --version` - Display version
-- `--help` - Show help
+## Integration
 
-### Common Use Cases
+### Husky (Git Hooks)
 
-1. **Check translations before commit (with Husky)**
-   ```bash
-   # .husky/commit-msg
-   
-   # Check README translations if README.md is modified
-   README_FILE='README.md'
-   I18N_SKIP_FLAG='[i18n-skip]'  # You can customize this flag string
-   
-   if git diff --cached --name-only | grep -q "^${README_FILE}$"; then
-     if ! grep -qF "${I18N_SKIP_FLAG}" "$1"; then
-       echo "📖 Checking README translations..."
-       if ! npx readme-i18n-sentinel; then
-         echo ""
-         echo "❌ README translation check failed"
-         echo ""
-         echo "The translations in README.*.md files need to be updated."
-         echo "Please fix the issues above or add '${I18N_SKIP_FLAG}' to your commit message to skip this check."
-         echo ""
-         echo "Example: feat: update documentation ${I18N_SKIP_FLAG}"
-         echo ""
-         exit 1
-       fi
-     else
-       echo "📖 Skipping README translation check due to ${I18N_SKIP_FLAG} flag"
-     fi
-   fi
-   ```
-
-2. **CI/CD Pipeline**
-   ```yaml
-   # GitHub Actions example
-   - name: Check README translations
-     run: npx readme-i18n-sentinel
-   ```
-
-3. **Skip check temporarily**
-   ```bash
-   # Add [i18n-skip] to your commit message
-   git commit -m "feat: update deps [i18n-skip]"
-   ```
-   
-   This is useful when:
-   - Making urgent hotfixes where translations can be updated later
-   - Updating non-content changes (formatting, code examples)
-   - Working on documentation incrementally
-   
-   **Note:** Remember to update translations in a follow-up commit!
-
-## Commands
-
-### `readme-i18n-sentinel` (default)
-
-Check translation files for outdated content.
-
+**Simple version** - Check translations on every commit:
 ```bash
-readme-i18n-sentinel [options]
+# .husky/pre-commit
+
+npx readme-i18n-sentinel
 ```
 
-Options:
-- `-s, --source <path>` - Source README file path
-- `-t, --target <pattern>` - Target file pattern
-- `--skip-section-structure-check` - Skip section structure check
-- `--skip-line-count-check` - Skip line count and section position check
-- `--require-original-section-titles` - Keep headings in original language
-- `--require-original-code-blocks` - Keep code blocks unchanged
-- `--json` - Output in JSON format
-- `-v, --version` - Display version
-- `-h, --help` - Show help
-
-### `readme-i18n-sentinel init`
-
-Create a configuration file interactively.
-
+**Advanced version** - Only check when README.md is modified & support skip flag:
 ```bash
-readme-i18n-sentinel init [options]
+# .husky/commit-msg
+
+README_FILE='README.md'
+I18N_SKIP_FLAG='[i18n-skip]'
+
+if git diff --cached --name-only | grep -q "^${README_FILE}$"; then
+  if ! grep -qF "${I18N_SKIP_FLAG}" "$1"; then
+    if ! npx readme-i18n-sentinel; then
+      echo "❌ README translation check failed"
+      echo "Please fix the issues above or add '${I18N_SKIP_FLAG}' to your commit message to skip this check."
+      echo "Example: feat: update documentation ${I18N_SKIP_FLAG}"
+      exit 1
+    fi
+  else
+    echo "📖 Skipping README translation check due to ${I18N_SKIP_FLAG} flag"
+  fi
+fi
 ```
 
-Options:
-- `-y, --yes` - Skip prompts and use defaults
-
-### `readme-i18n-sentinel validate`
-
-Validate configuration file.
-
+To skip the check temporarily (advanced version only), add `[i18n-skip]` to your commit message:
 ```bash
-readme-i18n-sentinel validate [config-file]
+git commit -m "feat: urgent fix [i18n-skip]"
 ```
 
-## Check Types
+### CI/CD
 
-### Section Structure Check (`sectionStructure`)
-**Default: enabled**  
-Ensures sections have the same count, hierarchy, and order. Checks that:
-- Same number of headings exist
-- Heading levels match (e.g., `#` vs `##`)
-- Sections appear in the same order
+```yaml
+# GitHub Actions
+- name: Check README translations
+  run: npx readme-i18n-sentinel
 
-### Section Position Check
-**Default: enabled (disabled when line count check is skipped)**  
-Verifies that each section starts at the same line number. Helps identify where content has expanded or contracted. This check is automatically skipped when `--skip-line-count-check` is used.
-
-### Heading Translation Check (`requireOriginalSectionTitles`)
-**Default: disabled**  
-Requires section titles/headers to remain in original language (no translation). Useful for:
-- Maintaining URL anchors
-- Ensuring consistent navigation
-- Projects requiring untranslated headings
-
-### Code Block Check (`requireOriginalCodeBlocks`)
-**Default: disabled**  
-Requires code blocks to remain exactly as original (no changes).
-
-### Line Count Check (`lineCount`)
-**Default: enabled**  
-Ensures source and translation files have the same total number of lines and section positions. When skipped with `--skip-line-count-check`, both line count and section position checks are disabled.
-
-## Tips
-
-- **Start small**: Begin with just default checks, then add stricter requirements gradually
-- **Use with Git hooks**: Integrate with Husky to catch issues before commit
-- **CI Integration**: Add to your CI pipeline to ensure PRs don't break translations
-- **Heading rule**: Use `--require-original-section-titles` to keep headings in original language
+# GitLab CI
+check-translations:
+  script: npx readme-i18n-sentinel
+```
 
 ## Contributing
 

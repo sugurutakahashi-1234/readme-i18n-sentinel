@@ -9,229 +9,124 @@
 
 [English](README.md) | [日本語](README.ja.md)
 
-READMEファイルの古い翻訳を検出する軽量なCLIツール。開発ワークフローの早い段階で翻訳のずれをキャッチし、多言語ドキュメントを同期させ続けます。
+翻訳されたREADMEファイルがソースと同じ構造を維持していることを確認するCLIツール。多言語ドキュメントの同期を保つのに役立ちます。
 
 ## What it does
 
-ソースファイルと翻訳されたREADMEファイルが同期していないことを以下の項目をチェックして検出します：
-- セクション構造（数と階層）
-- セクション位置（行番号）
-- セクションタイトル（オプションで完全一致）
-- 総行数
+ソースREADMEと翻訳版を比較して、同じ構造を持っていることを確認します：
+- **セクション数と階層** - 同じレベルで同じ数の見出し
+- **行位置** - セクションが同じ行番号から始まる
+- **行数** - ファイルの総行数が同じ
+- **セクションタイトル** (オプション) - 見出しが元の言語のまま
+- **コードブロック** (オプション) - コード例が変更されていない
 
-**使用例：**
-
-英語のREADMEを更新した場合：
-```diff
-- ## Installation
-+ ## Installation
-
-- Install using npm:
-+ Install using npm or yarn:
-```
-
-しかし、日本語版の更新を忘れた場合、`readme-i18n-sentinel`を実行すると以下のようにキャッチします：
-```
-❌ README.ja.md: Line 3 not updated
-```
+**例:** 英語のREADMEが5つのセクションと150行を持ち、日本語版が4つのセクションと140行の場合、このツールは不一致を検出し、どのセクションが欠けているか、ずれているかを報告します。
 
 ## Installation
 
 **要件:** Node.js v20 以上
 
 ```bash
-# グローバルインストール（推奨）
+# Global installation (recommended)
 npm install -g readme-i18n-sentinel
 
-# プロジェクト固有のインストール
+# Project-specific installation
 npm install --save-dev readme-i18n-sentinel
 
-# または npx で直接使用
+# Or use directly with npx
 npx readme-i18n-sentinel
 ```
 
 ## Quick Start
 
 ```bash
-# 引数なしで実行 - READMEファイルを自動検出します
+# Just run without any arguments - it will auto-detect README files
 readme-i18n-sentinel
 
-# ツールは自動的に以下を行います：
-# 1. README.mdをソースとして検出
-# 2. すべてのREADME.*.mdファイルを翻訳として検出
-# 3. 翻訳が最新かどうかをチェック
+# Automatically checks:
+# - Source: README.md
+# - Targets: README.*.md, docs/README.*.md, docs/*/README.md, docs/*/README.*.md
 ```
-
 
 ## Usage
 
-### Auto-detection (Recommended)
+### Options
+
+| Option                              | Description                                                                           | Default                                                              |
+| ----------------------------------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `-s, --source <path>`               | ソースREADMEファイルのパス                                                             | `README.md`                                                          |
+| `-t, --target <pattern>`            | ターゲットファイルパターン（glob対応）                                                   | `{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}` |
+| `--skip-section-structure-check`    | 見出しの数と階層（# vs ##）の検証をスキップ                                              | disabled                                                             |
+| `--skip-line-count-check`           | 総行数と見出しの行位置の検証をスキップ                                                    | disabled                                                             |
+| `--require-original-section-titles` | 見出しテキストの完全一致を要求（例：「## Installation」は英語のまま）                        | disabled                                                             |
+| `--require-original-code-blocks`    | コードブロックの完全一致を要求（```内のコンテンツを含む）                                   | disabled                                                             |
+| `--json`                            | CI/CD統合用にJSON形式で結果を出力                                                       | disabled                                                             |
+
+### Examples
 
 ```bash
-# 引数なしで実行
+# Basic usage with auto-detection
 readme-i18n-sentinel
 
-# 上記は以下と同等：
-readme-i18n-sentinel \
-  --source "README.md" \
-  --target "{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}"
-```
-
-### Command Line Options
-
-```bash
-# 特定のチェックをスキップ
-readme-i18n-sentinel --skip-line-count-check
-
-# CI統合用のJSON出力
+# JSON output for CI/CD
 readme-i18n-sentinel --json
 
-# カスタムパスを指定
+# Custom paths
 readme-i18n-sentinel --source docs/README.md --target "docs/README.*.md"
-
-# 複数のオプションを組み合わせる
-readme-i18n-sentinel --json --require-original-section-titles
 ```
 
-利用可能なオプション：
-- `-s, --source <path>` - ソースREADMEファイルパス
-- `-t, --target <pattern>` - ターゲットファイルパターン（globサポート、複数回指定可）
-- `--skip-section-structure-check` - セクション構造検証をスキップ（数と階層）
-- `--skip-line-count-check` - 行数とセクション位置検証をスキップ
-- `--require-original-section-titles` - セクションタイトルを元の言語のまま保持
-- `--require-original-code-blocks` - コードブロックを完全に元のまま保持
-- `--json` - JSON形式で出力
-- `-v, --version` - バージョンを表示
-- `--help` - ヘルプを表示
+## Integration
 
-### Common Use Cases
+### Husky (Git Hooks)
 
-1. **コミット前に翻訳をチェック（Huskyと連携）**
-   ```bash
-   # .husky/commit-msg
-   
-   # README.mdが変更された場合、README翻訳をチェック
-   README_FILE='README.md'
-   I18N_SKIP_FLAG='[i18n-skip]'  # このフラグ文字列はカスタマイズ可能
-   
-   if git diff --cached --name-only | grep -q "^${README_FILE}$"; then
-     if ! grep -qF "${I18N_SKIP_FLAG}" "$1"; then
-       echo "📖 Checking README translations..."
-       if ! npx readme-i18n-sentinel; then
-         echo ""
-         echo "❌ README translation check failed"
-         echo ""
-         echo "The translations in README.*.md files need to be updated."
-         echo "Please fix the issues above or add '${I18N_SKIP_FLAG}' to your commit message to skip this check."
-         echo ""
-         echo "Example: feat: update documentation ${I18N_SKIP_FLAG}"
-         echo ""
-         exit 1
-       fi
-     else
-       echo "📖 Skipping README translation check due to ${I18N_SKIP_FLAG} flag"
-     fi
-   fi
-   ```
-
-2. **CI/CDパイプライン**
-   ```yaml
-   # GitHub Actionsの例
-   - name: Check README translations
-     run: npx readme-i18n-sentinel
-   ```
-
-3. **一時的にチェックをスキップ**
-   ```bash
-   # コミットメッセージに[i18n-skip]を追加
-   git commit -m "feat: update deps [i18n-skip]"
-   ```
-   
-   以下の場合に便利です：
-   - 翻訳を後で更新できる緊急のホットフィックスを行う場合
-   - コンテンツ以外の変更（フォーマット、コード例）を更新する場合
-   - ドキュメントを段階的に作業する場合
-   
-   **注意:** フォローアップコミットで翻訳を更新することを忘れないでください！
-
-## Commands
-
-### `readme-i18n-sentinel` (default)
-
-古いコンテンツの翻訳ファイルをチェックします。
-
+**シンプルバージョン** - 毎回のコミットで翻訳をチェック：
 ```bash
-readme-i18n-sentinel [options]
+# .husky/pre-commit
+
+npx readme-i18n-sentinel
 ```
 
-オプション：
-- `-s, --source <path>` - ソースREADMEファイルパス
-- `-t, --target <pattern>` - ターゲットファイルパターン
-- `--skip-section-structure-check` - セクション構造チェックをスキップ
-- `--skip-line-count-check` - 行数とセクション位置チェックをスキップ
-- `--require-original-section-titles` - 見出しを元の言語のまま保持
-- `--require-original-code-blocks` - コードブロックを変更しない
-- `--json` - JSON形式で出力
-- `-v, --version` - バージョンを表示
-- `-h, --help` - ヘルプを表示
-
-### `readme-i18n-sentinel init`
-
-対話的に設定ファイルを作成します。
-
+**高度なバージョン** - README.mdが変更された時のみチェック＆スキップフラグをサポート：
 ```bash
-readme-i18n-sentinel init [options]
+# .husky/commit-msg
+
+README_FILE='README.md'
+I18N_SKIP_FLAG='[i18n-skip]'
+
+if git diff --cached --name-only | grep -q "^${README_FILE}$"; then
+  if ! grep -qF "${I18N_SKIP_FLAG}" "$1"; then
+    if ! npx readme-i18n-sentinel; then
+      echo "❌ README translation check failed"
+      echo "Please fix the issues above or add '${I18N_SKIP_FLAG}' to your commit message to skip this check."
+      echo "Example: feat: update documentation ${I18N_SKIP_FLAG}"
+      exit 1
+    fi
+  else
+    echo "📖 Skipping README translation check due to ${I18N_SKIP_FLAG} flag"
+  fi
+fi
 ```
 
-オプション：
-- `-y, --yes` - プロンプトをスキップしてデフォルトを使用
-
-### `readme-i18n-sentinel validate`
-
-設定ファイルを検証します。
-
+一時的にチェックをスキップするには（高度なバージョンのみ）、コミットメッセージに `[i18n-skip]` を追加：
 ```bash
-readme-i18n-sentinel validate [config-file]
+git commit -m "feat: urgent fix [i18n-skip]"
 ```
 
-## Check Types
+### CI/CD
 
-### Section Structure Check (`sectionStructure`)
-**デフォルト: 有効**  
-セクションの数、階層、順序が一致していることを確認します。以下をチェック：
-- 同じ数の見出しが存在するか
-- 見出しレベルが一致するか（例：`#` vs `##`）
-- セクションが同じ順序で出現するか
+```yaml
+# GitHub Actions
+- name: Check README translations
+  run: npx readme-i18n-sentinel
 
-### Section Position Check
-**デフォルト: 有効（行数チェックがスキップされると無効）**  
-各セクションが同じ行番号から始まることを確認します。コンテンツがどこで拡大・縮小したかを特定できます。`--skip-line-count-check`を使用すると、このチェックは自動的にスキップされます。
-
-### Heading Translation Check (`requireOriginalSectionTitles`)
-**デフォルト: 無効**  
-セクションタイトル/見出しを元の言語のまま保持することを要求（翻訳不可）。以下の場合に有用：
-- URLアンカーの維持
-- 一貫したナビゲーションの確保
-- 見出しを翻訳しないプロジェクト
-
-### Code Block Check (`requireOriginalCodeBlocks`)
-**デフォルト: 無効**  
-コードブロックを完全に元のまま保持することを要求（変更不可）。
-
-### Line Count Check (`lineCount`)
-**デフォルト: 有効**  
-ソースファイルと翻訳ファイルの総行数とセクション位置が一致していることを確認します。`--skip-line-count-check`でスキップすると、行数とセクション位置の両方のチェックが無効になります。
-
-## Tips
-
-- **小さく始める**: デフォルトのチェックだけから始めて、徐々により厳格な要求を追加
-- **Gitフックと連携**: Huskyと統合してコミット前に問題をキャッチ
-- **CI統合**: CIパイプラインに追加してPRが翻訳を壊さないようにする
-- **見出しルール**: `--require-original-section-titles`を使用して見出しを元の言語のまま保持
+# GitLab CI
+check-translations:
+  script: npx readme-i18n-sentinel
+```
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+コントリビューションは歓迎します！お気軽にプルリクエストを送信してください。
 
 ## License
 

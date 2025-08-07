@@ -20,26 +20,29 @@ program
   .option("-s, --source <path>", "source README file path", "README.md")
   .option(
     "-t, --target <pattern>",
-    "target file pattern (glob supported)",
+    "target file pattern, glob supported",
     "{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}",
   )
   .option(
     "--skip-section-structure-check",
-    "skip section structure validation (count and hierarchy)",
+    "skip validation of heading count and hierarchy (# vs ##) (default: disabled)",
   )
   .option(
     "--skip-line-count-check",
-    "skip line count and section position validation",
+    "skip validation of total line count and heading line positions (default: disabled)",
   )
   .option(
     "--require-original-section-titles",
-    "require section titles to remain in original language",
+    "require heading text to match exactly (e.g., ## Installation must stay in English) (default: disabled)",
   )
   .option(
     "--require-original-code-blocks",
-    "require code blocks to remain exactly as original",
+    "require code blocks to match exactly (including content inside ```) (default: disabled)",
   )
-  .option("--json", "output in JSON format")
+  .option(
+    "--json",
+    "output results in JSON format for CI/CD integration (default: disabled)",
+  )
   .action(async (options) => {
     try {
       // Parse and prepare config
@@ -68,34 +71,14 @@ program
     "after",
     `
 Examples:
-  # Auto-detect README files (README.md → README.*.md)
+  # Basic usage with auto-detection
   $ ${getPackageName()}
   
-  # Skip specific checks
-  $ ${getPackageName()} --skip-line-count-check
-  
-  # Require headings to remain in original language
-  $ ${getPackageName()} --require-original-section-titles
-  
-  # Require code blocks to remain unchanged
-  $ ${getPackageName()} --require-original-code-blocks
-  
-  # JSON output
+  # JSON output for CI/CD
   $ ${getPackageName()} --json
   
-  # Specify custom paths
+  # Custom paths
   $ ${getPackageName()} --source docs/README.md --target "docs/README.*.md"
-  
-  # Multiple options
-  $ ${getPackageName()} --source README.md --target "README.*.md" --require-original-section-titles
-
-Auto-detection:
-  When no CLI arguments are provided, the tool will:
-  - Source: README.md
-  - Target: {README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}
-  
-  This is equivalent to:
-  $ ${getPackageName()} --source "README.md" --target "{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}"
   
 For more information:
   https://github.com/sugurutakahashi-1234/${getPackageName()}
