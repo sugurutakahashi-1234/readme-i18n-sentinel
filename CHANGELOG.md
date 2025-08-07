@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.0.0](https://github.com/sugurutakahashi-1234/readme-i18n-sentinel/compare/v0.2.0...v1.0.0) (2025-08-07)
+
+
+### ✨ Features
+
+* add manual force version bump workflow ([#9](https://github.com/sugurutakahashi-1234/readme-i18n-sentinel/issues/9)) ([c608a98](https://github.com/sugurutakahashi-1234/readme-i18n-sentinel/commit/c608a98170ca09b57cf9cfcfa09e48588e4bfea5))
+
+
+### ♻️ Code Refactoring
+
+* improve READMEs and simplify scripts ([#6](https://github.com/sugurutakahashi-1234/readme-i18n-sentinel/issues/6)) ([87c3487](https://github.com/sugurutakahashi-1234/readme-i18n-sentinel/commit/87c348733375a0b0a3859cac2fc8b6437dc2dcf7))
+* streamline translation checking logic ([#8](https://github.com/sugurutakahashi-1234/readme-i18n-sentinel/issues/8)) ([7aafbcc](https://github.com/sugurutakahashi-1234/readme-i18n-sentinel/commit/7aafbccb5b70ade9f691853ccb8b63da24858935))
+
+
+### 🔧 Maintenance
+
+* bump version to 1.0.0 ([c3183f2](https://github.com/sugurutakahashi-1234/readme-i18n-sentinel/commit/c3183f266d7cecbdf708c007e739f35f4bd52b39))
+
 ## [0.2.0](https://github.com/sugurutakahashi-1234/readme-i18n-sentinel/compare/v0.1.0...v0.2.0) (2025-08-07)
 
 
