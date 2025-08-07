@@ -1,8 +1,5 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
-import {
-  detectReadmeFiles,
-  shouldUseAutoDetection,
-} from "./readme-detector.js";
+import { detectReadmeFiles } from "./readme-detector.js";
 
 describe("readme-detector", () => {
   describe("detectReadmeFiles", () => {
@@ -86,16 +83,6 @@ describe("readme-detector", () => {
 
       expect(result.source).toBeNull();
       expect(result.targets).toEqual([]);
-    });
-  });
-
-  describe("shouldUseAutoDetection", () => {
-    test("returns true when no CLI source", () => {
-      expect(shouldUseAutoDetection(false)).toBe(true);
-    });
-
-    test("returns false when CLI source is specified", () => {
-      expect(shouldUseAutoDetection(true)).toBe(false);
     });
   });
 });

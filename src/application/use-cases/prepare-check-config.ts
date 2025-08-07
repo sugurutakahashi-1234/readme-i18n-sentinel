@@ -1,9 +1,6 @@
 import type { RawCLIOptions } from "../../domain/models/cli-options.js";
 import type { Config } from "../../domain/models/config.js";
-import {
-  detectReadmeFiles,
-  shouldUseAutoDetection,
-} from "../../infrastructure/services/readme-detector.js";
+import { detectReadmeFiles } from "../../infrastructure/services/readme-detector.js";
 
 /**
  * Prepare and validate configuration for translation checks
@@ -17,7 +14,7 @@ export async function prepareCheckConfigUseCase(
   cliOptions: RawCLIOptions,
 ): Promise<Config> {
   // Check if we should use auto-detection
-  if (shouldUseAutoDetection(!!cliOptions.source)) {
+  if (!cliOptions.source) {
     // Auto-detect README files
     const detected = await detectReadmeFiles();
 

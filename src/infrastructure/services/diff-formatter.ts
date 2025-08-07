@@ -1,9 +1,9 @@
 import { diffLines } from "diff";
 
 /**
- * Split content into lines properly handling trailing newlines
+ * Format lines with a prefix, handling trailing newlines properly
  */
-function splitLines(content: string): string[] {
+function formatContentWithPrefix(content: string, prefix: string): string[] {
   const lines = content.split("\n");
 
   // Remove only the last empty line that comes from split
@@ -12,13 +12,6 @@ function splitLines(content: string): string[] {
     lines.pop();
   }
 
-  return lines;
-}
-
-/**
- * Format lines with a prefix
- */
-function formatLinesWithPrefix(lines: string[], prefix: string): string[] {
   return lines.map((line) => `${prefix}${line}`);
 }
 
@@ -33,18 +26,8 @@ export function formatDiff(expected: string, actual: string): string[] {
   const changes = diffLines(expected, actual);
 
   for (const change of changes) {
-    const changeLines = splitLines(change.value);
-
-    let prefix: string;
-    if (change.added) {
-      prefix = "+ ";
-    } else if (change.removed) {
-      prefix = "- ";
-    } else {
-      prefix = "  ";
-    }
-
-    const formattedLines = formatLinesWithPrefix(changeLines, prefix);
+    const prefix = change.added ? "+ " : change.removed ? "- " : "  ";
+    const formattedLines = formatContentWithPrefix(change.value, prefix);
     lines.push(...formattedLines);
   }
 
@@ -57,8 +40,7 @@ export function formatDiff(expected: string, actual: string): string[] {
  * @returns Array of formatted lines showing what's missing
  */
 export function formatMissing(content: string): string[] {
-  const contentLines = splitLines(content);
-  return formatLinesWithPrefix(contentLines, "- ");
+  return formatContentWithPrefix(content, "- ");
 }
 
 /**
@@ -67,6 +49,5 @@ export function formatMissing(content: string): string[] {
  * @returns Array of formatted lines showing what's unexpected
  */
 export function formatUnexpected(content: string): string[] {
-  const contentLines = splitLines(content);
-  return formatLinesWithPrefix(contentLines, "+ ");
+  return formatContentWithPrefix(content, "+ ");
 }

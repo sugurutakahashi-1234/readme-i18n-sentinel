@@ -48,16 +48,3 @@ export async function detectReadmeFiles(): Promise<ReadmeDetectionResult> {
     targets: targetFiles,
   };
 }
-
-/**
- * Check if auto-detection should be used
- *
- * Auto-detection is used when:
- * - No source is specified via CLI
- *
- * @param hasCliSource - Whether source was specified via CLI
- * @returns Whether to use auto-detection
- */
-export function shouldUseAutoDetection(hasCliSource: boolean): boolean {
-  return !hasCliSource;
-}
