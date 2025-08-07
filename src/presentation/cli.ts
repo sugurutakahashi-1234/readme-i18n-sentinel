@@ -1,11 +1,8 @@
 #!/usr/bin/env bun
 
-import { Command } from "commander";
+import { Command } from "@commander-js/extra-typings";
 import { checkTranslationsUseCase } from "../application/use-cases/check-translations.js";
-import {
-  prepareCheckConfigUseCase,
-  type RawCLIOptions,
-} from "../application/use-cases/prepare-check-config.js";
+import { prepareCheckConfigUseCase } from "../application/use-cases/prepare-check-config.js";
 import { printResultUseCase } from "../application/use-cases/print-result.js";
 import {
   getDescription,
@@ -41,11 +38,10 @@ program
     "require code blocks to remain exactly as original",
   )
   .option("--json", "output in JSON format")
-  .action(async (options: unknown) => {
+  .action(async (options) => {
     try {
       // Parse and prepare config
-      const cliOptions = options as RawCLIOptions;
-      const config = await prepareCheckConfigUseCase(cliOptions);
+      const config = await prepareCheckConfigUseCase(options);
 
       // Print check settings if not in JSON mode
       if (!config.output?.json) {

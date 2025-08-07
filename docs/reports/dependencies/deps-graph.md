@@ -45,7 +45,7 @@ flowchart LR
         node//modules/zod/index.d.cts["zod"]
         node//modules/globby/index.d.ts["globby"]
         node//modules/diff/libcjs/index.d.ts["diff"]
-        node//modules/commander/typings/index.d.ts["commander"]
+        node//modules///commander//js/extra//typings/index.d.ts["@commander-js/extra-typings"]
     end
     src/domain/models/config.ts-->node//modules/zod/index.d.cts
     src/domain/services/translation//checker.ts-->src/domain/models/check//result.ts
@@ -64,7 +64,7 @@ flowchart LR
     src/infrastructure/services/diff//formatter.ts-->node//modules/diff/libcjs/index.d.ts
     src/application/use//cases/print//result.ts-->src/domain/models/check//result.ts
     src/application/use//cases/print//result.ts-->src/infrastructure/services/diff//formatter.ts
-    src/presentation/cli.ts-->node//modules/commander/typings/index.d.ts
+    src/presentation/cli.ts-->node//modules///commander//js/extra//typings/index.d.ts
     src/presentation/cli.ts-->src/application/use//cases/check//translations.ts
     src/presentation/cli.ts-->src/application/use//cases/prepare//check//config.ts
     src/presentation/cli.ts-->src/application/use//cases/print//result.ts

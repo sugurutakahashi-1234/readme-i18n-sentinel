@@ -13,8 +13,8 @@ export async function prepareCheckConfigUseCase(
 ): Promise<Config> {
   // Convert CLI options to config format
   const config: Config = {
-    source: cliOptions.source || "",
-    target: cliOptions.target || "",
+    source: cliOptions.source ?? "",
+    target: cliOptions.target ?? "",
     checks: {
       skip: {
         sectionStructure: cliOptions.skipSectionStructureCheck ?? false,
@@ -40,5 +40,3 @@ export async function prepareCheckConfigUseCase(
 
   return config;
 }
-
-export type { RawCLIOptions } from "../../domain/models/cli-options.js";
