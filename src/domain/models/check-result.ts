@@ -100,11 +100,15 @@ export interface CheckConfig {
   source: string;
   target: string;
   checks: {
-    sectionStructure: boolean;
-    sectionPosition: boolean;
-    sectionTitle: boolean;
-    lineCount: boolean;
-    codeBlock: boolean;
+    skip: {
+      sectionStructure: boolean;
+      sectionPosition: boolean;
+      lineCount: boolean;
+    };
+    require: {
+      originalSectionTitles: boolean;
+      originalCodeBlocks: boolean;
+    };
   };
   output: {
     json: boolean;

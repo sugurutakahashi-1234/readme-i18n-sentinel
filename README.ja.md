@@ -79,8 +79,8 @@ readme-i18n-sentinel
 ### Command Line Options
 
 ```bash
-# 特定のチェックを無効化
-readme-i18n-sentinel --no-line-count
+# 特定のチェックをスキップ
+readme-i18n-sentinel --skip-line-count-check
 
 # CI統合用のJSON出力
 readme-i18n-sentinel --json
@@ -89,16 +89,17 @@ readme-i18n-sentinel --json
 readme-i18n-sentinel --source docs/README.md --target "docs/README.*.md"
 
 # 複数のオプションを組み合わせる
-readme-i18n-sentinel --json --section-title
+readme-i18n-sentinel --json --require-original-section-titles
 ```
 
 利用可能なオプション：
 - `-s, --source <path>` - ソースREADMEファイルパス
 - `-t, --target <pattern>` - ターゲットファイルパターン（globサポート、複数回指定可）
-- `--no-section-structure` - セクション構造チェック（数と階層）を無効化
-- `--no-section-position` - セクション位置チェックを無効化
-- `--section-title` - セクションタイトルの完全一致を要求（翻訳不可）
-- `--no-line-count` - 行数チェックを無効化
+- `--skip-section-structure-check` - セクション構造検証をスキップ（数と階層）
+- `--skip-section-position-check` - セクション位置検証をスキップ
+- `--skip-line-count-check` - 行数検証をスキップ
+- `--require-original-section-titles` - セクションタイトルを元の言語のまま保持
+- `--require-original-code-blocks` - コードブロックを完全に元のまま保持
 - `--json` - JSON形式で出力
 - `-v, --version` - バージョンを表示
 - `--help` - ヘルプを表示
@@ -166,10 +167,11 @@ readme-i18n-sentinel [options]
 オプション：
 - `-s, --source <path>` - ソースREADMEファイルパス
 - `-t, --target <pattern>` - ターゲットファイルパターン
-- `--no-section-structure` - セクション構造チェックを無効化
-- `--no-section-position` - セクション位置チェックを無効化
-- `--section-title` - タイトルの完全一致を要求
-- `--no-line-count` - 行数チェックを無効化
+- `--skip-section-structure-check` - セクション構造チェックをスキップ
+- `--skip-section-position-check` - セクション位置チェックをスキップ
+- `--skip-line-count-check` - 行数チェックをスキップ
+- `--require-original-section-titles` - 見出しを元の言語のまま保持
+- `--require-original-code-blocks` - コードブロックを変更しない
 - `--json` - JSON形式で出力
 - `-v, --version` - バージョンを表示
 - `-h, --help` - ヘルプを表示
@@ -206,12 +208,16 @@ readme-i18n-sentinel validate [config-file]
 **デフォルト: 有効**  
 各セクションが同じ行番号から始まることを確認します。コンテンツがどこで拡大・縮小したかを特定できます。
 
-### Section Title Check (`sectionTitle`)
+### Heading Translation Check (`requireOriginalSectionTitles`)
 **デフォルト: 無効**  
-セクションタイトルの完全一致を要求します（翻訳不可）。以下の場合に有用：
+セクションタイトル/見出しを元の言語のまま保持することを要求（翻訳不可）。以下の場合に有用：
 - URLアンカーの維持
 - 一貫したナビゲーションの確保
 - 見出しを翻訳しないプロジェクト
+
+### Code Block Check (`requireOriginalCodeBlocks`)
+**デフォルト: 無効**  
+コードブロックを完全に元のまま保持することを要求（変更不可）。
 
 ### Line Count Check (`lineCount`)
 **デフォルト: 有効**  
@@ -219,10 +225,10 @@ readme-i18n-sentinel validate [config-file]
 
 ## Tips
 
-- **小さく始める**: 行数チェックだけから始めて、徐々に他のチェックを有効にする
+- **小さく始める**: デフォルトのチェックだけから始めて、徐々により厳格な要求を追加
 - **Gitフックと連携**: Huskyと統合してコミット前に問題をキャッチ
 - **CI統合**: CIパイプラインに追加してPRが翻訳を壊さないようにする
-- **見出しルール**: すべての言語版で見出しを英語のままにする
+- **見出しルール**: `--require-original-section-titles`を使用して見出しを元の言語のまま保持
 
 ## Contributing
 

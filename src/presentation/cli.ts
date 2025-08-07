@@ -23,16 +23,19 @@ program
   .option("-s, --source <path>", "source README file path")
   .option("-t, --target <pattern>", "target file pattern (glob supported)")
   .option(
-    "--no-section-structure",
-    "disable section structure check (count and hierarchy)",
+    "--skip-section-structure-check",
+    "skip section structure validation (count and hierarchy)",
   )
-  .option("--no-section-position", "disable section position check")
+  .option("--skip-section-position-check", "skip section position validation")
+  .option("--skip-line-count-check", "skip line count validation")
   .option(
-    "--section-title",
-    "require exact section title match (no translation allowed)",
+    "--require-original-section-titles",
+    "require section titles to remain in original language",
   )
-  .option("--no-line-count", "disable line count check")
-  .option("--code-block", "enable strict code block matching")
+  .option(
+    "--require-original-code-blocks",
+    "require code blocks to remain exactly as original",
+  )
   .option("--json", "output in JSON format")
   .action(async (options: unknown) => {
     try {
@@ -66,14 +69,14 @@ Examples:
   # Auto-detect README files (README.md → README.*.md)
   $ ${getPackageName()}
   
-  # Disable specific checks
-  $ ${getPackageName()} --no-line-count
+  # Skip specific checks
+  $ ${getPackageName()} --skip-line-count-check
   
-  # Enable strict heading checks (no translation allowed)
-  $ ${getPackageName()} --section-title
+  # Require headings to remain in original language
+  $ ${getPackageName()} --require-original-section-titles
   
-  # Enable strict code block matching
-  $ ${getPackageName()} --code-block
+  # Require code blocks to remain unchanged
+  $ ${getPackageName()} --require-original-code-blocks
   
   # JSON output
   $ ${getPackageName()} --json
@@ -82,7 +85,7 @@ Examples:
   $ ${getPackageName()} --source docs/README.md --target "docs/README.*.md"
   
   # Multiple options
-  $ ${getPackageName()} --source README.md --target "README.*.md" --section-title
+  $ ${getPackageName()} --source README.md --target "README.*.md" --require-original-section-titles
 
 Auto-detection:
   When no CLI arguments are provided, the tool will:

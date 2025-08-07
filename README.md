@@ -79,8 +79,8 @@ readme-i18n-sentinel
 ### Command Line Options
 
 ```bash
-# Disable specific checks
-readme-i18n-sentinel --no-line-count
+# Skip specific checks
+readme-i18n-sentinel --skip-line-count-check
 
 # JSON output for CI integration
 readme-i18n-sentinel --json
@@ -89,16 +89,17 @@ readme-i18n-sentinel --json
 readme-i18n-sentinel --source docs/README.md --target "docs/README.*.md"
 
 # Combine multiple options
-readme-i18n-sentinel --json --section-title
+readme-i18n-sentinel --json --require-original-section-titles
 ```
 
 Available options:
 - `-s, --source <path>` - Source README file path
 - `-t, --target <pattern>` - Target file pattern (glob supported, can be specified multiple times)
-- `--no-section-structure` - Disable section structure check (count and hierarchy)
-- `--no-section-position` - Disable section position check
-- `--section-title` - Require exact section title match (no translation allowed)
-- `--no-line-count` - Disable line count check
+- `--skip-section-structure-check` - Skip section structure validation (count and hierarchy)
+- `--skip-section-position-check` - Skip section position validation
+- `--skip-line-count-check` - Skip line count validation
+- `--require-original-section-titles` - Require section titles to remain in original language
+- `--require-original-code-blocks` - Require code blocks to remain exactly as original
 - `--json` - Output in JSON format
 - `-v, --version` - Display version
 - `--help` - Show help
@@ -166,10 +167,11 @@ readme-i18n-sentinel [options]
 Options:
 - `-s, --source <path>` - Source README file path
 - `-t, --target <pattern>` - Target file pattern
-- `--no-section-structure` - Disable section structure check
-- `--no-section-position` - Disable section position check  
-- `--section-title` - Require exact title match
-- `--no-line-count` - Disable line count check
+- `--skip-section-structure-check` - Skip section structure check
+- `--skip-section-position-check` - Skip section position check
+- `--skip-line-count-check` - Skip line count check
+- `--require-original-section-titles` - Keep headings in original language
+- `--require-original-code-blocks` - Keep code blocks unchanged
 - `--json` - Output in JSON format
 - `-v, --version` - Display version
 - `-h, --help` - Show help
@@ -206,12 +208,16 @@ Ensures sections have the same count, hierarchy, and order. Checks that:
 **Default: enabled**  
 Verifies that each section starts at the same line number. Helps identify where content has expanded or contracted.
 
-### Section Title Check (`sectionTitle`)
+### Heading Translation Check (`requireOriginalSectionTitles`)
 **Default: disabled**  
-Requires section titles to match exactly (no translation). Useful for:
+Requires section titles/headers to remain in original language (no translation). Useful for:
 - Maintaining URL anchors
 - Ensuring consistent navigation
 - Projects requiring untranslated headings
+
+### Code Block Check (`requireOriginalCodeBlocks`)
+**Default: disabled**  
+Requires code blocks to remain exactly as original (no changes).
 
 ### Line Count Check (`lineCount`)
 **Default: enabled**  
@@ -219,10 +225,10 @@ Ensures source and translation files have the same total number of lines.
 
 ## Tips
 
-- **Start small**: Begin with just line count checks, then enable other checks gradually
+- **Start small**: Begin with just default checks, then add stricter requirements gradually
 - **Use with Git hooks**: Integrate with Husky to catch issues before commit
 - **CI Integration**: Add to your CI pipeline to ensure PRs don't break translations
-- **Heading rule**: Keep headings in English across all language versions to maintain consistency
+- **Heading rule**: Use `--require-original-section-titles` to keep headings in original language
 
 ## Contributing
 

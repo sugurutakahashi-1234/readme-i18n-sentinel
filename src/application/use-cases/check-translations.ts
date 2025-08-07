@@ -52,7 +52,7 @@ export async function checkTranslationsUseCase(
     const targetHeadings = extractHeadings(targetContent);
 
     // 1. Check section structure (count and hierarchy) first
-    if (config.checks?.sectionStructure !== false) {
+    if (!config.checks?.skip?.sectionStructure) {
       const orderErrors = checkSectionOrder(
         sourceHeadings,
         targetHeadings,
@@ -65,7 +65,7 @@ export async function checkTranslationsUseCase(
     }
 
     // 2. Check section positions
-    if (config.checks?.sectionPosition !== false) {
+    if (!config.checks?.skip?.sectionPosition) {
       const lineErrors = checkSectionLines(
         sourceHeadings,
         targetHeadings,
@@ -75,7 +75,7 @@ export async function checkTranslationsUseCase(
     }
 
     // 3. Check section titles (if required)
-    if (config.checks?.sectionTitle === true) {
+    if (config.checks?.require?.originalSectionTitles) {
       const titleErrors = checkSectionTitleMatch(
         sourceHeadings,
         targetHeadings,
@@ -85,7 +85,7 @@ export async function checkTranslationsUseCase(
     }
 
     // 4. Check code blocks (if required)
-    if (config.checks?.codeBlock === true) {
+    if (config.checks?.require?.originalCodeBlocks) {
       const sourceBlocks = extractCodeBlocks(sourceContent, sourceHeadings);
       const targetBlocks = extractCodeBlocks(targetContent, targetHeadings);
       const codeBlockErrors = checkCodeBlockMatch(
@@ -97,7 +97,7 @@ export async function checkTranslationsUseCase(
     }
 
     // 5. Finally, check total line count
-    if (config.checks?.lineCount !== false) {
+    if (!config.checks?.skip?.lineCount) {
       const lineError = checkLines(
         sourceLineCount,
         targetLineCount,
@@ -114,11 +114,16 @@ export async function checkTranslationsUseCase(
     source: config.source,
     target: config.target,
     checks: {
-      sectionStructure: config.checks?.sectionStructure ?? true,
-      sectionPosition: config.checks?.sectionPosition ?? true,
-      sectionTitle: config.checks?.sectionTitle ?? false,
-      lineCount: config.checks?.lineCount ?? true,
-      codeBlock: config.checks?.codeBlock ?? false,
+      skip: {
+        sectionStructure: config.checks?.skip?.sectionStructure ?? false,
+        sectionPosition: config.checks?.skip?.sectionPosition ?? false,
+        lineCount: config.checks?.skip?.lineCount ?? false,
+      },
+      require: {
+        originalSectionTitles:
+          config.checks?.require?.originalSectionTitles ?? false,
+        originalCodeBlocks: config.checks?.require?.originalCodeBlocks ?? false,
+      },
     },
     output: {
       json: config.output?.json ?? false,

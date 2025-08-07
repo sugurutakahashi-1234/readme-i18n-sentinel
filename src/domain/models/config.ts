@@ -5,18 +5,37 @@ import { z } from "zod";
  */
 const ChecksConfigSchema = z
   .object({
-    sectionStructure: z.boolean().default(true),
-    sectionPosition: z.boolean().default(true),
-    sectionTitle: z.boolean().default(false),
-    lineCount: z.boolean().default(true),
-    codeBlock: z.boolean().default(false),
+    skip: z
+      .object({
+        sectionStructure: z.boolean().default(false),
+        sectionPosition: z.boolean().default(false),
+        lineCount: z.boolean().default(false),
+      })
+      .default({
+        sectionStructure: false,
+        sectionPosition: false,
+        lineCount: false,
+      }),
+    require: z
+      .object({
+        originalSectionTitles: z.boolean().default(false),
+        originalCodeBlocks: z.boolean().default(false),
+      })
+      .default({
+        originalSectionTitles: false,
+        originalCodeBlocks: false,
+      }),
   })
   .default({
-    sectionStructure: true,
-    sectionPosition: true,
-    sectionTitle: false,
-    lineCount: true,
-    codeBlock: false,
+    skip: {
+      sectionStructure: false,
+      sectionPosition: false,
+      lineCount: false,
+    },
+    require: {
+      originalSectionTitles: false,
+      originalCodeBlocks: false,
+    },
   });
 
 /**

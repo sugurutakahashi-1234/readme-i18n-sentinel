@@ -39,7 +39,7 @@ describe("CLI Tests", () => {
     expect(result).toContain("Examples:");
     expect(result).toContain("--source");
     expect(result).toContain("--target");
-    expect(result).toContain("--section-title");
+    expect(result).toContain("--require-original-section-titles");
     expect(result).toContain("--json");
   });
 

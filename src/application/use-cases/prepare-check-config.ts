@@ -47,11 +47,15 @@ export async function prepareCheckConfigUseCase(
     source: cliOptions.source || "",
     target: cliOptions.target || "",
     checks: {
-      sectionStructure: cliOptions.sectionStructure ?? true,
-      sectionPosition: cliOptions.sectionPosition ?? true,
-      sectionTitle: cliOptions.sectionTitle ?? false,
-      lineCount: cliOptions.lineCount ?? true,
-      codeBlock: cliOptions.codeBlock ?? false,
+      skip: {
+        sectionStructure: cliOptions.skipSectionStructureCheck ?? false,
+        sectionPosition: cliOptions.skipSectionPositionCheck ?? false,
+        lineCount: cliOptions.skipLineCountCheck ?? false,
+      },
+      require: {
+        originalSectionTitles: cliOptions.requireOriginalSectionTitles ?? false,
+        originalCodeBlocks: cliOptions.requireOriginalCodeBlocks ?? false,
+      },
     },
     output: {
       json: cliOptions.json || false,

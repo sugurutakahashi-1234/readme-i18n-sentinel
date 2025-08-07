@@ -8,11 +8,11 @@ import { z } from "zod";
 const RawCLIOptionsSchema = z.object({
   source: z.string().optional(),
   target: z.string().optional(),
-  sectionStructure: z.boolean().optional(),
-  sectionPosition: z.boolean().optional(),
-  sectionTitle: z.boolean().optional(),
-  lineCount: z.boolean().optional(),
-  codeBlock: z.boolean().optional(),
+  skipSectionStructureCheck: z.boolean().optional(),
+  skipSectionPositionCheck: z.boolean().optional(),
+  skipLineCountCheck: z.boolean().optional(),
+  requireOriginalSectionTitles: z.boolean().optional(),
+  requireOriginalCodeBlocks: z.boolean().optional(),
   json: z.boolean().optional(),
 });
 

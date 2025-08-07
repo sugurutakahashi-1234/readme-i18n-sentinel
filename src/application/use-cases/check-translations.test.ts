@@ -79,11 +79,15 @@ console.log("こんにちは");
       source: "README.md",
       target: "README.ja.md",
       checks: {
-        sectionStructure: true,
-        sectionPosition: true,
-        sectionTitle: true,
-        lineCount: true,
-        codeBlock: true, // Enable code block checking
+        skip: {
+          sectionStructure: false,
+          sectionPosition: false,
+          lineCount: false,
+        },
+        require: {
+          originalSectionTitles: true,
+          originalCodeBlocks: true, // Enable code block checking
+        },
       },
       output: {
         json: false,
@@ -127,11 +131,15 @@ yarn install
       source: "README.md",
       target: "README.ja.md",
       checks: {
-        sectionStructure: true,
-        sectionPosition: true,
-        sectionTitle: true,
-        lineCount: true,
-        codeBlock: false, // Disable code block checking
+        skip: {
+          sectionStructure: false,
+          sectionPosition: false,
+          lineCount: false,
+        },
+        require: {
+          originalSectionTitles: true,
+          originalCodeBlocks: false, // Disable code block checking
+        },
       },
       output: {
         json: false,
@@ -180,11 +188,15 @@ Some text
       source: "README.md",
       target: "README.ja.md",
       checks: {
-        sectionStructure: false,
-        sectionPosition: false,
-        sectionTitle: false,
-        lineCount: false,
-        codeBlock: true, // Only check code blocks
+        skip: {
+          sectionStructure: true,
+          sectionPosition: true,
+          lineCount: true,
+        },
+        require: {
+          originalSectionTitles: false,
+          originalCodeBlocks: true, // Only check code blocks
+        },
       },
       output: {
         json: false,
@@ -219,11 +231,15 @@ Some text
       source: "README.md",
       target: "README.ja.md",
       checks: {
-        sectionStructure: true,
-        sectionPosition: true,
-        sectionTitle: true,
-        lineCount: true,
-        codeBlock: false,
+        skip: {
+          sectionStructure: false,
+          sectionPosition: false,
+          lineCount: false,
+        },
+        require: {
+          originalSectionTitles: true,
+          originalCodeBlocks: false,
+        },
       },
       output: {
         json: false,
@@ -255,11 +271,15 @@ Some text
       source: "README.md",
       target: "README.{ja,zh-CN}.md",
       checks: {
-        sectionStructure: true,
-        sectionPosition: true,
-        sectionTitle: true,
-        lineCount: true,
-        codeBlock: false,
+        skip: {
+          sectionStructure: false,
+          sectionPosition: false,
+          lineCount: false,
+        },
+        require: {
+          originalSectionTitles: true,
+          originalCodeBlocks: false,
+        },
       },
       output: {
         json: false,
@@ -277,11 +297,15 @@ Some text
       source: "nonexistent.md",
       target: "README.ja.md",
       checks: {
-        sectionStructure: true,
-        sectionPosition: true,
-        sectionTitle: true,
-        lineCount: true,
-        codeBlock: false,
+        skip: {
+          sectionStructure: false,
+          sectionPosition: false,
+          lineCount: false,
+        },
+        require: {
+          originalSectionTitles: true,
+          originalCodeBlocks: false,
+        },
       },
       output: {
         json: false,
@@ -300,11 +324,15 @@ Some text
       source: "README.md",
       target: "nonexistent.ja.md",
       checks: {
-        sectionStructure: true,
-        sectionPosition: true,
-        sectionTitle: true,
-        lineCount: true,
-        codeBlock: false,
+        skip: {
+          sectionStructure: false,
+          sectionPosition: false,
+          lineCount: false,
+        },
+        require: {
+          originalSectionTitles: true,
+          originalCodeBlocks: false,
+        },
       },
       output: {
         json: false,
@@ -328,11 +356,15 @@ Some text
       source: "README.md",
       target: "README.ja.md",
       checks: {
-        sectionStructure: false, // Disabled
-        sectionPosition: false, // Disabled
-        sectionTitle: false, // Disabled
-        lineCount: false, // Disabled
-        codeBlock: false, // Disabled
+        skip: {
+          sectionStructure: true, // Disabled
+          sectionPosition: true, // Disabled
+          lineCount: true, // Disabled
+        },
+        require: {
+          originalSectionTitles: false, // Disabled
+          originalCodeBlocks: false, // Disabled
+        },
       },
       output: {
         json: false,
@@ -374,11 +406,15 @@ Some text
       source: "README.md",
       target: "README.ja.md",
       checks: {
-        sectionStructure: true,
-        sectionPosition: true,
-        sectionTitle: true,
-        lineCount: true,
-        codeBlock: false,
+        skip: {
+          sectionStructure: false,
+          sectionPosition: false,
+          lineCount: false,
+        },
+        require: {
+          originalSectionTitles: true,
+          originalCodeBlocks: false,
+        },
       },
       output: {
         json: false,
@@ -404,11 +440,15 @@ Some text
       source: "README.md",
       target: "README.{ja,zh-CN}.md",
       checks: {
-        sectionStructure: true,
-        sectionPosition: true,
-        sectionTitle: true,
-        lineCount: true,
-        codeBlock: false,
+        skip: {
+          sectionStructure: false,
+          sectionPosition: false,
+          lineCount: false,
+        },
+        require: {
+          originalSectionTitles: true,
+          originalCodeBlocks: false,
+        },
       },
       output: {
         json: false,
