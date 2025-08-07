@@ -7,7 +7,6 @@ const ChecksConfigSchema = z
   .object({
     skip: z.object({
       sectionStructure: z.boolean(),
-      sectionPosition: z.boolean(),
       lineCount: z.boolean(),
     }),
     require: z.object({
@@ -18,7 +17,6 @@ const ChecksConfigSchema = z
   .default({
     skip: {
       sectionStructure: false,
-      sectionPosition: false,
       lineCount: false,
     },
     require: {

@@ -64,8 +64,8 @@ export async function checkTranslationsUseCase(
       }
     }
 
-    // 2. Check section positions
-    if (!config.checks?.skip?.sectionPosition) {
+    // 2. Check section positions (skip if line count check is also skipped)
+    if (!config.checks?.skip?.lineCount) {
       const lineErrors = checkSectionLines(
         sourceHeadings,
         targetHeadings,
@@ -116,7 +116,7 @@ export async function checkTranslationsUseCase(
     checks: {
       skip: {
         sectionStructure: config.checks?.skip?.sectionStructure ?? false,
-        sectionPosition: config.checks?.skip?.sectionPosition ?? false,
+        sectionPosition: config.checks?.skip?.lineCount ?? false,
         lineCount: config.checks?.skip?.lineCount ?? false,
       },
       require: {

@@ -97,8 +97,7 @@ Available options:
 - `-s, --source <path>` - Source README file path
 - `-t, --target <pattern>` - Target file pattern (glob supported, can be specified multiple times)
 - `--skip-section-structure-check` - Skip section structure validation (count and hierarchy)
-- `--skip-section-position-check` - Skip section position validation
-- `--skip-line-count-check` - Skip line count validation
+- `--skip-line-count-check` - Skip line count and section position validation
 - `--require-original-section-titles` - Require section titles to remain in original language
 - `--require-original-code-blocks` - Require code blocks to remain exactly as original
 - `--json` - Output in JSON format
@@ -169,8 +168,7 @@ Options:
 - `-s, --source <path>` - Source README file path
 - `-t, --target <pattern>` - Target file pattern
 - `--skip-section-structure-check` - Skip section structure check
-- `--skip-section-position-check` - Skip section position check
-- `--skip-line-count-check` - Skip line count check
+- `--skip-line-count-check` - Skip line count and section position check
 - `--require-original-section-titles` - Keep headings in original language
 - `--require-original-code-blocks` - Keep code blocks unchanged
 - `--json` - Output in JSON format
@@ -205,9 +203,9 @@ Ensures sections have the same count, hierarchy, and order. Checks that:
 - Heading levels match (e.g., `#` vs `##`)
 - Sections appear in the same order
 
-### Section Position Check (`sectionPosition`)
-**Default: enabled**  
-Verifies that each section starts at the same line number. Helps identify where content has expanded or contracted.
+### Section Position Check
+**Default: enabled (disabled when line count check is skipped)**  
+Verifies that each section starts at the same line number. Helps identify where content has expanded or contracted. This check is automatically skipped when `--skip-line-count-check` is used.
 
 ### Heading Translation Check (`requireOriginalSectionTitles`)
 **Default: disabled**  
@@ -222,7 +220,7 @@ Requires code blocks to remain exactly as original (no changes).
 
 ### Line Count Check (`lineCount`)
 **Default: enabled**  
-Ensures source and translation files have the same total number of lines.
+Ensures source and translation files have the same total number of lines and section positions. When skipped with `--skip-line-count-check`, both line count and section position checks are disabled.
 
 ## Tips
 

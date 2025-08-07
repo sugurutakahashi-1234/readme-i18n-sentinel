@@ -81,7 +81,6 @@ console.log("こんにちは");
       checks: {
         skip: {
           sectionStructure: false,
-          sectionPosition: false,
           lineCount: false,
         },
         require: {
@@ -133,7 +132,6 @@ yarn install
       checks: {
         skip: {
           sectionStructure: false,
-          sectionPosition: false,
           lineCount: false,
         },
         require: {
@@ -190,7 +188,6 @@ Some text
       checks: {
         skip: {
           sectionStructure: true,
-          sectionPosition: true,
           lineCount: true,
         },
         require: {
@@ -233,7 +230,6 @@ Some text
       checks: {
         skip: {
           sectionStructure: false,
-          sectionPosition: false,
           lineCount: false,
         },
         require: {
@@ -273,7 +269,6 @@ Some text
       checks: {
         skip: {
           sectionStructure: false,
-          sectionPosition: false,
           lineCount: false,
         },
         require: {
@@ -299,7 +294,6 @@ Some text
       checks: {
         skip: {
           sectionStructure: false,
-          sectionPosition: false,
           lineCount: false,
         },
         require: {
@@ -326,7 +320,6 @@ Some text
       checks: {
         skip: {
           sectionStructure: false,
-          sectionPosition: false,
           lineCount: false,
         },
         require: {
@@ -358,7 +351,6 @@ Some text
       checks: {
         skip: {
           sectionStructure: true, // Disabled
-          sectionPosition: true, // Disabled
           lineCount: true, // Disabled
         },
         require: {
@@ -408,7 +400,6 @@ Some text
       checks: {
         skip: {
           sectionStructure: false,
-          sectionPosition: false,
           lineCount: false,
         },
         require: {
@@ -442,7 +433,6 @@ Some text
       checks: {
         skip: {
           sectionStructure: false,
-          sectionPosition: false,
           lineCount: false,
         },
         require: {

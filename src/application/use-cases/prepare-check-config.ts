@@ -18,7 +18,6 @@ export async function prepareCheckConfigUseCase(
     checks: {
       skip: {
         sectionStructure: cliOptions.skipSectionStructureCheck ?? false,
-        sectionPosition: cliOptions.skipSectionPositionCheck ?? false,
         lineCount: cliOptions.skipLineCountCheck ?? false,
       },
       require: {

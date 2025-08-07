@@ -97,8 +97,7 @@ readme-i18n-sentinel --json --require-original-section-titles
 - `-s, --source <path>` - ソースREADMEファイルパス
 - `-t, --target <pattern>` - ターゲットファイルパターン（globサポート、複数回指定可）
 - `--skip-section-structure-check` - セクション構造検証をスキップ（数と階層）
-- `--skip-section-position-check` - セクション位置検証をスキップ
-- `--skip-line-count-check` - 行数検証をスキップ
+- `--skip-line-count-check` - 行数とセクション位置検証をスキップ
 - `--require-original-section-titles` - セクションタイトルを元の言語のまま保持
 - `--require-original-code-blocks` - コードブロックを完全に元のまま保持
 - `--json` - JSON形式で出力
@@ -169,8 +168,7 @@ readme-i18n-sentinel [options]
 - `-s, --source <path>` - ソースREADMEファイルパス
 - `-t, --target <pattern>` - ターゲットファイルパターン
 - `--skip-section-structure-check` - セクション構造チェックをスキップ
-- `--skip-section-position-check` - セクション位置チェックをスキップ
-- `--skip-line-count-check` - 行数チェックをスキップ
+- `--skip-line-count-check` - 行数とセクション位置チェックをスキップ
 - `--require-original-section-titles` - 見出しを元の言語のまま保持
 - `--require-original-code-blocks` - コードブロックを変更しない
 - `--json` - JSON形式で出力
@@ -205,9 +203,9 @@ readme-i18n-sentinel validate [config-file]
 - 見出しレベルが一致するか（例：`#` vs `##`）
 - セクションが同じ順序で出現するか
 
-### Section Position Check (`sectionPosition`)
-**デフォルト: 有効**  
-各セクションが同じ行番号から始まることを確認します。コンテンツがどこで拡大・縮小したかを特定できます。
+### Section Position Check
+**デフォルト: 有効（行数チェックがスキップされると無効）**  
+各セクションが同じ行番号から始まることを確認します。コンテンツがどこで拡大・縮小したかを特定できます。`--skip-line-count-check`を使用すると、このチェックは自動的にスキップされます。
 
 ### Heading Translation Check (`requireOriginalSectionTitles`)
 **デフォルト: 無効**  
@@ -222,7 +220,7 @@ readme-i18n-sentinel validate [config-file]
 
 ### Line Count Check (`lineCount`)
 **デフォルト: 有効**  
-ソースファイルと翻訳ファイルの総行数が一致していることを確認します。
+ソースファイルと翻訳ファイルの総行数とセクション位置が一致していることを確認します。`--skip-line-count-check`でスキップすると、行数とセクション位置の両方のチェックが無効になります。
 
 ## Tips
 

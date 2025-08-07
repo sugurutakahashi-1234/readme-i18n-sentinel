@@ -9,7 +9,6 @@ const RawCLIOptionsSchema = z.object({
   source: z.string().optional(),
   target: z.string().optional(),
   skipSectionStructureCheck: z.boolean().optional(),
-  skipSectionPositionCheck: z.boolean().optional(),
   skipLineCountCheck: z.boolean().optional(),
   requireOriginalSectionTitles: z.boolean().optional(),
   requireOriginalCodeBlocks: z.boolean().optional(),

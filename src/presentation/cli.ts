@@ -27,8 +27,10 @@ program
     "--skip-section-structure-check",
     "skip section structure validation (count and hierarchy)",
   )
-  .option("--skip-section-position-check", "skip section position validation")
-  .option("--skip-line-count-check", "skip line count validation")
+  .option(
+    "--skip-line-count-check",
+    "skip line count and section position validation",
+  )
   .option(
     "--require-original-section-titles",
     "require section titles to remain in original language",
