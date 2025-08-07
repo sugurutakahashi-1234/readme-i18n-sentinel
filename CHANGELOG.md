@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.0](https://github.com/sugurutakahashi-1234/readme-i18n-sentinel/compare/v1.0.0...v1.1.0) (2025-08-07)
+
+
+### ✨ Features
+
+* translate README descriptions to respective languages ([#11](https://github.com/sugurutakahashi-1234/readme-i18n-sentinel/issues/11)) ([4ca0c5a](https://github.com/sugurutakahashi-1234/readme-i18n-sentinel/commit/4ca0c5aac9c784788ec19e2d15fe6935a71c6380))
+* update package description to accurately reflect tool functionality ([#10](https://github.com/sugurutakahashi-1234/readme-i18n-sentinel/issues/10)) ([111125c](https://github.com/sugurutakahashi-1234/readme-i18n-sentinel/commit/111125cbefc9942bad93869cf39675a327e2b3f0))
+
 ## [1.0.0](https://github.com/sugurutakahashi-1234/readme-i18n-sentinel/compare/v0.2.0...v1.0.0) (2025-08-07)
 
 
