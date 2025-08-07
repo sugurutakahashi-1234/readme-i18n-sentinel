@@ -55,15 +55,13 @@ readme-i18n-sentinel
 
 ### Options
 
-| Option                              | Description                                                                          | Default                                                              |
-| ----------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------- |
-| `-s, --source <path>`               | स्रोत README फाइल का पथ                                                              | `README.md`                                                          |
-| `-t, --target <pattern>`            | लक्ष्य फाइल पैटर्न (glob समर्थित)                                                    | `{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}` |
-| `--skip-section-structure-check`    | शीर्षक संख्या और पदानुक्रम सत्यापन छोड़ें (# vs ##)                                   | disabled                                                             |
-| `--skip-line-count-check`           | कुल लाइन संख्या और शीर्षक लाइन स्थिति सत्यापन छोड़ें                                 | disabled                                                             |
-| `--require-original-section-titles` | शीर्षक पाठ का सटीक मिलान आवश्यक (उदा. "## Installation" अंग्रेजी में रहना चाहिए)      | disabled                                                             |
-| `--require-original-code-blocks`    | कोड ब्लॉक का सटीक मिलान आवश्यक (``` के अंदर की सामग्री सहित)                       | disabled                                                             |
-| `--json`                            | CI/CD एकीकरण के लिए JSON प्रारूप में परिणाम आउटपुट करें                              | disabled                                                             |
+- `-s, --source <path>` - स्रोत README फाइल का पथ (default: `README.md`)
+- `-t, --target <pattern>` - लक्ष्य फाइल पैटर्न (glob समर्थित) (default: `{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}`)
+- `--skip-section-structure-check` - शीर्षक संख्या और पदानुक्रम सत्यापन छोड़ें (# vs ##)
+- `--skip-line-count-check` - कुल लाइन संख्या और शीर्षक लाइन स्थिति सत्यापन छोड़ें
+- `--require-original-section-titles` - शीर्षक पाठ का सटीक मिलान आवश्यक (उदा. "## Installation" अंग्रेजी में रहना चाहिए)
+- `--require-original-code-blocks` - कोड ब्लॉक का सटीक मिलान आवश्यक (``` के अंदर की सामग्री सहित)
+- `--json` - CI/CD एकीकरण के लिए JSON प्रारूप में परिणाम आउटपुट करें
 
 ### Examples
 

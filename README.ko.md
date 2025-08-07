@@ -55,15 +55,13 @@ readme-i18n-sentinel
 
 ### Options
 
-| Option                              | Description                                                                          | Default                                                              |
-| ----------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------- |
-| `-s, --source <path>`               | 원본 README 파일 경로                                                                | `README.md`                                                          |
-| `-t, --target <pattern>`            | 대상 파일 패턴 (glob 지원)                                                           | `{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}` |
-| `--skip-section-structure-check`    | 제목 개수 및 계층 검증 건너뛰기 (# vs ##)                                             | disabled                                                             |
-| `--skip-line-count-check`           | 총 라인 수 및 제목 라인 위치 검증 건너뛰기                                            | disabled                                                             |
-| `--require-original-section-titles` | 제목 텍스트 정확히 일치 요구 (예: "## Installation"은 영어로 유지해야 함)                | disabled                                                             |
-| `--require-original-code-blocks`    | 코드 블록 정확히 일치 요구 (``` 내용 포함)                                            | disabled                                                             |
-| `--json`                            | CI/CD 통합을 위한 JSON 형식으로 결과 출력                                             | disabled                                                             |
+- `-s, --source <path>` - 원본 README 파일 경로 (default: `README.md`)
+- `-t, --target <pattern>` - 대상 파일 패턴 (glob 지원) (default: `{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}`)
+- `--skip-section-structure-check` - 제목 개수 및 계층 검증 건너뛰기 (# vs ##)
+- `--skip-line-count-check` - 총 라인 수 및 제목 라인 위치 검증 건너뛰기
+- `--require-original-section-titles` - 제목 텍스트 정확히 일치 요구 (예: "## Installation"은 영어로 유지해야 함)
+- `--require-original-code-blocks` - 코드 블록 정확히 일치 요구 (``` 내용 포함)
+- `--json` - CI/CD 통합을 위한 JSON 형식으로 결과 출력
 
 ### Examples
 

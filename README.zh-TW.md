@@ -55,15 +55,13 @@ readme-i18n-sentinel
 
 ### Options
 
-| Option                              | Description                                                                          | Default                                                              |
-| ----------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------- |
-| `-s, --source <path>`               | 源 README 檔案路徑                                                                   | `README.md`                                                          |
-| `-t, --target <pattern>`            | 目標檔案模式（支援 glob）                                                             | `{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}` |
-| `--skip-section-structure-check`    | 跳過標題數量和層次結構驗證（# vs ##）                                                 | disabled                                                             |
-| `--skip-line-count-check`           | 跳過總行數和標題行位置驗證                                                           | disabled                                                             |
-| `--require-original-section-titles` | 要求標題文字完全匹配（例如，"## Installation" 必須保持英文）                           | disabled                                                             |
-| `--require-original-code-blocks`    | 要求程式碼區塊完全匹配（包括 ``` 內的內容）                                           | disabled                                                             |
-| `--json`                            | 以 JSON 格式輸出結果，用於 CI/CD 整合                                                | disabled                                                             |
+- `-s, --source <path>` - 源 README 檔案路徑 (default: `README.md`)
+- `-t, --target <pattern>` - 目標檔案模式（支援 glob）(default: `{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}`)
+- `--skip-section-structure-check` - 跳過標題數量和層次結構驗證（# vs ##）
+- `--skip-line-count-check` - 跳過總行數和標題行位置驗證
+- `--require-original-section-titles` - 要求標題文字完全匹配（例如，"## Installation" 必須保持英文）
+- `--require-original-code-blocks` - 要求程式碼區塊完全匹配（包括 ``` 內的內容）
+- `--json` - 以 JSON 格式輸出結果，用於 CI/CD 整合
 
 ### Examples
 

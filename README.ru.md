@@ -55,15 +55,13 @@ readme-i18n-sentinel
 
 ### Options
 
-| Option                              | Description                                                                          | Default                                                              |
-| ----------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------- |
-| `-s, --source <path>`               | Путь к исходному README файлу                                                        | `README.md`                                                          |
-| `-t, --target <pattern>`            | Паттерн целевого файла (поддерживает glob)                                          | `{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}` |
-| `--skip-section-structure-check`    | Пропустить проверку количества заголовков и иерархии (# vs ##)                       | disabled                                                             |
-| `--skip-line-count-check`           | Пропустить проверку общего количества строк и позиций строк заголовков              | disabled                                                             |
-| `--require-original-section-titles` | Требовать точного соответствия текста заголовков (например, "## Installation" должен остаться на английском) | disabled                                                             |
-| `--require-original-code-blocks`    | Требовать точного соответствия блоков кода (включая содержимое внутри ```)          | disabled                                                             |
-| `--json`                            | Вывод результатов в формате JSON для интеграции CI/CD                               | disabled                                                             |
+- `-s, --source <path>` - Путь к исходному README файлу (default: `README.md`)
+- `-t, --target <pattern>` - Паттерн целевого файла (поддерживает glob) (default: `{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}`)
+- `--skip-section-structure-check` - Пропустить проверку количества заголовков и иерархии (# vs ##)
+- `--skip-line-count-check` - Пропустить проверку общего количества строк и позиций строк заголовков
+- `--require-original-section-titles` - Требовать точного соответствия текста заголовков (например, "## Installation" должен остаться на английском)
+- `--require-original-code-blocks` - Требовать точного соответствия блоков кода (включая содержимое внутри ```)
+- `--json` - Вывод результатов в формате JSON для интеграции CI/CD
 
 ### Examples
 

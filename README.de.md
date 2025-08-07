@@ -55,15 +55,13 @@ readme-i18n-sentinel
 
 ### Options
 
-| Option                              | Description                                                                          | Default                                                              |
-| ----------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------- |
-| `-s, --source <path>`               | Quell-README-Dateipfad                                                               | `README.md`                                                          |
-| `-t, --target <pattern>`            | Zieldateimuster (glob-unterstützt)                                                   | `{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}` |
-| `--skip-section-structure-check`    | Validierung von Überschriftenzahl und Hierarchie überspringen (# vs ##)             | disabled                                                             |
-| `--skip-line-count-check`           | Validierung der Gesamtzeilenzahl und Überschriftenzeilenpositionen überspringen     | disabled                                                             |
-| `--require-original-section-titles` | Überschriftentext muss exakt übereinstimmen (z.B. "## Installation" muss englisch bleiben) | disabled                                                             |
-| `--require-original-code-blocks`    | Codeblöcke müssen exakt übereinstimmen (einschließlich Inhalt in ```)               | disabled                                                             |
-| `--json`                            | Ergebnisse im JSON-Format für CI/CD-Integration ausgeben                            | disabled                                                             |
+- `-s, --source <path>` - Quell-README-Dateipfad (default: `README.md`)
+- `-t, --target <pattern>` - Zieldateimuster (glob-unterstützt) (default: `{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}`)
+- `--skip-section-structure-check` - Validierung von Überschriftenzahl und Hierarchie überspringen (# vs ##)
+- `--skip-line-count-check` - Validierung der Gesamtzeilenzahl und Überschriftenzeilenpositionen überspringen
+- `--require-original-section-titles` - Überschriftentext muss exakt übereinstimmen (z.B. "## Installation" muss englisch bleiben)
+- `--require-original-code-blocks` - Codeblöcke müssen exakt übereinstimmen (einschließlich Inhalt in ```)
+- `--json` - Ergebnisse im JSON-Format für CI/CD-Integration ausgeben
 
 ### Examples
 
