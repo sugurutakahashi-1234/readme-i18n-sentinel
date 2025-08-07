@@ -1,7 +1,7 @@
 {
   "name": "readme-i18n-sentinel",
   "version": "1.0.0",
-  "description": "CLI tool to detect outdated translations in README files using Git diff",
+  "description": "A CLI tool that validates structural consistency between source and translated README files",
   "publishConfig": {
     "access": "public"
   },
