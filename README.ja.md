@@ -55,15 +55,13 @@ readme-i18n-sentinel
 
 ### Options
 
-| Option                              | Description                                                           | Default                                                              |
-| ----------------------------------- | --------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| `-s, --source <path>`               | ソースREADMEファイルのパス                                            | `README.md`                                                          |
-| `-t, --target <pattern>`            | ターゲットファイルパターン（glob対応）                                | `{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}` |
-| `--skip-section-structure-check`    | 見出しの数と階層（# vs ##）の検証をスキップ                           | disabled                                                             |
-| `--skip-line-count-check`           | 総行数と見出しの行位置の検証をスキップ                                | disabled                                                             |
-| `--require-original-section-titles` | 見出しテキストの完全一致を要求（例：「## Installation」は英語のまま） | disabled                                                             |
-| `--require-original-code-blocks`    | コードブロックの完全一致を要求（```内のコンテンツを含む）             | disabled                                                             |
-| `--json`                            | CI/CD統合用にJSON形式で結果を出力                                     | disabled                                                             |
+- `-s, --source <path>` - ソースREADMEファイルのパス (default: `README.md`)
+- `-t, --target <pattern>` - ターゲットファイルパターン（glob対応）(default: `{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}`)
+- `--skip-section-structure-check` - 見出しの数と階層（# vs ##）の検証をスキップ
+- `--skip-line-count-check` - 総行数と見出しの行位置の検証をスキップ
+- `--require-original-section-titles` - 見出しテキストの完全一致を要求（例：「## Installation」は英語のまま）
+- `--require-original-code-blocks` - コードブロックの完全一致を要求（```内のコンテンツを含む）
+- `--json` - CI/CD統合用にJSON形式で結果を出力
 
 ### Examples
 

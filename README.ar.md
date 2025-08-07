@@ -55,15 +55,13 @@ readme-i18n-sentinel
 
 ### Options
 
-| Option                              | Description                                                                          | Default                                                              |
-| ----------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------- |
-| `-s, --source <path>`               | مسار ملف README المصدر                                                               | `README.md`                                                          |
-| `-t, --target <pattern>`            | نمط الملف المستهدف (يدعم glob)                                                      | `{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}` |
-| `--skip-section-structure-check`    | تخطي التحقق من عدد العناوين والتسلسل الهرمي (# مقابل ##)                            | disabled                                                             |
-| `--skip-line-count-check`           | تخطي التحقق من العدد الإجمالي للأسطر ومواضع أسطر العناوين                          | disabled                                                             |
-| `--require-original-section-titles` | يتطلب مطابقة نص العنوان بدقة (مثلاً "## Installation" يجب أن يبقى بالإنجليزية)       | disabled                                                             |
-| `--require-original-code-blocks`    | يتطلب مطابقة كتل الكود بدقة (بما في ذلك المحتوى داخل ```)                        | disabled                                                             |
-| `--json`                            | إخراج النتائج بتنسيق JSON لتكامل CI/CD                                             | disabled                                                             |
+- `-s, --source <path>` - مسار ملف README المصدر (default: `README.md`)
+- `-t, --target <pattern>` - نمط الملف المستهدف (يدعم glob) (default: `{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}`)
+- `--skip-section-structure-check` - تخطي التحقق من عدد العناوين والتسلسل الهرمي (# مقابل ##)
+- `--skip-line-count-check` - تخطي التحقق من العدد الإجمالي للأسطر ومواضع أسطر العناوين
+- `--require-original-section-titles` - يتطلب مطابقة نص العنوان بدقة (مثلاً "## Installation" يجب أن يبقى بالإنجليزية)
+- `--require-original-code-blocks` - يتطلب مطابقة كتل الكود بدقة (بما في ذلك المحتوى داخل ```)
+- `--json` - إخراج النتائج بتنسيق JSON لتكامل CI/CD
 
 ### Examples
 

@@ -55,15 +55,13 @@ readme-i18n-sentinel
 
 ### Options
 
-| Option                              | Description                                                                          | Default                                                              |
-| ----------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------- |
-| `-s, --source <path>`               | Source README file path                                                              | `README.md`                                                          |
-| `-t, --target <pattern>`            | Target file pattern (glob supported)                                                 | `{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}` |
-| `--skip-section-structure-check`    | Skip validation of heading count and hierarchy (# vs ##)                             | disabled                                                             |
-| `--skip-line-count-check`           | Skip validation of total line count and heading line positions                       | disabled                                                             |
-| `--require-original-section-titles` | Require heading text to match exactly (e.g., "## Installation" must stay in English) | disabled                                                             |
-| `--require-original-code-blocks`    | Require code blocks to match exactly (including content inside ```)                  | disabled                                                             |
-| `--json`                            | Output results in JSON format for CI/CD integration                                  | disabled                                                             |
+- `-s, --source <path>` - Source README file path (default: `README.md`)
+- `-t, --target <pattern>` - Target file pattern, glob supported (default: `{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}`)
+- `--skip-section-structure-check` - Skip validation of heading count and hierarchy (# vs ##)
+- `--skip-line-count-check` - Skip validation of total line count and heading line positions
+- `--require-original-section-titles` - Require heading text to match exactly (e.g., "## Installation" must stay in English)
+- `--require-original-code-blocks` - Require code blocks to match exactly (including content inside ```)
+- `--json` - Output results in JSON format for CI/CD integration
 
 ### Examples
 

@@ -8,7 +8,7 @@ I18N_SKIP_FLAG='[i18n-skip]'
 if git diff --cached --name-only | grep -q "^${README_FILE}$"; then
   if ! grep -qF "${I18N_SKIP_FLAG}" "$1"; then
     echo "📖 Checking README translations..."
-    if ! bun run readme-i18n-sentinel; then
+    if ! bun run update:docs:readme; then
       echo ""
       echo "❌ README translation check failed"
       echo ""

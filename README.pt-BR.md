@@ -55,15 +55,13 @@ readme-i18n-sentinel
 
 ### Options
 
-| Option                              | Description                                                                        | Default                                                              |
-| ----------------------------------- | ---------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| `-s, --source <path>`               | Caminho do arquivo README fonte                                                    | `README.md`                                                          |
-| `-t, --target <pattern>`            | Padrão de arquivo alvo (compatível com glob)                                       | `{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}` |
-| `--skip-section-structure-check`    | Pular validação de contagem de títulos e hierarquia (# vs ##)                      | disabled                                                             |
-| `--skip-line-count-check`           | Pular validação de contagem total de linhas e posições de linha dos títulos        | disabled                                                             |
-| `--require-original-section-titles` | Exigir que o texto do título corresponda exatamente (ex., "## Installation" deve permanecer em inglês) | disabled                                                             |
-| `--require-original-code-blocks`    | Exigir que blocos de código correspondam exatamente (incluindo conteúdo dentro de ```) | disabled                                                             |
-| `--json`                            | Exibir resultados em formato JSON para integração CI/CD                            | disabled                                                             |
+- `-s, --source <path>` - Caminho do arquivo README fonte (default: `README.md`)
+- `-t, --target <pattern>` - Padrão de arquivo alvo (compatível com glob) (default: `{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}`)
+- `--skip-section-structure-check` - Pular validação de contagem de títulos e hierarquia (# vs ##)
+- `--skip-line-count-check` - Pular validação de contagem total de linhas e posições de linha dos títulos
+- `--require-original-section-titles` - Exigir que o texto do título corresponda exatamente (ex., "## Installation" deve permanecer em inglês)
+- `--require-original-code-blocks` - Exigir que blocos de código correspondam exatamente (incluindo conteúdo dentro de ```)
+- `--json` - Exibir resultados em formato JSON para integração CI/CD
 
 ### Examples
 

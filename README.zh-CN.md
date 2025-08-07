@@ -55,15 +55,13 @@ readme-i18n-sentinel
 
 ### Options
 
-| Option                              | Description                                                       | Default                                                              |
-| ----------------------------------- | ----------------------------------------------------------------- | -------------------------------------------------------------------- |
-| `-s, --source <path>`               | 源 README 文件路径                                                 | `README.md`                                                          |
-| `-t, --target <pattern>`            | 目标文件模式（支持 glob）                                           | `{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}` |
-| `--skip-section-structure-check`    | 跳过标题数量和层次结构验证（# vs ##）                                | disabled                                                             |
-| `--skip-line-count-check`           | 跳过总行数和标题行位置验证                                          | disabled                                                             |
-| `--require-original-section-titles` | 要求标题文本完全匹配（例如，"## Installation" 必须保持英文）           | disabled                                                             |
-| `--require-original-code-blocks`    | 要求代码块完全匹配（包括 ``` 内的内容）                              | disabled                                                             |
-| `--json`                            | 以 JSON 格式输出结果，用于 CI/CD 集成                               | disabled                                                             |
+- `-s, --source <path>` - 源 README 文件路径 (default: `README.md`)
+- `-t, --target <pattern>` - 目标文件模式（支持 glob）(default: `{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}`)
+- `--skip-section-structure-check` - 跳过标题数量和层次结构验证（# vs ##）
+- `--skip-line-count-check` - 跳过总行数和标题行位置验证
+- `--require-original-section-titles` - 要求标题文本完全匹配（例如，"## Installation" 必须保持英文）
+- `--require-original-code-blocks` - 要求代码块完全匹配（包括 ``` 内的内容）
+- `--json` - 以 JSON 格式输出结果，用于 CI/CD 集成
 
 ### Examples
 
