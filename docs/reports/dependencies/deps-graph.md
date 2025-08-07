@@ -35,6 +35,7 @@ flowchart LR
         subgraph src/application/use//cases["/application/use-cases"]
             src/application/use//cases/check//translations.ts["check-translations.ts"]
             src/application/use//cases/prepare//check//config.ts["prepare-check-config.ts"]
+            src/application/use//cases/print//config.ts["print-config.ts"]
             src/application/use//cases/print//result.ts["print-result.ts"]
         end
         subgraph src/presentation["/presentation"]
@@ -61,12 +62,14 @@ flowchart LR
     src/domain/models/cli//options.ts-->node//modules/zod/index.d.cts
     src/application/use//cases/prepare//check//config.ts-->src/domain/models/cli//options.ts
     src/application/use//cases/prepare//check//config.ts-->src/domain/models/config.ts
+    src/application/use//cases/print//config.ts-->src/domain/models/config.ts
     src/infrastructure/services/diff//formatter.ts-->node//modules/diff/libcjs/index.d.ts
     src/application/use//cases/print//result.ts-->src/domain/models/check//result.ts
     src/application/use//cases/print//result.ts-->src/infrastructure/services/diff//formatter.ts
     src/presentation/cli.ts-->node//modules///commander//js/extra//typings/index.d.ts
     src/presentation/cli.ts-->src/application/use//cases/check//translations.ts
     src/presentation/cli.ts-->src/application/use//cases/prepare//check//config.ts
+    src/presentation/cli.ts-->src/application/use//cases/print//config.ts
     src/presentation/cli.ts-->src/application/use//cases/print//result.ts
     src/presentation/cli.ts-->src/domain/constants/package//metadata.ts
     src/index.ts-->src/presentation/cli.ts

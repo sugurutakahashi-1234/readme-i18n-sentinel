@@ -3,6 +3,7 @@
 import { Command } from "@commander-js/extra-typings";
 import { checkTranslationsUseCase } from "../application/use-cases/check-translations.js";
 import { prepareCheckConfigUseCase } from "../application/use-cases/prepare-check-config.js";
+import { printConfigUseCase } from "../application/use-cases/print-config.js";
 import { printResultUseCase } from "../application/use-cases/print-result.js";
 import {
   getDescription,
@@ -51,6 +52,7 @@ program
       // Print check settings if not in JSON mode
       if (!config.output?.json) {
         console.log("📖 Checking README translations...");
+        printConfigUseCase(config);
       }
 
       // Run checks
