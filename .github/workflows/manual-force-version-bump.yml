@@ -1,0 +1,127 @@
+name: manual-force-version-bump
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_type:
+        description: 'Version bump type'
+        required: false
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      custom_version:
+        description: 'Custom version WITHOUT v prefix (e.g., 1.2.3, NOT v1.2.3) - If provided, this takes precedence; if empty, version_type will be used'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  create-release-commit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Generate GitHub App Token
+        id: generate-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
+          fetch-depth: 0
+          ref: main
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Get current version
+        id: current_version
+        run: echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
+
+      - name: Validate inputs
+        run: |
+          if [ -z "${{ github.event.inputs.custom_version }}" ] && [ -z "${{ github.event.inputs.version_type }}" ]; then
+            echo "::error::Either version_type or custom_version must be provided"
+            exit 1
+          fi
+
+      - name: Validate custom version format
+        if: github.event.inputs.custom_version != ''
+        run: |
+          if [[ "${{ github.event.inputs.custom_version }}" =~ ^v ]]; then
+            echo "Error: Custom version must NOT include 'v' prefix (e.g., 1.2.3, NOT v1.2.3)"
+            echo "Received: ${{ github.event.inputs.custom_version }}"
+            exit 1
+          fi
+          echo "Custom version format validated: ${{ github.event.inputs.custom_version }}"
+
+      - name: Validate custom version semver
+        if: github.event.inputs.custom_version != ''
+        id: validate_version
+        uses: matt-usurp/validate-semver@v2
+        with:
+          version: ${{ github.event.inputs.custom_version }}
+
+      - name: Calculate next version
+        id: next_version
+        run: |
+          CURRENT="${{ steps.current_version.outputs.version }}"
+          echo "Current version: $CURRENT"
+          
+          if [ -n "${{ github.event.inputs.custom_version }}" ]; then
+            NEXT="${{ steps.validate_version.outputs.version }}"
+          else
+            # Use npx semver to calculate next version
+            NEXT=$(npx semver@latest $CURRENT -i ${{ github.event.inputs.version_type }}) || {
+              echo "::error::Failed to calculate next version"
+              exit 1
+            }
+          fi
+          
+          echo "Next version: $NEXT"
+          echo "version=$NEXT" >> $GITHUB_OUTPUT
+
+      - name: Compare versions
+        uses: madhead/semver-utils@v4
+        id: version_compare
+        with:
+          version: ${{ steps.next_version.outputs.version }}
+          compare-to: ${{ steps.current_version.outputs.version }}
+
+      - name: Verify version increase
+        if: steps.version_compare.outputs.comparison-result != '>'
+        run: |
+          echo "::error::New version (${{ steps.next_version.outputs.version }}) must be greater than current version (${{ steps.current_version.outputs.version }})"
+          exit 1
+
+      - name: Create empty commit with Release-As
+        env:
+          HUSKY: 0
+        run: |
+          git commit --allow-empty -m "chore: bump version to ${{ steps.next_version.outputs.version }}
+
+          Release-As: ${{ steps.next_version.outputs.version }}"
+
+      - name: Push to main
+        run: git push origin main
+
+      - name: Summary
+        run: |
+          echo "## Version Bump Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- Current version: ${{ steps.current_version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- New version: ${{ steps.next_version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Bump type: ${{ github.event.inputs.version_type }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Comparison result: ${{ steps.version_compare.outputs.comparison-result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Next Steps" >> $GITHUB_STEP_SUMMARY
+          echo "Release-Please will automatically create a PR with this version." >> $GITHUB_STEP_SUMMARY
