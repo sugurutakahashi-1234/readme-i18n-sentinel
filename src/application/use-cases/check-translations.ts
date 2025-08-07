@@ -41,7 +41,8 @@ export async function checkTranslationsUseCase(
   // Expand target pattern to find matching files
   const targetFiles = await findFilesByPattern(config.target);
 
-  // Target file not found is not treated as error, returned as empty array (expected for README-only repos)
+  // If no target files match the pattern, findFilesByPattern returns an empty array.
+  // This is the expected and relied-upon behavior: the absence of target files is not treated as an error (e.g., for README-only repos).
 
   // Check each valid target file
   for (const targetFile of targetFiles) {
