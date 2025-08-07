@@ -1,6 +1,8 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
     // Disable declaration maps for smaller package size
     "declarationMap": false,
     // Disable source maps for production builds

@@ -334,10 +334,11 @@ Some text
 
     const result = await checkTranslationsUseCase(config);
 
-    expect(result.isValid).toBe(false);
-    expect(result.errors).toHaveLength(1);
-    expect(result.errors[0]?.type).toBe("file-not-found");
-    expect(result.errors[0]?.file).toBeDefined();
+    // Target file not found should not be treated as error - it's expected for README-only repos
+    expect(result.isValid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+    expect(result.summary.checkedFiles).toHaveLength(0);
+    expect(result.summary.targetPattern).toBe("nonexistent.ja.md");
   });
 
   test("skips disabled checks", async () => {

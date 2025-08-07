@@ -22,7 +22,6 @@ flowchart LR
     end
     src/domain-->node//modules/zod/index.d.cts
     src/infrastructure-->node//modules/globby/index.d.ts
-    src/infrastructure-->src/domain
     src/application-->src/domain
     src/application-->src/infrastructure
     src/infrastructure-->node//modules/diff/libcjs/index.d.ts
