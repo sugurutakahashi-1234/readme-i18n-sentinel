@@ -71,9 +71,10 @@ readme-i18n-sentinel
 # Just run without any arguments
 readme-i18n-sentinel
 
-# The tool will automatically:
-# - Look for README.md as the source
-# - Find all README.*.md files as targets (e.g., README.ja.md, README.zh-CN.md)
+# The above is equivalent to:
+readme-i18n-sentinel \
+  --source "README.md" \
+  --target "{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}"
 ```
 
 ### Command Line Options

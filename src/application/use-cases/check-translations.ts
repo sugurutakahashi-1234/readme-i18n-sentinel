@@ -130,20 +130,24 @@ export async function checkTranslationsUseCase(
     },
   };
 
-  // Create summary if there are errors
+  // Extract failed files from errors
+  const failedFiles = [...new Set(errors.map((e) => e.file))];
+
+  // Calculate passed files
+  const passedFiles = targetFiles.filter((f) => !failedFiles.includes(f));
+
+  // Create result with summary
   const result: CheckResult = {
     isValid: errors.length === 0,
     errors,
     config: checkConfig,
+    summary: {
+      source: config.source,
+      checkedFiles: targetFiles,
+      passedFiles,
+      failedFiles,
+    },
   };
-
-  if (errors.length > 0) {
-    const affectedFiles = [...new Set(errors.map((e) => e.file))];
-    result.summary = {
-      totalErrors: errors.length,
-      affectedFiles,
-    };
-  }
 
   return result;
 }

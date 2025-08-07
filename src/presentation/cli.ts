@@ -20,8 +20,12 @@ program
   .name(getPackageName())
   .description(getDescription())
   .version(getVersion(), "-v, --version", "display version number")
-  .option("-s, --source <path>", "source README file path")
-  .option("-t, --target <pattern>", "target file pattern (glob supported)")
+  .option("-s, --source <path>", "source README file path", "README.md")
+  .option(
+    "-t, --target <pattern>",
+    "target file pattern (glob supported)",
+    "{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}",
+  )
   .option(
     "--skip-section-structure-check",
     "skip section structure validation (count and hierarchy)",
@@ -89,8 +93,11 @@ Examples:
 
 Auto-detection:
   When no CLI arguments are provided, the tool will:
-  - Look for README.md as the source
-  - Find all README.*.md files as targets (e.g., README.ja.md, README.zh-CN.md)
+  - Source: README.md
+  - Target: {README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}
+  
+  This is equivalent to:
+  $ ${getPackageName()} --source "README.md" --target "{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}"
   
 For more information:
   https://github.com/sugurutakahashi-1234/${getPackageName()}

@@ -26,7 +26,6 @@ flowchart LR
             subgraph src/infrastructure/services["/services"]
                 src/infrastructure/services/content//normalizer.ts["content-normalizer.ts"]
                 src/infrastructure/services/file//validator.ts["file-validator.ts"]
-                src/infrastructure/services/readme//detector.ts["readme-detector.ts"]
                 src/infrastructure/services/diff//formatter.ts["diff-formatter.ts"]
             end
             subgraph src/infrastructure/adapters["/adapters"]
@@ -60,10 +59,8 @@ flowchart LR
     src/application/use//cases/check//translations.ts-->src/infrastructure/services/content//normalizer.ts
     src/application/use//cases/check//translations.ts-->src/infrastructure/services/file//validator.ts
     src/domain/models/cli//options.ts-->node//modules/zod/index.d.cts
-    src/infrastructure/services/readme//detector.ts-->src/infrastructure/adapters/glob.adapter.ts
     src/application/use//cases/prepare//check//config.ts-->src/domain/models/cli//options.ts
     src/application/use//cases/prepare//check//config.ts-->src/domain/models/config.ts
-    src/application/use//cases/prepare//check//config.ts-->src/infrastructure/services/readme//detector.ts
     src/infrastructure/services/diff//formatter.ts-->node//modules/diff/libcjs/index.d.ts
     src/application/use//cases/print//result.ts-->src/domain/models/check//result.ts
     src/application/use//cases/print//result.ts-->src/infrastructure/services/diff//formatter.ts

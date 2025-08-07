@@ -71,9 +71,10 @@ readme-i18n-sentinel
 # 引数なしで実行
 readme-i18n-sentinel
 
-# ツールは自動的に：
-# - README.mdをソースとして検索
-# - すべてのREADME.*.mdファイルをターゲットとして検出（例：README.ja.md、README.zh-CN.md）
+# 上記は以下と同等：
+readme-i18n-sentinel \
+  --source "README.md" \
+  --target "{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}"
 ```
 
 ### Command Line Options

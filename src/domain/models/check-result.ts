@@ -119,8 +119,10 @@ export interface CheckResult {
   isValid: boolean;
   errors: TranslationError[];
   config: CheckConfig;
-  summary?: {
-    totalErrors: number;
-    affectedFiles: string[];
+  summary: {
+    source: string;
+    checkedFiles: string[];
+    passedFiles: string[];
+    failedFiles: string[];
   };
 }

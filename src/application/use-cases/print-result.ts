@@ -247,9 +247,9 @@ function formatText(result: CheckResult): string {
   const lines: string[] = [];
 
   // Show error summary
-  if (result.summary && result.summary.affectedFiles.length > 0) {
+  if (result.summary.failedFiles.length > 0) {
     lines.push(
-      `❌ Found ${result.errors.length} issue${result.errors.length === 1 ? "" : "s"} in ${result.summary.affectedFiles.length} file${result.summary.affectedFiles.length === 1 ? "" : "s"}`,
+      `❌ Found ${result.errors.length} issue${result.errors.length === 1 ? "" : "s"} in ${result.summary.failedFiles.length} file${result.summary.failedFiles.length === 1 ? "" : "s"}`,
     );
     lines.push("");
   }
