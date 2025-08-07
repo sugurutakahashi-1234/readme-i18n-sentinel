@@ -19,7 +19,6 @@ const ERROR_TYPE_LABELS = {
   "section-position": "Section position mismatch",
   "section-title": "Section title mismatch",
   "code-block": "Code block mismatch",
-  "file-not-found": "File not found",
 } as const satisfies Record<ErrorType, string>;
 
 /**
@@ -104,12 +103,6 @@ function generateSuggestion(error: TranslationError): string {
         return `Code block${lineInfo} does not match exactly. Ensure code blocks are identical in all translations`;
       }
     }
-
-    case "file-not-found":
-      if (error.pattern) {
-        return `No files found matching pattern: ${error.pattern}. Check if the pattern is correct`;
-      }
-      return `Target file ${error.file} not found. Create the file or check the path`;
 
     default: {
       // Exhaustive check - ensures all cases are handled
@@ -221,10 +214,6 @@ function formatErrorDetails(error: TranslationError): string[] {
       break;
     }
 
-    case "file-not-found":
-      lines.push(`  → ${generateSuggestion(error)}`);
-      break;
-
     default: {
       // Exhaustive check - ensures all cases are handled
       const _exhaustive: never = error;
@@ -240,16 +229,22 @@ function formatErrorDetails(error: TranslationError): string[] {
  * Format check result as human-readable text
  */
 function formatText(result: CheckResult): string {
-  if (result.isValid) {
-    return "✅ All translations are up to date";
-  }
-
   const lines: string[] = [];
 
-  // Show error summary
-  if (result.summary.failedFiles.length > 0) {
+  // Show statistics first
+  const fileCount = result.summary.checkedFiles.length;
+  lines.push(`📊 Checked ${fileCount} file${fileCount === 1 ? "" : "s"}`);
+
+  // Show result based on status
+  if (fileCount === 0) {
+    lines.push("📄 No target files found");
+  } else if (result.isValid) {
+    lines.push("✅ All translations are up to date");
+  } else {
+    const errorCount = result.errors.length;
+    const failedCount = result.summary.failedFiles.length;
     lines.push(
-      `❌ Found ${result.errors.length} issue${result.errors.length === 1 ? "" : "s"} in ${result.summary.failedFiles.length} file${result.summary.failedFiles.length === 1 ? "" : "s"}`,
+      `❌ Found ${errorCount} issue${errorCount === 1 ? "" : "s"} in ${failedCount} file${failedCount === 1 ? "" : "s"}`,
     );
     lines.push("");
   }

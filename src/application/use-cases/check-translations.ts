@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import type {
   CheckConfig,
   CheckResult,
@@ -14,14 +14,11 @@ import {
   extractCodeBlocks,
   extractHeadings,
 } from "../../domain/services/translation-checker.js";
+import { findFilesByPattern } from "../../infrastructure/adapters/glob.adapter.js";
 import {
   countLines,
   normalizeContent,
 } from "../../infrastructure/services/content-normalizer.js";
-import {
-  expandAndValidateTargets,
-  validateSourceFile,
-} from "../../infrastructure/services/file-validator.js";
 
 /**
  * Main use case for checking translations
@@ -32,17 +29,19 @@ export async function checkTranslationsUseCase(
   const errors: TranslationError[] = [];
 
   // Validate source file exists
-  validateSourceFile(config.source);
+  if (!existsSync(config.source)) {
+    throw new Error(`Source file not found: ${config.source}`);
+  }
 
   // Read and normalize source content
   const sourceContent = normalizeContent(readFileSync(config.source, "utf-8"));
   const sourceLineCount = countLines(sourceContent);
   const sourceHeadings = extractHeadings(sourceContent);
 
-  // Expand and validate target files
-  const { targetFiles, errors: validationErrors } =
-    await expandAndValidateTargets(config.target);
-  errors.push(...validationErrors);
+  // Expand target pattern to find matching files
+  const targetFiles = await findFilesByPattern(config.target);
+
+  // Target file not found is not treated as error, returned as empty array (expected for README-only repos)
 
   // Check each valid target file
   for (const targetFile of targetFiles) {
@@ -143,6 +142,7 @@ export async function checkTranslationsUseCase(
     config: checkConfig,
     summary: {
       source: config.source,
+      targetPattern: config.target,
       checkedFiles: targetFiles,
       passedFiles,
       failedFiles,
