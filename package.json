@@ -1,6 +1,6 @@
 {
   "name": "readme-i18n-sentinel",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A CLI tool that validates structural consistency between source and translated README files",
   "publishConfig": {
     "access": "public"
