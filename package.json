@@ -71,7 +71,7 @@
     "ci": "bun run lint && bun run format && bun run typecheck && bun run lint:check && bun run format:check && bun run build && bun run test:quiet && bun run update:docs && bun run knip",
     "clean": "rm -rf bun.lock node_modules dist coverage .*.bun-build tsconfig.tsbuildinfo tsconfig.build.tsbuildinfo",
     "clean:install": "bun run clean && bun install",
-    "clean:build": "bun run clean:install && bun run ci",
+    "clean:build": "bun run clean:install && bun run ci && bun run test:e2e",
     "release-please:dry-run": "bunx release-please release-pr --token=$(gh auth token) --repo-url=$(gh repo view --json nameWithOwner --jq '.nameWithOwner') --debug --dry-run",
     "deps:size": "node-size",
     "deps:check": "bunx ncu --deep",
