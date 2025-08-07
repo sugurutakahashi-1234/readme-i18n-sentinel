@@ -12,22 +12,22 @@
 
 [English](README.md) | [日本語](README.ja.md) | [简体中文](README.zh-CN.md) | [Español](README.es.md) | [Português](README.pt-BR.md) | [한국어](README.ko.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Русский](README.ru.md) | [हिन्दी](README.hi.md) | [العربية](README.ar.md) | [繁體中文](README.zh-TW.md)
 
-A CLI tool that ensures your translated README files maintain the same structure as the source, helping you keep multi-language documentation in sync.
+翻訳されたREADMEファイルがソースと同じ構造を維持していることを確認するCLIツール。多言語ドキュメントの同期を保つのに役立ちます。
 
 ## What it does
 
-Compares your source README with translated versions to ensure they have the same structure:
-- **Section count & hierarchy** - Same number of headings at the same levels
-- **Line positions** - Sections start at the same line numbers
-- **Line count** - Files have the same total number of lines
-- **Section titles** (optional) - Headings remain in original language
-- **Code blocks** (optional) - Code examples stay unchanged
+ソースREADMEと翻訳版を比較して、同じ構造を持っていることを確認します：
+- **セクション数と階層** - 同じレベルで同じ数の見出し
+- **行位置** - セクションが同じ行番号から始まる
+- **行数** - ファイルの総行数が同じ
+- **セクションタイトル** (オプション) - 見出しが元の言語のまま
+- **コードブロック** (オプション) - コード例が変更されていない
 
-**Example:** If your English README has 5 sections and 150 lines, but the Japanese version has 4 sections and 140 lines, the tool will detect this mismatch and report which sections are missing or misaligned.
+**例:** 英語のREADMEが5つのセクションと150行を持ち、日本語版が4つのセクションと140行の場合、このツールは不一致を検出し、どのセクションが欠けているか、ずれているかを報告します。
 
 ## Installation
 
-**Requirements:** Node.js v20 or higher
+**要件:** Node.js v20 以上
 
 ```bash
 # Global installation (recommended)
@@ -55,15 +55,15 @@ readme-i18n-sentinel
 
 ### Options
 
-| Option                              | Description                                                                          | Default                                                              |
-| ----------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------- |
-| `-s, --source <path>`               | Source README file path                                                              | `README.md`                                                          |
-| `-t, --target <pattern>`            | Target file pattern (glob supported)                                                 | `{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}` |
-| `--skip-section-structure-check`    | Skip validation of heading count and hierarchy (# vs ##)                             | disabled                                                             |
-| `--skip-line-count-check`           | Skip validation of total line count and heading line positions                       | disabled                                                             |
-| `--require-original-section-titles` | Require heading text to match exactly (e.g., "## Installation" must stay in English) | disabled                                                             |
-| `--require-original-code-blocks`    | Require code blocks to match exactly (including content inside ```)                  | disabled                                                             |
-| `--json`                            | Output results in JSON format for CI/CD integration                                  | disabled                                                             |
+| Option                              | Description                                                           | Default                                                              |
+| ----------------------------------- | --------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `-s, --source <path>`               | ソースREADMEファイルのパス                                            | `README.md`                                                          |
+| `-t, --target <pattern>`            | ターゲットファイルパターン（glob対応）                                | `{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}` |
+| `--skip-section-structure-check`    | 見出しの数と階層（# vs ##）の検証をスキップ                           | disabled                                                             |
+| `--skip-line-count-check`           | 総行数と見出しの行位置の検証をスキップ                                | disabled                                                             |
+| `--require-original-section-titles` | 見出しテキストの完全一致を要求（例：「## Installation」は英語のまま） | disabled                                                             |
+| `--require-original-code-blocks`    | コードブロックの完全一致を要求（```内のコンテンツを含む）             | disabled                                                             |
+| `--json`                            | CI/CD統合用にJSON形式で結果を出力                                     | disabled                                                             |
 
 ### Examples
 
@@ -82,14 +82,14 @@ readme-i18n-sentinel --source docs/README.md --target "docs/README.*.md"
 
 ### Husky (Git Hooks)
 
-**Simple version** - Check translations on every commit:
+**シンプルバージョン** - 毎回のコミットで翻訳をチェック：
 ```bash
 # .husky/pre-commit
 
 npx readme-i18n-sentinel
 ```
 
-**Advanced version** - Only check when README.md is modified & support skip flag:
+**高度なバージョン** - README.mdが変更された時のみチェック＆スキップフラグをサポート：
 ```bash
 # .husky/commit-msg
 
@@ -110,7 +110,7 @@ if git diff --cached --name-only | grep -q "^${README_FILE}$"; then
 fi
 ```
 
-To skip the check temporarily (advanced version only), add `[i18n-skip]` to your commit message:
+一時的にチェックをスキップするには（高度なバージョンのみ）、コミットメッセージに `[i18n-skip]` を追加：
 ```bash
 git commit -m "feat: urgent fix [i18n-skip]"
 ```
@@ -129,7 +129,7 @@ check-translations:
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+コントリビューションは歓迎します！お気軽にプルリクエストを送信してください。
 
 ## License
 

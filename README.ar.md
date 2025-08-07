@@ -12,22 +12,22 @@
 
 [English](README.md) | [日本語](README.ja.md) | [简体中文](README.zh-CN.md) | [Español](README.es.md) | [Português](README.pt-BR.md) | [한국어](README.ko.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Русский](README.ru.md) | [हिन्दी](README.hi.md) | [العربية](README.ar.md) | [繁體中文](README.zh-TW.md)
 
-A CLI tool that ensures your translated README files maintain the same structure as the source, helping you keep multi-language documentation in sync.
+أداة سطر أوامر تضمن أن ملفات README المترجمة تحافظ على نفس هيكل المصدر، مما يساعدك على الحفاظ على توثيق متعدد اللغات متزامن.
 
 ## What it does
 
-Compares your source README with translated versions to ensure they have the same structure:
-- **Section count & hierarchy** - Same number of headings at the same levels
-- **Line positions** - Sections start at the same line numbers
-- **Line count** - Files have the same total number of lines
-- **Section titles** (optional) - Headings remain in original language
-- **Code blocks** (optional) - Code examples stay unchanged
+يقارن README المصدر مع النسخ المترجمة للتأكد من أن لها نفس الهيكل:
+- **عدد الأقسام والتسلسل الهرمي** - نفس عدد العناوين في نفس المستويات
+- **مواضع الأسطر** - تبدأ الأقسام في نفس أرقام الأسطر
+- **عدد الأسطر** - الملفات لها نفس العدد الإجمالي للأسطر
+- **عناوين الأقسام** (اختياري) - تبقى العناوين باللغة الأصلية
+- **كتل الكود** (اختياري) - تبقى أمثلة الكود بدون تغيير
 
-**Example:** If your English README has 5 sections and 150 lines, but the Japanese version has 4 sections and 140 lines, the tool will detect this mismatch and report which sections are missing or misaligned.
+**مثال:** إذا كان README الإنجليزي يحتوي على 5 أقسام و 150 سطر، ولكن النسخة اليابانية تحتوي على 4 أقسام و 140 سطر، ستكتشف الأداة هذا التناقض وتبلغ عن الأقسام المفقودة أو غير المحاذاة.
 
 ## Installation
 
-**Requirements:** Node.js v20 or higher
+**المتطلبات:** Node.js v20 أو أعلى
 
 ```bash
 # Global installation (recommended)
@@ -57,13 +57,13 @@ readme-i18n-sentinel
 
 | Option                              | Description                                                                          | Default                                                              |
 | ----------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------- |
-| `-s, --source <path>`               | Source README file path                                                              | `README.md`                                                          |
-| `-t, --target <pattern>`            | Target file pattern (glob supported)                                                 | `{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}` |
-| `--skip-section-structure-check`    | Skip validation of heading count and hierarchy (# vs ##)                             | disabled                                                             |
-| `--skip-line-count-check`           | Skip validation of total line count and heading line positions                       | disabled                                                             |
-| `--require-original-section-titles` | Require heading text to match exactly (e.g., "## Installation" must stay in English) | disabled                                                             |
-| `--require-original-code-blocks`    | Require code blocks to match exactly (including content inside ```)                  | disabled                                                             |
-| `--json`                            | Output results in JSON format for CI/CD integration                                  | disabled                                                             |
+| `-s, --source <path>`               | مسار ملف README المصدر                                                               | `README.md`                                                          |
+| `-t, --target <pattern>`            | نمط الملف المستهدف (يدعم glob)                                                      | `{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}` |
+| `--skip-section-structure-check`    | تخطي التحقق من عدد العناوين والتسلسل الهرمي (# مقابل ##)                            | disabled                                                             |
+| `--skip-line-count-check`           | تخطي التحقق من العدد الإجمالي للأسطر ومواضع أسطر العناوين                          | disabled                                                             |
+| `--require-original-section-titles` | يتطلب مطابقة نص العنوان بدقة (مثلاً "## Installation" يجب أن يبقى بالإنجليزية)       | disabled                                                             |
+| `--require-original-code-blocks`    | يتطلب مطابقة كتل الكود بدقة (بما في ذلك المحتوى داخل ```)                        | disabled                                                             |
+| `--json`                            | إخراج النتائج بتنسيق JSON لتكامل CI/CD                                             | disabled                                                             |
 
 ### Examples
 
@@ -82,14 +82,14 @@ readme-i18n-sentinel --source docs/README.md --target "docs/README.*.md"
 
 ### Husky (Git Hooks)
 
-**Simple version** - Check translations on every commit:
+**نسخة بسيطة** - فحص الترجمات في كل commit:
 ```bash
 # .husky/pre-commit
 
 npx readme-i18n-sentinel
 ```
 
-**Advanced version** - Only check when README.md is modified & support skip flag:
+**نسخة متقدمة** - فحص فقط عند تعديل README.md ودعم علامة التخطي:
 ```bash
 # .husky/commit-msg
 
@@ -110,7 +110,7 @@ if git diff --cached --name-only | grep -q "^${README_FILE}$"; then
 fi
 ```
 
-To skip the check temporarily (advanced version only), add `[i18n-skip]` to your commit message:
+لتخطي الفحص مؤقتاً (النسخة المتقدمة فقط)، أضف `[i18n-skip]` إلى رسالة commit:
 ```bash
 git commit -m "feat: urgent fix [i18n-skip]"
 ```
@@ -129,7 +129,7 @@ check-translations:
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+المساهمات مرحب بها! لا تتردد في إرسال Pull Request.
 
 ## License
 

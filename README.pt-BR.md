@@ -12,22 +12,22 @@
 
 [English](README.md) | [日本語](README.ja.md) | [简体中文](README.zh-CN.md) | [Español](README.es.md) | [Português](README.pt-BR.md) | [한국어](README.ko.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Русский](README.ru.md) | [हिन्दी](README.hi.md) | [العربية](README.ar.md) | [繁體中文](README.zh-TW.md)
 
-A CLI tool that ensures your translated README files maintain the same structure as the source, helping you keep multi-language documentation in sync.
+Uma ferramenta CLI que garante que seus arquivos README traduzidos mantenham a mesma estrutura que o original, ajudando você a manter a documentação multilíngue sincronizada.
 
 ## What it does
 
-Compares your source README with translated versions to ensure they have the same structure:
-- **Section count & hierarchy** - Same number of headings at the same levels
-- **Line positions** - Sections start at the same line numbers
-- **Line count** - Files have the same total number of lines
-- **Section titles** (optional) - Headings remain in original language
-- **Code blocks** (optional) - Code examples stay unchanged
+Compara seu README fonte com as versões traduzidas para garantir que tenham a mesma estrutura:
+- **Contagem e hierarquia de seções** - Mesmo número de títulos nos mesmos níveis
+- **Posições de linha** - Seções começam nos mesmos números de linha
+- **Contagem de linhas** - Arquivos têm o mesmo número total de linhas
+- **Títulos de seção** (opcional) - Títulos permanecem no idioma original
+- **Blocos de código** (opcional) - Exemplos de código permanecem inalterados
 
-**Example:** If your English README has 5 sections and 150 lines, but the Japanese version has 4 sections and 140 lines, the tool will detect this mismatch and report which sections are missing or misaligned.
+**Exemplo:** Se seu README em inglês tem 5 seções e 150 linhas, mas a versão japonesa tem 4 seções e 140 linhas, a ferramenta detectará essa incompatibilidade e relatará quais seções estão faltando ou desalinhadas.
 
 ## Installation
 
-**Requirements:** Node.js v20 or higher
+**Requisitos:** Node.js v20 ou superior
 
 ```bash
 # Global installation (recommended)
@@ -55,15 +55,15 @@ readme-i18n-sentinel
 
 ### Options
 
-| Option                              | Description                                                                          | Default                                                              |
-| ----------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------- |
-| `-s, --source <path>`               | Source README file path                                                              | `README.md`                                                          |
-| `-t, --target <pattern>`            | Target file pattern (glob supported)                                                 | `{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}` |
-| `--skip-section-structure-check`    | Skip validation of heading count and hierarchy (# vs ##)                             | disabled                                                             |
-| `--skip-line-count-check`           | Skip validation of total line count and heading line positions                       | disabled                                                             |
-| `--require-original-section-titles` | Require heading text to match exactly (e.g., "## Installation" must stay in English) | disabled                                                             |
-| `--require-original-code-blocks`    | Require code blocks to match exactly (including content inside ```)                  | disabled                                                             |
-| `--json`                            | Output results in JSON format for CI/CD integration                                  | disabled                                                             |
+| Option                              | Description                                                                        | Default                                                              |
+| ----------------------------------- | ---------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `-s, --source <path>`               | Caminho do arquivo README fonte                                                    | `README.md`                                                          |
+| `-t, --target <pattern>`            | Padrão de arquivo alvo (compatível com glob)                                       | `{README.*.md,docs/README.*.md,docs/*/README.md,docs/*/README.*.md}` |
+| `--skip-section-structure-check`    | Pular validação de contagem de títulos e hierarquia (# vs ##)                      | disabled                                                             |
+| `--skip-line-count-check`           | Pular validação de contagem total de linhas e posições de linha dos títulos        | disabled                                                             |
+| `--require-original-section-titles` | Exigir que o texto do título corresponda exatamente (ex., "## Installation" deve permanecer em inglês) | disabled                                                             |
+| `--require-original-code-blocks`    | Exigir que blocos de código correspondam exatamente (incluindo conteúdo dentro de ```) | disabled                                                             |
+| `--json`                            | Exibir resultados em formato JSON para integração CI/CD                            | disabled                                                             |
 
 ### Examples
 
@@ -82,14 +82,14 @@ readme-i18n-sentinel --source docs/README.md --target "docs/README.*.md"
 
 ### Husky (Git Hooks)
 
-**Simple version** - Check translations on every commit:
+**Versão simples** - Verificar traduções em cada commit:
 ```bash
 # .husky/pre-commit
 
 npx readme-i18n-sentinel
 ```
 
-**Advanced version** - Only check when README.md is modified & support skip flag:
+**Versão avançada** - Verificar apenas quando README.md for modificado e suportar flag de pular:
 ```bash
 # .husky/commit-msg
 
@@ -110,7 +110,7 @@ if git diff --cached --name-only | grep -q "^${README_FILE}$"; then
 fi
 ```
 
-To skip the check temporarily (advanced version only), add `[i18n-skip]` to your commit message:
+Para pular a verificação temporariamente (apenas versão avançada), adicione `[i18n-skip]` à sua mensagem de commit:
 ```bash
 git commit -m "feat: urgent fix [i18n-skip]"
 ```
@@ -129,7 +129,7 @@ check-translations:
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contribuições são bem-vindas! Sinta-se à vontade para enviar um Pull Request.
 
 ## License
 

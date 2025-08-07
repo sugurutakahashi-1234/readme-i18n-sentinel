@@ -9,17 +9,26 @@ flowchart LR
     classDef dir fill:#0000,stroke:#999
     subgraph src["src"]
         src/domain["/domain"]:::dir
-        src/application["/application"]:::dir
         src/infrastructure["/infrastructure"]:::dir
+        src/application["/application"]:::dir
         src/presentation["/presentation"]:::dir
-        src/main.ts["main.ts"]
+        src/index.ts["index.ts"]
     end
-    src/application-->src/domain
+    subgraph node//modules["node_modules"]
+        node//modules/zod/index.d.cts["zod"]
+        node//modules/globby/index.d.ts["globby"]
+        node//modules/diff/libcjs/index.d.ts["diff"]
+        node//modules///commander//js/extra//typings/index.d.ts["@commander-js/extra-typings"]
+    end
+    src/domain-->node//modules/zod/index.d.cts
+    src/infrastructure-->node//modules/globby/index.d.ts
     src/infrastructure-->src/domain
+    src/application-->src/domain
+    src/application-->src/infrastructure
+    src/infrastructure-->node//modules/diff/libcjs/index.d.ts
+    src/presentation-->node//modules///commander//js/extra//typings/index.d.ts
     src/presentation-->src/application
-    src/main.ts-->src/application
-    src/main.ts-->src/domain
-    src/main.ts-->src/infrastructure
-    src/main.ts-->src/presentation
+    src/presentation-->src/domain
+    src/index.ts-->src/presentation
 ```
 

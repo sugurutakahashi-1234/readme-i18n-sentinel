@@ -7,30 +7,71 @@ tsg --tsconfig tsconfig.build.json --LR --md docs/reports/dependencies/deps-grap
 ```mermaid
 flowchart LR
     subgraph src["src"]
-        src/main.ts["main.ts"]
+        src/index.ts["index.ts"]
         subgraph src/domain["/domain"]
-            src/domain/user.ts["user.ts"]
-            src/domain/userRepository.ts["userRepository.ts"]
-        end
-        subgraph src/application["/application"]
-            src/application/getUserUseCase.ts["getUserUseCase.ts"]
+            subgraph src/domain/models["/models"]
+                src/domain/models/check//result.ts["check-result.ts"]
+                src/domain/models/config.ts["config.ts"]
+                src/domain/models/heading.ts["heading.ts"]
+                src/domain/models/cli//options.ts["cli-options.ts"]
+            end
+            subgraph src/domain/services["/services"]
+                src/domain/services/translation//checker.ts["translation-checker.ts"]
+            end
+            subgraph src/domain/constants["/constants"]
+                src/domain/constants/package//metadata.ts["package-metadata.ts"]
+            end
         end
         subgraph src/infrastructure["/infrastructure"]
-            src/infrastructure/inMemoryUserRepository.ts["inMemoryUserRepository.ts"]
+            subgraph src/infrastructure/services["/services"]
+                src/infrastructure/services/content//normalizer.ts["content-normalizer.ts"]
+                src/infrastructure/services/file//validator.ts["file-validator.ts"]
+                src/infrastructure/services/diff//formatter.ts["diff-formatter.ts"]
+            end
+            subgraph src/infrastructure/adapters["/adapters"]
+                src/infrastructure/adapters/glob.adapter.ts["glob.adapter.ts"]
+            end
+        end
+        subgraph src/application/use//cases["/application/use-cases"]
+            src/application/use//cases/check//translations.ts["check-translations.ts"]
+            src/application/use//cases/prepare//check//config.ts["prepare-check-config.ts"]
+            src/application/use//cases/print//config.ts["print-config.ts"]
+            src/application/use//cases/print//result.ts["print-result.ts"]
         end
         subgraph src/presentation["/presentation"]
-            src/presentation/userController.ts["userController.ts"]
+            src/presentation/cli.ts["cli.ts"]
         end
     end
-    src/domain/userRepository.ts-->src/domain/user.ts
-    src/application/getUserUseCase.ts-->src/domain/user.ts
-    src/application/getUserUseCase.ts-->src/domain/userRepository.ts
-    src/infrastructure/inMemoryUserRepository.ts-->src/domain/user.ts
-    src/infrastructure/inMemoryUserRepository.ts-->src/domain/userRepository.ts
-    src/presentation/userController.ts-->src/application/getUserUseCase.ts
-    src/main.ts-->src/application/getUserUseCase.ts
-    src/main.ts-->src/domain/user.ts
-    src/main.ts-->src/infrastructure/inMemoryUserRepository.ts
-    src/main.ts-->src/presentation/userController.ts
+    subgraph node//modules["node_modules"]
+        node//modules/zod/index.d.cts["zod"]
+        node//modules/globby/index.d.ts["globby"]
+        node//modules/diff/libcjs/index.d.ts["diff"]
+        node//modules///commander//js/extra//typings/index.d.ts["@commander-js/extra-typings"]
+    end
+    src/domain/models/config.ts-->node//modules/zod/index.d.cts
+    src/domain/services/translation//checker.ts-->src/domain/models/check//result.ts
+    src/domain/services/translation//checker.ts-->src/domain/models/heading.ts
+    src/infrastructure/adapters/glob.adapter.ts-->node//modules/globby/index.d.ts
+    src/infrastructure/services/file//validator.ts-->src/domain/models/check//result.ts
+    src/infrastructure/services/file//validator.ts-->src/infrastructure/adapters/glob.adapter.ts
+    src/application/use//cases/check//translations.ts-->src/domain/models/check//result.ts
+    src/application/use//cases/check//translations.ts-->src/domain/models/config.ts
+    src/application/use//cases/check//translations.ts-->src/domain/services/translation//checker.ts
+    src/application/use//cases/check//translations.ts-->src/infrastructure/services/content//normalizer.ts
+    src/application/use//cases/check//translations.ts-->src/infrastructure/services/file//validator.ts
+    src/domain/models/cli//options.ts-->node//modules/zod/index.d.cts
+    src/application/use//cases/prepare//check//config.ts-->src/domain/models/cli//options.ts
+    src/application/use//cases/prepare//check//config.ts-->src/domain/models/config.ts
+    src/application/use//cases/print//config.ts-->src/domain/models/config.ts
+    src/infrastructure/services/diff//formatter.ts-->node//modules/diff/libcjs/index.d.ts
+    src/application/use//cases/print//result.ts-->src/domain/models/check//result.ts
+    src/application/use//cases/print//result.ts-->src/infrastructure/services/diff//formatter.ts
+    src/presentation/cli.ts-->node//modules///commander//js/extra//typings/index.d.ts
+    src/presentation/cli.ts-->src/application/use//cases/check//translations.ts
+    src/presentation/cli.ts-->src/application/use//cases/prepare//check//config.ts
+    src/presentation/cli.ts-->src/application/use//cases/print//config.ts
+    src/presentation/cli.ts-->src/application/use//cases/print//result.ts
+    src/presentation/cli.ts-->src/domain/constants/package//metadata.ts
+    src/index.ts-->src/presentation/cli.ts
 ```
 
