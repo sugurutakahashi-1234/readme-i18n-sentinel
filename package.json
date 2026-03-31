@@ -80,7 +80,7 @@
   "dependencies": {
     "@commander-js/extra-typings": "^14.0.0",
     "commander": "^14.0.0",
-    "diff": "^8.0.2",
+    "diff": "^8.0.4",
     "globby": "^14.1.0",
     "zod": "^4.0.15"
   },
