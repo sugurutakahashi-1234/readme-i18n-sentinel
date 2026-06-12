@@ -91,7 +91,7 @@
     "@commitlint/types": "^19.8.1",
     "@elsikora/git-branch-lint": "^1.1.2",
     "@types/bun": "^1.2.19",
-    "@types/node": "^24.2.0",
+    "@types/node": "^25.0.0",
     "@ysk8hori/typescript-graph": "^0.26.4",
     "husky": "^9.1.7",
     "knip": "^5.62.0",
