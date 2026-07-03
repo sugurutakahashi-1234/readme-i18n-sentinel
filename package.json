@@ -78,7 +78,7 @@
     "deps:update": "bunx ncu -u --deep && bun install && bun run ci"
   },
   "dependencies": {
-    "@commander-js/extra-typings": "^14.0.0",
+    "@commander-js/extra-typings": "^15.0.0",
     "commander": "^14.0.0",
     "diff": "^8.0.2",
     "globby": "^14.1.0",
