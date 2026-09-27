@@ -86,9 +86,9 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.1.3",
-    "@commitlint/cli": "^19.8.1",
-    "@commitlint/config-conventional": "^19.8.1",
-    "@commitlint/types": "^19.8.1",
+    "@commitlint/cli": "^21.0.0",
+    "@commitlint/config-conventional": "^21.0.0",
+    "@commitlint/types": "^21.0.0",
     "@elsikora/git-branch-lint": "^1.1.2",
     "@types/bun": "^1.2.19",
     "@types/node": "^24.2.0",
