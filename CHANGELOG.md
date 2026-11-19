@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/sugurutakahashi-1234/readme-i18n-sentinel/compare/v1.1.1...v2.0.0) (2026-11-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* npm パッケージの実行には Node.js 26 以上が必要です。
+
+### ✨ Features
+
+* 最低対応を Node.js 26 に引き上げる ([286a664](https://github.com/sugurutakahashi-1234/readme-i18n-sentinel/commit/286a6649528cdc2a2a9a6aeaa514d197dd9a226e))
+
 ## [1.1.1](https://github.com/sugurutakahashi-1234/readme-i18n-sentinel/compare/v1.1.0...v1.1.1) (2026-11-19)
 
 
