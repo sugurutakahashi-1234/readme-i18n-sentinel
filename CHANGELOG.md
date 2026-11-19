@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/sugurutakahashi-1234/readme-i18n-sentinel/compare/v1.1.0...v1.1.1) (2026-11-19)
+
+
+### 🐛 Bug Fixes
+
+* npm の自動公開を OIDC に移行し依存ライブラリを更新 ([#30](https://github.com/sugurutakahashi-1234/readme-i18n-sentinel/issues/30)) ([a8b6c4e](https://github.com/sugurutakahashi-1234/readme-i18n-sentinel/commit/a8b6c4eea025ef3123705f511bead0c800a905fb))
+
 ## [1.1.0](https://github.com/sugurutakahashi-1234/readme-i18n-sentinel/compare/v1.0.0...v1.1.0) (2025-08-07)
 
 
