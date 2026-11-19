@@ -27,7 +27,7 @@
 
 ## Installation
 
-**要件:** Node.js v20 以上
+**要件:** Node.js v26 以上
 
 ```bash
 # Global installation (recommended)

@@ -104,5 +104,5 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - 「この変更により既存の〇〇機能に影響が出る可能性があります。確認させていただけますか？」
 
 ### Requirements
-- **Node.js**: v20 以上
+- **Node.js**: v26 以上
 - **bun**: 最新版
