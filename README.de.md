@@ -27,7 +27,7 @@ Vergleicht Ihre Quell-README mit übersetzten Versionen, um sicherzustellen, das
 
 ## Installation
 
-**Anforderungen:** Node.js v20 oder höher
+**Anforderungen:** Node.js v26 oder höher
 
 ```bash
 # Global installation (recommended)

@@ -27,7 +27,7 @@ CLI-инструмент, который проверяет структурну
 
 ## Installation
 
-**Требования:** Node.js v20 или выше
+**Требования:** Node.js v26 или выше
 
 ```bash
 # Global installation (recommended)

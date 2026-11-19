@@ -27,7 +27,7 @@ Compare votre README source avec les versions traduites pour s'assurer qu'elles 
 
 ## Installation
 
-**Exigences :** Node.js v20 ou supérieur
+**Exigences :** Node.js v26 ou supérieur
 
 ```bash
 # Global installation (recommended)

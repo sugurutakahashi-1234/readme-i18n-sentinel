@@ -27,7 +27,7 @@
 
 ## Installation
 
-**المتطلبات:** Node.js v20 أو أعلى
+**المتطلبات:** Node.js v26 أو أعلى
 
 ```bash
 # Global installation (recommended)
